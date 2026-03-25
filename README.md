@@ -1,16 +1,41 @@
 # project3-team_53
 
+## Prerequisites
 
-Step 1: Download Node.JS:
-https://nodejs.org/dist/v24.14.1/node-v24.14.1-x64.msi
+Install [Node.js](https://nodejs.org/) (current LTS is fine). Use the installer for your OS.
 
-Step 2: Clone Repo
+## Setup
 
-Step 3: Place .env files in the "./frontend" and "./backend" files
+1. Clone this repository.
 
-Step 4: Go into Frontend & Backend and run "npm install"
+2. Create environment files (they are gitignored; each developer copies them locally).
 
-Step 5: 
+   **`frontend/.env`**
 
-a - To run the backend run "npm run start:dev"
-b - To run the frontend run "npm run dev"
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:3001/api
+   ```
+
+   **`backend/.env`** (optional)
+
+   ```env
+   PORT=3001
+   ```
+
+   If you omit `backend/.env`, the API listens on port **3001** by default (`main.ts`).
+
+3. Install dependencies in both apps:
+
+   ```bash
+   cd frontend && npm install
+   cd ../backend && npm install
+   ```
+
+## Run locally
+
+Start the **backend** first, then the **frontend** (the UI calls the API on port 3001).
+
+- **Backend** (from `backend/`): `npm run start:dev` → `http://localhost:3001`
+- **Frontend** (from `frontend/`): `npm run dev` → `http://localhost:3000` (default Next.js port)
+
+API routes use the `/api` prefix (for example: `GET http://localhost:3001/api/hello`).
