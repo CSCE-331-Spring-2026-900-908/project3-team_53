@@ -1,5 +1,16 @@
 # project3-team_53
 
+## Tech stack
+
+| Area | Technologies |
+| --- | --- |
+| **Runtime** | Node.js |
+| **Frontend** | [Next.js](https://nextjs.org/) 16 (App Router), [React](https://react.dev/) 19, TypeScript |
+| **UI & styling** | [MUI (Material UI)](https://mui.com/) 7, [Emotion](https://emotion.sh/), [Tailwind CSS](https://tailwindcss.com/) 4 |
+| **HTTP client** | [Axios](https://axios-http.com/) |
+| **Backend** | [NestJS](https://nestjs.com/) 11 on [Express](https://expressjs.com/) (`@nestjs/platform-express`), TypeScript |
+| **Tooling** | ESLint; backend also uses Jest and Prettier |
+
 ## Prerequisites
 
 Install [Node.js](https://nodejs.org/) (current LTS is fine). Use the installer for your OS.
