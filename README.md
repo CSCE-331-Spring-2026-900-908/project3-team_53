@@ -4,7 +4,7 @@
 
 Main Website: [https://project3-team-53.vercel.app/](https://project3-team-53.vercel.app/)
 
-API Base URL: https://project3-team-53-backend.vercel.app/
+API Base URL: https://project3-team-53-backend.vercel.app/api
 
 ## Tech stack
 
