@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -12,10 +12,30 @@ interface ConfirmationScreenProps {
   onStartOver: () => void;
 }
 
+const AUTO_RESET_SECONDS = 30;
+
 export default function ConfirmationScreen({
   order,
   onStartOver,
 }: ConfirmationScreenProps) {
+  const [countdown, setCountdown] = useState(AUTO_RESET_SECONDS);
+  const onStartOverRef = useRef(onStartOver);
+  onStartOverRef.current = onStartOver;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCountdown((prev) => (prev <= 1 ? 0 : prev - 1));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (countdown === 0) {
+      onStartOverRef.current();
+    }
+  }, [countdown]);
+
   return (
     <Box
       sx={{
@@ -89,6 +109,10 @@ export default function ConfirmationScreen({
       >
         Start New Order
       </Button>
+
+      <Typography sx={{ color: '#b2bec3', fontSize: '0.85rem', mt: 2 }}>
+        Returning to start in {countdown} second{countdown !== 1 ? 's' : ''}...
+      </Typography>
     </Box>
   );
 }

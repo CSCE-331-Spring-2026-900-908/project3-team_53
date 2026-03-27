@@ -11,6 +11,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import {
   MenuItem as MenuItemType,
   CartItem,
+  OrderType,
   Size,
   SugarLevel,
   IceLevel,
@@ -25,6 +26,8 @@ interface MenuScreenProps {
   menuItems: MenuItemType[];
   cart: CartItem[];
   cartTotal: number;
+  orderType: OrderType;
+  onToggleOrderType: () => void;
   onAddToCart: (
     item: MenuItemType,
     size: Size,
@@ -42,6 +45,8 @@ export default function MenuScreen({
   menuItems,
   cart,
   cartTotal,
+  orderType,
+  onToggleOrderType,
   onAddToCart,
   onUpdateQuantity,
   onRemoveFromCart,
@@ -198,6 +203,8 @@ export default function MenuScreen({
         open={cartOpen}
         cart={cart}
         cartTotal={cartTotal}
+        orderType={orderType}
+        onToggleOrderType={onToggleOrderType}
         onClose={() => setCartOpen(false)}
         onUpdateQuantity={onUpdateQuantity}
         onRemove={onRemoveFromCart}

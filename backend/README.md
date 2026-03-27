@@ -96,3 +96,70 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+
+## DATABASE TABLE OUTLINE
+
+The backend uses [TypeORM](https://typeorm.io/) as its ORM, connecting to a PostgreSQL database. When `DB_SYNCHRONIZE=true` in `backend/.env`, TypeORM automatically creates and updates table schemas to match the entity definitions on startup (no manual migrations needed during development).
+
+### Tables
+
+#### `menu_items`
+
+Stores every product the shop offers.
+
+| Column | Type | Notes |
+| --- | --- | --- |
+| `id` | `int` (PK, auto-increment) | |
+| `name` | `varchar` | Display name |
+| `category` | `varchar` | Grouping (e.g. Milk Tea, Fruit Tea, Smoothies, Snacks) |
+| `price` | `decimal(6,2)` | Unit price |
+| `image` | `varchar` (nullable) | Optional image URL |
+| `available` | `boolean` | Defaults to `true`; set to `false` to hide from the kiosk |
+
+On startup, if the table is empty, `MenuItemsService.onModuleInit()` seeds it with 14 default boba shop items so the kiosk is immediately functional.
+
+#### `orders`
+
+One row per customer transaction.
+
+| Column | Type | Notes |
+| --- | --- | --- |
+| `id` | `int` (PK, auto-increment) | Displayed as the order number on the confirmation screen |
+| `status` | `varchar` | Defaults to `pending` |
+| `order_type` | `varchar` | `dine_in` or `carry_out` |
+| `total` | `decimal(8,2)` | Sum of all line items |
+| `created_at` | `timestamp` | Auto-set on insert |
+
+#### `order_items`
+
+Individual line items within an order. This is how each ordered product (and its customizations) is traced back to its parent order.
+
+| Column | Type | Notes |
+| --- | --- | --- |
+| `id` | `int` (PK, auto-increment) | |
+| `order_id` | `int` (FK &rarr; `orders.id`) | Cascading delete &mdash; removing an order removes its items |
+| `menu_item_id` | `int` (FK &rarr; `menu_items.id`) | Which product was ordered |
+| `quantity` | `int` | |
+| `size` | `varchar` | Defaults to `Regular` |
+| `sugar_level` | `varchar` | Defaults to `100%` |
+| `ice_level` | `varchar` | Defaults to `Regular` |
+| `toppings` | `jsonb` | Array of topping names, e.g. `["Boba", "Coconut Jelly"]` |
+| `item_price` | `decimal(6,2)` | Computed price for this line (price &times; quantity) |
+
+### Relationships
+
+```
+orders  1 ──── * order_items * ──── 1 menu_items
+```
+
+- **orders &harr; order_items**: One order has many order items (`OneToMany`). Each order item belongs to exactly one order (`ManyToOne`). Deleting an order cascades to its items.
+- **order_items &harr; menu_items**: Each order item references one menu item (`ManyToOne`, eager-loaded). This lets the API return the full product details alongside order data.
+
+### API Endpoints
+
+| Method | Path | Description |
+| --- | --- | --- |
+| `GET` | `/api/menu-items` | List all available menu items (optional `?category=` filter) |
+| `POST` | `/api/orders` | Place a new order (body: `{ order_type, total, items: [...] }`) |
+| `GET` | `/api/orders` | List all orders with their items and menu item details |

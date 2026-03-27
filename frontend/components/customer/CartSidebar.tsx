@@ -7,13 +7,17 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { CartItem } from '@/types/customer';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import Chip from '@mui/material/Chip';
+import { CartItem, OrderType } from '@/types/customer';
 import CartItemRow from './CartItemRow';
 
 interface CartSidebarProps {
   open: boolean;
   cart: CartItem[];
   cartTotal: number;
+  orderType: OrderType;
+  onToggleOrderType: () => void;
   onClose: () => void;
   onUpdateQuantity: (cartId: string, quantity: number) => void;
   onRemove: (cartId: string) => void;
@@ -24,6 +28,8 @@ export default function CartSidebar({
   open,
   cart,
   cartTotal,
+  orderType,
+  onToggleOrderType,
   onClose,
   onUpdateQuantity,
   onRemove,
@@ -46,20 +52,33 @@ export default function CartSidebar({
       {/* Header */}
       <Box
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
           px: 3,
           py: 2,
           borderBottom: '2px solid #3a4144',
         }}
       >
-        <Typography sx={{ color: '#FAF3E0', fontWeight: 700, fontSize: '1.25rem' }}>
-          Your Order
-        </Typography>
-        <IconButton onClick={onClose} sx={{ color: '#FAF3E0' }}>
-          <CloseIcon />
-        </IconButton>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Typography sx={{ color: '#FAF3E0', fontWeight: 700, fontSize: '1.25rem' }}>
+            Your Order
+          </Typography>
+          <IconButton onClick={onClose} sx={{ color: '#FAF3E0' }}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        <Chip
+          icon={<SwapHorizIcon sx={{ color: '#fff !important', fontSize: 18 }} />}
+          label={orderType === 'dine_in' ? 'Dine In' : 'Carry Out'}
+          onClick={onToggleOrderType}
+          sx={{
+            mt: 1,
+            bgcolor: '#4ECDC4',
+            color: '#fff',
+            fontWeight: 600,
+            fontSize: '0.85rem',
+            cursor: 'pointer',
+            '&:hover': { bgcolor: '#3dbdb5' },
+          }}
+        />
       </Box>
 
       {/* Cart items */}

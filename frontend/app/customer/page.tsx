@@ -60,6 +60,10 @@ export default function CustomerKiosk() {
     setStep('menu');
   };
 
+  const toggleOrderType = useCallback(() => {
+    setOrderType((prev) => (prev === 'dine_in' ? 'carry_out' : 'dine_in'));
+  }, []);
+
   const addToCart = useCallback(
     (
       item: MenuItemType,
@@ -148,6 +152,8 @@ export default function CustomerKiosk() {
           menuItems={menuItems}
           cart={cart}
           cartTotal={cartTotal}
+          orderType={orderType}
+          onToggleOrderType={toggleOrderType}
           onAddToCart={addToCart}
           onUpdateQuantity={updateCartQuantity}
           onRemoveFromCart={removeFromCart}
