@@ -25,7 +25,12 @@ Install [Node.js](https://nodejs.org/) (current LTS is fine). Use the installer 
 
 1. Clone this repository.
 
-2. Create environment files (they are gitignored; each developer copies them locally).
+2. Create environment files from the provided examples (they are gitignored; each developer copies them locally).
+
+   ```bash
+   cp frontend/.env.example frontend/.env
+   cp backend/.env.example backend/.env
+   ```
 
    **`frontend/.env`**
 
@@ -37,9 +42,17 @@ Install [Node.js](https://nodejs.org/) (current LTS is fine). Use the installer 
 
    ```env
    PORT=3001
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_USER=postgres
+   DB_PASSWORD=postgres
+   DB_NAME=postgres
+   DB_SYNCHRONIZE=false
+   DB_SSL=true
+   DB_SSL_REJECT_UNAUTHORIZED=false
    ```
 
-   If you omit `backend/.env`, the API listens on port **3001** by default (`main.ts`).
+   If you omit `backend/.env`, the API listens on port **3001** by default (`main.ts`) and uses the default local PostgreSQL values shown above.
 
 3. Install dependencies in both apps:
 
