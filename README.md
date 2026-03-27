@@ -38,7 +38,7 @@ Install [Node.js](https://nodejs.org/) (current LTS is fine). Use the installer 
    NEXT_PUBLIC_API_URL=http://localhost:3001/api
    ```
 
-   **`backend/.env`** (optional)
+   **`backend/.env`**
 
    ```env
    PORT=3001
