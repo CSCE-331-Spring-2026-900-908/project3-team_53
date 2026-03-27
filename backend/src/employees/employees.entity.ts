@@ -12,6 +12,9 @@ export class Employee {
   role: string;
 
   @Column()
+  email: string;
+
+  @Column()
   shift: string;
 
   @Column({ default: false })
