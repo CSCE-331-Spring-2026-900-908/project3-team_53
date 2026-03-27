@@ -47,6 +47,8 @@ Install [Node.js](https://nodejs.org/) (current LTS is fine). Use the installer 
    DB_USER=postgres
    DB_PASSWORD=postgres
    DB_NAME=postgres
+
+   # Database configuration - dont change these
    DB_SYNCHRONIZE=false
    DB_SSL=true
    DB_SSL_REJECT_UNAUTHORIZED=false
