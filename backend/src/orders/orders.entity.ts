@@ -7,8 +7,6 @@ export class Order {
     @Column()
     customerId: number;
     @Column()
-    items: string[];
-    @Column()
     totalAmount: number;
     @Column()
     status: string;

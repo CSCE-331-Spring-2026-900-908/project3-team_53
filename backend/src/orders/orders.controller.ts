@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { Order } from './orders.entity';
 import { OrdersService } from './orders.service';
 
@@ -11,7 +11,7 @@ export class OrdersController {
     }
 
     @Post('')
-    async createOrder(order: Order): Promise<Order> {
+    async createOrder(@Body() order: Order): Promise<Order> {
         return this.ordersService.createOrder(order);
     }
 }
