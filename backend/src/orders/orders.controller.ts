@@ -1,9 +1,19 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Post, Get, Body } from '@nestjs/common';
+import { OrdersService } from './orders.service';
+import { CreateOrderDto } from './create-order.dto';
+import { Order } from './orders.entity';
 
-@Controller('orders')
+@Controller('api/orders')
 export class OrdersController {
-    @Get('')
-    getOrders() {
-        return 'Hello World';
-    }
+  constructor(private readonly ordersService: OrdersService) {}
+
+  @Post()
+  create(@Body() dto: CreateOrderDto): Promise<Order> {
+    return this.ordersService.create(dto);
+  }
+
+  @Get()
+  findAll(): Promise<Order[]> {
+    return this.ordersService.findAll();
+  }
 }
