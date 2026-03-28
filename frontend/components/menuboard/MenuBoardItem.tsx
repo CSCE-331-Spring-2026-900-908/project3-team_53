@@ -18,7 +18,7 @@ export default function MenuBoardItem({ item }: MenuBoardItemProps) {
 
       <h3 className="text-2xl font-semibold">{item.name}</h3>
 
-      <p className="text-xl mt-2">${item.price.toFixed(2)}</p>
+      <p className="text-xl mt-2">${Number(item.price).toFixed(2)}</p>
 
       {!item.available && (
         <p className="text-red-400 text-lg mt-2">Unavailable</p>
