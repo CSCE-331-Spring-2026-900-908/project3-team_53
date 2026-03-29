@@ -8,6 +8,7 @@ interface MenuBoardItemProps {
 export default function MenuBoardItem({ item }: MenuBoardItemProps) {
   return (
     <div className="flex flex-col items-center text-center p-4 bg-[#FFF8EE] rounded-lg shadow-lg">
+      {/* Show image if it exists */}
       {item.image && (
         <img
           src={item.image}
@@ -20,6 +21,7 @@ export default function MenuBoardItem({ item }: MenuBoardItemProps) {
 
       <p className="text-xl mt-2 text-[#FF6B6B]">${Number(item.price).toFixed(2)}</p>
 
+      {/* Show unavailable message if the item is not available */}
       {!item.available && (
         <p className="text-red-400 text-lg mt-2">Unavailable</p>
       )}
