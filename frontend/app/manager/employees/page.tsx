@@ -12,11 +12,11 @@ const sampleEmployees = [
 
 export default function ManagerEmployeesPage() {
   return (
-    <Box sx={{ minHeight: '80vh', px: 4, py: 6, backgroundColor: '#f7f7f7', color: '#000000' }}>
-      <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2, color: '#000000' }}>
+    <Box sx={{ minHeight: '80vh', px: 4, py: 6, backgroundColor: '#f7f7f7' }}>
+      <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2 }}>
         Employee Management
       </Typography>
-      <Typography variant="body1" sx={{ color: '#000000', mb: 4, maxWidth: 820 }}>
+      <Typography variant="body1" sx={{ color: '#555555', mb: 4, maxWidth: 820 }}>
         View your team, update roles, and manage employee availability.
       </Typography>
 
