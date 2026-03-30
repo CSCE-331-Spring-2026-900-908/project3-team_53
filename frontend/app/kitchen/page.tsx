@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Get, Patch } from "@/utils/apiService";
 
 type OrderItem = {
   name: string;
@@ -21,7 +22,7 @@ export default function KitchenPage() {
   // Fetch orders
   const fetchOrders = async () => {
     try {
-      const res = await axios.get("/api/orders?status=pending");
+      const res = await Get("/orders?status=pending");
       setOrders(res.data);
     } catch (err) {
       console.error("Error fetching orders:", err);
@@ -41,7 +42,7 @@ export default function KitchenPage() {
   // Mark order complete
   const completeOrder = async (id: number) => {
     try {
-      await axios.patch(`/api/orders/${id}/complete`);
+      await Patch(`/orders/${id}/complete`);
       setOrders((prev) => prev.filter((o) => o.id !== id));
     } catch (err) {
       console.error("Error completing order:", err);

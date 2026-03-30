@@ -6,26 +6,26 @@ const apiService = axios.create({
 });
 
 export const Get = async (url: string) => {
-    const response = await apiService.get(url);
+    const response = await apiService.get(url + "/api");
     return response.data;
 };
 
 export const Post = async (url: string, data: any) => {
-    const response = await apiService.post(url, data);
+    const response = await apiService.post(url + "/api", data);
     return response.data;
 };
 
 export const Put = async (url: string, data: any) => {
-    const response = await apiService.put(url, data);
+    const response = await apiService.put(url + "/api", data);
     return response.data;
 };
 
 export const Patch = async (url: string, data?: any) => {
-    const response = await apiService.patch(url, data);
+    const response = await apiService.patch(url + "/api", data);
     return response.data;
 };
 
 export const Delete = async (url: string) => {
-    const response = await apiService.delete(url);
+    const response = await apiService.delete(url + "/api");
     return response.data;
 };
