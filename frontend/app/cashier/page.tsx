@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 
+// Menu data with categories and items
 const MENU = [
   { category: 'Milk Tea', items: [
     { id: 1, name: 'Classic Milk Tea', price: 5.50 },
@@ -25,6 +26,7 @@ const MENU = [
   ]},
 ];
 
+// Customization options
 const SUGAR_LEVELS = ['0%', '25%', '50%', '75%', '100%'];
 const ICE_LEVELS = ['No Ice', 'Less Ice', 'Regular Ice', 'Extra Ice'];
 const TOPPINGS = [
@@ -47,13 +49,23 @@ type OrderItem = {
   qty: number;
   key: string;
 };
-
 type MenuItem = { id: number; name: string; price: number };
+
+// Generates a random order number like #A1B2
+function generateOrderNumber(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '#';
+  for (let i = 0; i < 4; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
 
 export default function CashierPage() {
   const [activeCategory, setActiveCategory] = useState('Milk Tea');
   const [order, setOrder] = useState<OrderItem[]>([]);
   const [paid, setPaid] = useState(false);
+  const [orderNumber, setOrderNumber] = useState('');
 
   // Modal state
   const [modalItem, setModalItem] = useState<MenuItem | null>(null);
@@ -110,22 +122,25 @@ export default function CashierPage() {
     setOrder(prev => prev.map(o => o.key === key ? { ...o, qty: o.qty + 1 } : o));
   };
 
-  const clearOrder = () => { setOrder([]); setPaid(false); };
+  const clearOrder = () => { setOrder([]); setPaid(false); setOrderNumber(''); };
 
   const subtotal = order.reduce((sum, o) => sum + o.basePrice * o.qty, 0);
   const tax = subtotal * 0.0825;
   const total = subtotal + tax;
 
+  // Generate order number and show payment confirmation
   const handlePayment = () => {
     if (order.length === 0) return;
+    const num = generateOrderNumber();
+    setOrderNumber(num);
     setPaid(true);
-    setTimeout(() => { setOrder([]); setPaid(false); }, 2500);
+    setTimeout(() => { setOrder([]); setPaid(false); setOrderNumber(''); }, 3000);
   };
 
   return (
     <div style={{ display: 'flex', height: '100vh', fontFamily: 'Arial, sans-serif', backgroundColor: '#1a1a2e', overflow: 'hidden' }}>
 
-      {/* LEFT: Menu */}
+      {/* LEFT: Menu panel */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: '2px solid #333' }}>
         <div style={{ backgroundColor: '#16213e', padding: '16px 24px', borderBottom: '2px solid #333' }}>
           <h1 style={{ color: '#e94560', margin: 0, fontSize: '1.4rem', fontWeight: 'bold' }}>
@@ -133,6 +148,7 @@ export default function CashierPage() {
           </h1>
         </div>
 
+        {/* Category tabs */}
         <div style={{ display: 'flex', backgroundColor: '#16213e', borderBottom: '2px solid #333' }}>
           {MENU.map(m => (
             <button key={m.category} onClick={() => setActiveCategory(m.category)} style={{
@@ -146,6 +162,7 @@ export default function CashierPage() {
           ))}
         </div>
 
+        {/* Menu items grid */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', alignContent: 'start' }}>
           {currentItems.map(item => (
             <button key={item.id} onClick={() => openModal(item)} style={{
@@ -168,6 +185,7 @@ export default function CashierPage() {
           <h2 style={{ color: '#fff', margin: 0, fontSize: '1.2rem' }}>Current Order</h2>
         </div>
 
+        {/* Order items list */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
           {order.length === 0 ? (
             <p style={{ color: '#666', textAlign: 'center', marginTop: '40px' }}>No items added yet</p>
@@ -200,6 +218,7 @@ export default function CashierPage() {
           )}
         </div>
 
+        {/* Totals and payment */}
         <div style={{ padding: '16px 20px', borderTop: '2px solid #333', backgroundColor: '#0f3460' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: '#aaa', marginBottom: '6px' }}>
             <span>Subtotal</span><span>${subtotal.toFixed(2)}</span>
@@ -211,9 +230,13 @@ export default function CashierPage() {
             <span>Total</span><span>${total.toFixed(2)}</span>
           </div>
 
+          {/* Show order number on successful payment */}
           {paid ? (
             <div style={{ backgroundColor: '#2ecc71', borderRadius: '10px', padding: '16px', textAlign: 'center', color: '#fff', fontWeight: 'bold', fontSize: '1.1rem' }}>
               ✅ Payment Complete!
+              <div style={{ fontSize: '1.4rem', marginTop: '8px', letterSpacing: '2px' }}>
+                Order {orderNumber}
+              </div>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -236,14 +259,14 @@ export default function CashierPage() {
         </div>
       </div>
 
-      {/* MODAL: Customization */}
+      {/* MODAL: Drink customization popup */}
       {modalItem && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
           <div style={{ backgroundColor: '#16213e', borderRadius: '16px', padding: '28px', width: '420px', maxHeight: '85vh', overflowY: 'auto', border: '2px solid #0f3460' }}>
             <h2 style={{ color: '#fff', marginTop: 0 }}>{modalItem.name}</h2>
             <p style={{ color: '#aaa', marginTop: '-12px' }}>Base price: ${modalItem.price.toFixed(2)}</p>
 
-            {/* Sugar */}
+            {/* Sugar level selector */}
             <div style={{ marginBottom: '20px' }}>
               <h3 style={{ color: '#e94560', marginBottom: '10px' }}>Sugar Level</h3>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -258,7 +281,7 @@ export default function CashierPage() {
               </div>
             </div>
 
-            {/* Ice */}
+            {/* Ice level selector */}
             <div style={{ marginBottom: '20px' }}>
               <h3 style={{ color: '#e94560', marginBottom: '10px' }}>Ice Level</h3>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -273,7 +296,7 @@ export default function CashierPage() {
               </div>
             </div>
 
-            {/* Toppings */}
+            {/* Toppings selector */}
             <div style={{ marginBottom: '24px' }}>
               <h3 style={{ color: '#e94560', marginBottom: '10px' }}>Toppings (+$0.75 each)</h3>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
