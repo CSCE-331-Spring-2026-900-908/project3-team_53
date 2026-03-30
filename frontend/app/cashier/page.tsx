@@ -181,9 +181,26 @@ export default function CashierPage() {
 
       {/* RIGHT: Order panel */}
       <div style={{ width: '360px', display: 'flex', flexDirection: 'column', backgroundColor: '#16213e' }}>
-        <div style={{ padding: '16px 24px', borderBottom: '2px solid #333' }}>
-          <h2 style={{ color: '#fff', margin: 0, fontSize: '1.2rem' }}>Current Order</h2>
-        </div>
+      <div style={{ padding: '16px 24px', borderBottom: '2px solid #333', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+  <h2 style={{ color: '#fff', margin: 0, fontSize: '1.2rem' }}>Current Order</h2>
+  {/* Badge showing total number of items in the order */}
+  {order.length > 0 && (
+    <span style={{
+      backgroundColor: '#e94560',
+      color: '#fff',
+      borderRadius: '50%',
+      width: '28px',
+      height: '28px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontWeight: 'bold',
+      fontSize: '0.9rem',
+    }}>
+      {order.reduce((sum, o) => sum + o.qty, 0)}
+    </span>
+  )}
+</div>
 
         {/* Order items list */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
@@ -332,3 +349,4 @@ export default function CashierPage() {
     </div>
   );
 }
+
