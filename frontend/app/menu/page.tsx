@@ -1,40 +1,36 @@
-import MenuScreen from "@/components/menuboard/MenuScreen";
-import { MenuItem } from "@/types/menuboard";
+'use client';
 
-// Server-side fetching: no 'use client'
-export default async function MenuBoardPage() {
-  let items: MenuItem[] = [];
+import React, { useEffect, useState } from 'react';
+import MenuScreen from '@/components/menuboard/MenuScreen';
+import { MenuItem } from '@/types/menuboard';
+import { Get } from '@/utils/apiService';
 
-  try {
-    // Fetch backend data server-side
-    const res = await fetch(
-      "https://project3-team-53-backend.vercel.app/api/menu-items",
-      { cache: "no-store" } // ensures fresh data every time
-    );
+// Optional fallback in case API fails
+const FALLBACK_MENU: MenuItem[] = [
+  { id: 1, name: 'Classic Milk Tea', category: 'Milk Tea', price: 5.5, image: null, available: true },
+  { id: 2, name: 'Taro Milk Tea', category: 'Milk Tea', price: 6, image: null, available: true },
+  { id: 3, name: 'Mango Green Tea', category: 'Fruit Tea', price: 5.5, image: null, available: true },
+  { id: 4, name: 'Strawberry Smoothie', category: 'Smoothies', price: 6.5, image: null, available: true },
+  { id: 5, name: 'Popcorn Chicken', category: 'Snacks', price: 4.5, image: null, available: true },
+];
 
-    if (!res.ok) throw new Error("Failed to fetch menu items");
+export default function MenuBoardPage() {
+  const [items, setItems] = useState<MenuItem[]>(FALLBACK_MENU);
 
-    const data = await res.json();
+  useEffect(() => {
+    const fetchMenu = async () => {
+      try {
+        const data: MenuItem[] = await Get('/menu-items');
+        if (Array.isArray(data) && data.length > 0) {
+          setItems(data);
+        }
+      } catch (err) {
+        console.error('API fetch failed, using fallback menu:', err);
+      }
+    };
 
-    // Map backend keys to frontend MenuItem interface
-    items = data.map((item: any) => ({
-      id: item.id,
-      name: item.title || item.name,
-      category: item.category_name || item.category,
-      price: item.cost || item.price,
-      image: item.image_url || item.image,
-      available: item.is_available ?? item.available,
-    }));
-  } catch (err) {
-    console.error("Error fetching menu items:", err);
-
-    // Optional: fallback items if fetch fails
-    items = [
-      { id: 1, name: "Classic Milk Tea", category: "Milk Tea", price: 5.5, image: null, available: true },
-      { id: 2, name: "Taro Milk Tea", category: "Milk Tea", price: 6, image: null, available: true },
-      { id: 3, name: "Mango Green Tea", category: "Fruit Tea", price: 5.5, image: null, available: true },
-    ];
-  }
+    fetchMenu();
+  }, []);
 
   return (
     <div className="w-full h-full">
