@@ -11,6 +11,7 @@ async function bootstrap() {
   const allowedOrigins = new Set<string>([
     'http://localhost:3000',
     'https://project3-team-53.vercel.app',
+    'https://api.schlichenmeyer.com',
     ...configuredOrigins,
   ]);
 
