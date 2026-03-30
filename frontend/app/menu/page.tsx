@@ -22,7 +22,11 @@ export default function MenuBoardPage() {
       try {
         const data: MenuItem[] = await Get('/menu-items');
         if (Array.isArray(data) && data.length > 0) {
-          setItems(data);
+          const sanitized = data.map((item) => ({
+            ...item,
+            price: Number(item.price), // force numeric
+          }));
+          setItems(sanitized);
         }
       } catch (err) {
         console.error('API fetch failed, using fallback menu:', err);
