@@ -1,3 +1,5 @@
+'use client';
+import React from "react";
 export default function CustomizationInfo() {
   {/* This is just a static component to show the available customization options for drinks. */}
   return (

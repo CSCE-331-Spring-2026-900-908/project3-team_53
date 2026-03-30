@@ -1,23 +1,38 @@
-import MenuScreen from "@/components/menuboard/MenuScreen";
-import { MenuItem } from "@/types/menuboard";
+'use client';
 
-export default async function MenuBoardPage() {
-  //uncomment line below for local development
-  //const res = await fetch("http://localhost:3001/api/menu-items", {
+import React, { useEffect, useState } from 'react';
+import MenuScreen from '@/components/menuboard/MenuScreen';
+import { MenuItem } from '@/types/menuboard';
+import { Get } from '@/utils/apiService';
 
-  //Comment this line out for local development. Uncomment for production
-  const res = await fetch("https://project3-team-53-backend.vercel.app/api/menu-items", {
-    cache: "no-store", // ensures fresh data every time
-  });
+// Optional fallback in case API fails
+const FALLBACK_MENU: MenuItem[] = [
+  { id: 1, name: 'Classic Milk Tea', category: 'Milk Tea', price: 5.5, image: null, available: true },
+  { id: 2, name: 'Taro Milk Tea', category: 'Milk Tea', price: 6, image: null, available: true },
+  { id: 3, name: 'Mango Green Tea', category: 'Fruit Tea', price: 5.5, image: null, available: true },
+  { id: 4, name: 'Strawberry Smoothie', category: 'Smoothies', price: 6.5, image: null, available: true },
+  { id: 5, name: 'Popcorn Chicken', category: 'Snacks', price: 4.5, image: null, available: true },
+];
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch menu items");
-  }
+export default function MenuBoardPage() {
+  const [items, setItems] = useState<MenuItem[]>(FALLBACK_MENU);
 
-  const items: MenuItem[] = await res.json();
+  useEffect(() => {
+    const fetchMenu = async () => {
+      try {
+        const data: MenuItem[] = await Get('/menu-items');
+        if (Array.isArray(data) && data.length > 0) {
+          setItems(data);
+        }
+      } catch (err) {
+        console.error('API fetch failed, using fallback menu:', err);
+      }
+    };
+
+    fetchMenu();
+  }, []);
 
   return (
-    // The MenuScreen component is responsible for displaying the menu items and customization info.
     <div className="w-full h-full">
       <MenuScreen items={items} />
     </div>
