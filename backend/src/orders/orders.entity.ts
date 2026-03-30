@@ -23,8 +23,11 @@ export class Order {
   @Column('decimal', { precision: 8, scale: 2 })
   total: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   created_at: Date;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  completed_at: Date | null;
 
   @OneToMany(() => OrderItem, (item) => item.order, { cascade: true })
   items: OrderItem[];

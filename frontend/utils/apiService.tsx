@@ -19,6 +19,11 @@ export const Put = async (url: string, data: any) => {
     return response.data;
 };
 
+export const Patch = async (url: string, data?: any) => {
+    const response = await apiService.patch(url, data);
+    return response.data;
+};
+
 export const Delete = async (url: string) => {
     const response = await apiService.delete(url);
     return response.data;
