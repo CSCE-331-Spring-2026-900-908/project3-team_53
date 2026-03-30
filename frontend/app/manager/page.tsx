@@ -38,35 +38,20 @@ export default function ManagerDashboard() {
           gap: 2,
         }}
       >
-<<<<<<< HEAD
-        <Card href="/manager/orders" className="bg-red-600 text-white hover:bg-red-700">
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#ffffff' }}>
-=======
         <Card href="/manager/orders">
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
->>>>>>> 9eb3ed238d954ce1d62b9178bdb80fb985a52751
             Order History
           </Typography>
         </Card>
 
-<<<<<<< HEAD
-        <Card href="/manager/employees" className="bg-red-600 text-white hover:bg-red-700">
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#ffffff' }}>
-=======
         <Card href="/manager/employees">
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
->>>>>>> 9eb3ed238d954ce1d62b9178bdb80fb985a52751
             Employees
           </Typography>
         </Card>
 
-<<<<<<< HEAD
-        <Card href="/manager/inventory" className="bg-red-600 text-white hover:bg-red-700">
-          <Typography variant="h4" sx={{ fontWeight: 700, color: '#ffffff' }}>
-=======
         <Card href="/manager/inventory">
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
->>>>>>> 9eb3ed238d954ce1d62b9178bdb80fb985a52751
             Inventory
           </Typography>
         </Card>
