@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, MoreThanOrEqual } from 'typeorm';
 import { Order, OrderItem } from './orders.entity';
 import { MenuItem } from '../menu-items/menu-item.entity';
 import { CreateOrderDto } from './create-order.dto';
@@ -57,5 +57,68 @@ export class OrdersService {
 
   async findAll(): Promise<Order[]> {
     return this.orderRepo.find({ relations: ['items', 'items.menuItem'] });
+  }
+
+  async findPending(): Promise<Order[]> {
+    return this.orderRepo.find({
+      where: { status: 'pending' },
+      relations: ['items', 'items.menuItem'],
+      order: { created_at: 'ASC' },
+    });
+  }
+
+  async complete(id: number): Promise<Order> {
+    const order = await this.orderRepo.findOne({
+      where: { id },
+      relations: ['items', 'items.menuItem'],
+    });
+    if (!order) {
+      throw new NotFoundException(`Order #${id} not found`);
+    }
+    order.status = 'completed';
+    order.completed_at = new Date();
+    return this.orderRepo.save(order);
+  }
+
+  async todayStats(): Promise<{
+    totalOrders: number;
+    completedOrders: number;
+    avgWaitSeconds: number;
+    longestWaitSeconds: number;
+  }> {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const orders = await this.orderRepo.find({
+      where: { created_at: MoreThanOrEqual(startOfDay) },
+    });
+
+    if (orders.length === 0) {
+      return { totalOrders: 0, completedOrders: 0, avgWaitSeconds: 0, longestWaitSeconds: 0 };
+    }
+
+    const now = Date.now();
+    let totalWait = 0;
+    let longest = 0;
+    let completed = 0;
+
+    for (const order of orders) {
+      const created = new Date(order.created_at).getTime();
+      const wait =
+        order.status === 'completed' && order.completed_at
+          ? new Date(order.completed_at).getTime() - created
+          : now - created;
+      const waitSec = Math.max(0, Math.floor(wait / 1000));
+      totalWait += waitSec;
+      if (waitSec > longest) longest = waitSec;
+      if (order.status === 'completed') completed++;
+    }
+
+    return {
+      totalOrders: orders.length,
+      completedOrders: completed,
+      avgWaitSeconds: Math.floor(totalWait / orders.length),
+      longestWaitSeconds: longest,
+    };
   }
 }

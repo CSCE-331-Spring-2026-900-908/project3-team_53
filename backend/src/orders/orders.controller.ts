@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Param, Body, ParseIntPipe } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './create-order.dto';
 import { Order } from './orders.entity';
@@ -15,5 +15,20 @@ export class OrdersController {
   @Get()
   findAll(): Promise<Order[]> {
     return this.ordersService.findAll();
+  }
+
+  @Get('pending')
+  findPending(): Promise<Order[]> {
+    return this.ordersService.findPending();
+  }
+
+  @Get('today-stats')
+  todayStats() {
+    return this.ordersService.todayStats();
+  }
+
+  @Patch(':id/complete')
+  complete(@Param('id', ParseIntPipe) id: number): Promise<Order> {
+    return this.ordersService.complete(id);
   }
 }
