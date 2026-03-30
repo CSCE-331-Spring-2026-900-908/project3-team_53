@@ -52,7 +52,8 @@ export default function OrderCard({ order, onComplete }: OrderCardProps) {
   }, [completing, onComplete, order.id]);
 
   const isDineIn = order.order_type === 'dine_in';
-  const totalItems = order.items.reduce((sum, i) => sum + i.quantity, 0);
+  const items = order.items ?? [];
+  const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
 
   return (
     <Box
@@ -128,7 +129,7 @@ export default function OrderCard({ order, onComplete }: OrderCardProps) {
 
         {/* Items list */}
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
-          {order.items.map((item) => (
+          {items.map((item) => (
             <ItemRow key={item.id} item={item} />
           ))}
         </Box>
@@ -174,7 +175,7 @@ function ItemRow({ item }: { item: KitchenOrderItem }) {
         </Typography>
       </Box>
 
-      {(customizations.length > 0 || item.toppings.length > 0) && (
+      {(customizations.length > 0 || (item.toppings ?? []).length > 0) && (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, ml: 3, mt: 0.25 }}>
           {customizations.map((c) => (
             <Chip
@@ -190,7 +191,7 @@ function ItemRow({ item }: { item: KitchenOrderItem }) {
               }}
             />
           ))}
-          {item.toppings.map((t) => (
+          {(item.toppings ?? []).map((t) => (
             <Chip
               key={t}
               label={`+ ${t}`}
