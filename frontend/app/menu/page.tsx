@@ -2,7 +2,11 @@ import MenuScreen from "@/components/menuboard/MenuScreen";
 import { MenuItem } from "@/types/menuboard";
 
 export default async function MenuBoardPage() {
-  const res = await fetch("http://localhost:3001/api/menu-items", {
+  //uncomment line below for local development
+  //const res = await fetch("http://localhost:3001/api/menu-items", {
+
+  //Comment this line out for local development. Uncomment for production
+  const res = await fetch("https://project3-team-53-backend.vercel.app/api/menu-items", {
     cache: "no-store", // ensures fresh data every time
   });
 
