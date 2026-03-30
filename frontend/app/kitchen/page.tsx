@@ -23,7 +23,7 @@ export default function KitchenPage() {
   const fetchOrders = async () => {
     try {
       const res = await Get("/orders?status=pending");
-      setOrders(res.data);
+      setOrders(Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : []);
     } catch (err) {
       console.error("Error fetching orders:", err);
     } finally {
@@ -75,7 +75,7 @@ export default function KitchenPage() {
             </p>
 
             <ul>
-              {order.items.map((item, index) => (
+              {(order.items ?? []).map((item, index) => (
                 <li key={index}>
                   {item.name} x{item.quantity}
                 </li>

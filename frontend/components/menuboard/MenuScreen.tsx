@@ -10,7 +10,7 @@ interface MenuScreenProps {
 
 export default function MenuScreen({ items }: MenuScreenProps) {
   // Get unique categories
-  const categories = Array.from(new Set(items.map((i) => i.category)));
+  const categories = Array.from(new Set((items ?? []).map((i) => i.category)));
 
   return (
     <div className="w-full p-8 bg-[#FAF3E0] text-[#2D3436]">
