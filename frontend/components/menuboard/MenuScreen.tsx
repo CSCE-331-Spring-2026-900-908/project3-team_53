@@ -34,7 +34,7 @@ export default function MenuScreen({ items }: MenuScreenProps) {
                   )}
                   <div>
                     <h3 className="text-xl font-semibold">{item.name}</h3>
-                    <p className="text-lg text-[#FF6B6B]">${item.price.toFixed(2)}</p>
+                    <p className="text-lg text-[#FF6B6B]">${Number(item.price).toFixed(2)}</p>
                     {!item.available && (
                       <p className="text-red-400">Unavailable</p>
                     )}
