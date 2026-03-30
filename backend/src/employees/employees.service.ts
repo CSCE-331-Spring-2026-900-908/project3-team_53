@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, FindOptionsWhere } from 'typeorm';
 import { Employee } from './employees.entity';
 
 const SEED_EMPLOYEES: Partial<Employee>[] = [
@@ -29,7 +29,7 @@ export class EmployeesService implements OnModuleInit {
   }
 
   async findAll(role?: string): Promise<Employee[]> {
-    const where: Record<string, unknown> = {};
+    const where: FindOptionsWhere<Employee> = {};
     if (role) {
       where.role = role;
     }
