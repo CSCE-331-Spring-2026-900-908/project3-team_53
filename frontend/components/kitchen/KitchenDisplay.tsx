@@ -36,8 +36,8 @@ export default function KitchenDisplay() {
         Get('/orders/pending'),
         Get('/orders/today-stats'),
       ]);
-      setOrders(pending);
-      setDayStats(stats);
+      setOrders(Array.isArray(pending) ? pending : []);
+      setDayStats(stats ?? EMPTY_STATS);
     } catch {
       // silently retry on next poll
     } finally {
