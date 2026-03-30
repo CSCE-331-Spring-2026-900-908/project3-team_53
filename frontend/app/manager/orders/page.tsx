@@ -11,11 +11,19 @@ const sampleOrders = [
 
 export default function ManagerOrdersPage() {
   return (
+<<<<<<< HEAD
     <Box sx={{ minHeight: '80vh', px: 4, py: 6, backgroundColor: '#f7f7f7', color: '#000000' }}>
       <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2, color: '#000000' }}>
         Order History
       </Typography>
       <Typography variant="body1" sx={{ color: '#000000', mb: 4, maxWidth: 820 }}>
+=======
+    <Box sx={{ minHeight: '80vh', px: 4, py: 6, backgroundColor: '#f7f7f7' }}>
+      <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2 }}>
+        Order History
+      </Typography>
+      <Typography variant="body1" sx={{ color: '#555555', mb: 4, maxWidth: 820 }}>
+>>>>>>> 9eb3ed238d954ce1d62b9178bdb80fb985a52751
         Review recent orders and sales totals. Click through orders to see item details and fulfillment status.
       </Typography>
 
