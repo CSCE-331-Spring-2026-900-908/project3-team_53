@@ -22,12 +22,12 @@ export class ToppingItemsService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    const count = await this.toppingRepo.count();
-    if (count === 0) {
-      this.logger.log('Toppings table empty — seeding...');
-      const toppings = this.toppingRepo.create(SEED_TOPPINGS);
-      await this.toppingRepo.save(toppings);
-      this.logger.log(`Seeded ${toppings.length} toppings`);
+    for (const topping of SEED_TOPPINGS) {
+      const exists = await this.toppingRepo.findOneBy({ name: topping.name });
+      if (!exists) {
+        await this.toppingRepo.save(this.toppingRepo.create(topping));
+        this.logger.log(`Inserted topping: ${topping.name}`);
+      }
     }
   }
 
