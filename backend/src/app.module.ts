@@ -6,6 +6,7 @@ import { DatabaseModule } from './database/database.module';
 import { MenuItemsModule } from './menu-items/menu-items.module';
 import { OrdersModule } from './orders/orders.module';
 import { EmployeesModule } from './employees/employees.module';
+import { ToppingItemsModule } from './topping-items/topping-items.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { EmployeesModule } from './employees/employees.module';
     MenuItemsModule,
     OrdersModule,
     EmployeesModule,
+    ToppingItemsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
