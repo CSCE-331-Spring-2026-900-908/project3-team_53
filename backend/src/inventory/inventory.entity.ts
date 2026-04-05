@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { ItemIngredient } from '../item-ingredients/item-ingredient.entity';
 
 @Entity('inventory')
 export class Inventory {
@@ -22,5 +23,8 @@ export class Inventory {
 
   @Column({ default: 'In Stock' })
   status: string;
+
+  @OneToMany(() => ItemIngredient, (ii) => ii.inventory)
+  itemIngredients: ItemIngredient[];
 }
 
