@@ -8,6 +8,7 @@ import { OrdersModule } from './orders/orders.module';
 import { EmployeesModule } from './employees/employees.module';
 import { ToppingItemsModule } from './topping-items/topping-items.module';
 import { InventoryModule } from './inventory/inventory.modules';
+import { ItemIngredientsModule } from './item-ingredients/item-ingredients.module';
 
 
 @Module({
@@ -19,6 +20,7 @@ import { InventoryModule } from './inventory/inventory.modules';
     EmployeesModule,
     ToppingItemsModule,
     InventoryModule,
+    ItemIngredientsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
