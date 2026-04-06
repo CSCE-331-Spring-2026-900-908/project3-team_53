@@ -35,4 +35,12 @@ export class EmployeesService implements OnModuleInit {
     }
     return this.employeeRepo.find({ where, order: { name: 'ASC' } });
   }
+
+  async findByEmail(email: string): Promise<Employee | null> {
+    const normalized = email.trim().toLowerCase();
+    return this.employeeRepo
+      .createQueryBuilder('employee')
+      .where('LOWER(employee.email) = :email', { email: normalized })
+      .getOne();
+  }
 }
