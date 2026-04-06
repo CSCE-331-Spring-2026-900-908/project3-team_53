@@ -1,17 +1,49 @@
 'use client';
 
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import { Get } from '@/utils/apiService';
 
-const inventoryItems = [
-  { item: 'Tapioca Pearls', stock: 'Low' },
-  { item: 'Milk Tea Base', stock: 'In Stock' },
-  { item: 'Strawberry Syrup', stock: 'Medium' },
-  { item: 'Tea Bags', stock: 'In Stock' },
-];
+interface InventoryRelation {
+  id: number;
+  name: string;
+  quantity: number;
+  status: string;
+}
+
+interface ItemIngredient {
+  id: number;
+  inventory: InventoryRelation;
+}
 
 export default function ManagerInventoryPage() {
+  const [inventoryItems, setInventoryItems] = useState<InventoryRelation[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchInventory = async () => {
+      try {
+        const data: ItemIngredient[] = await Get('/item-ingredients');
+        if (Array.isArray(data)) {
+          const uniqueInventory = data
+            .map((item) => item.inventory)
+            .filter((inventoryItem, index, arr) =>
+              arr.findIndex((entry) => entry.id === inventoryItem.id) === index,
+            );
+          setInventoryItems(uniqueInventory);
+        }
+      } catch (error) {
+        console.error('Failed to load inventory:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInventory();
+  }, []);
+
   return (
     <Box sx={{ minHeight: '80vh', px: 4, py: 6, backgroundColor: '#f7f7f7', color: '#000000' }}>
       <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2, color: '#000000' }}>
@@ -27,27 +59,42 @@ export default function ManagerInventoryPage() {
       </Box>
 
       <Box sx={{ display: 'grid', gap: 2, maxWidth: 900 }}>
-        {inventoryItems.map((item) => (
-          <Box
-            key={item.item}
-            sx={{
-              p: 3,
-              backgroundColor: '#ffffff',
-              borderRadius: 2,
-              boxShadow: 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              {item.item}
-            </Typography>
-            <Typography variant="body2" sx={{ color: item.stock === 'Low' ? '#d32f2f' : '#2e7d32' }}>
-              {item.stock}
-            </Typography>
-          </Box>
-        ))}
+        {loading ? (
+          <Typography variant="body1" sx={{ color: '#333333' }}>
+            Loading inventory...
+          </Typography>
+        ) : inventoryItems.length === 0 ? (
+          <Typography variant="body1" sx={{ color: '#333333' }}>
+            No inventory items found.
+          </Typography>
+        ) : (
+          inventoryItems.map((item) => (
+            <Box
+              key={item.id}
+              sx={{
+                p: 3,
+                backgroundColor: '#ffffff',
+                borderRadius: 2,
+                boxShadow: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                  {item.name}
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#666666' }}>
+                  Quantity: {item.quantity}
+                </Typography>
+              </Box>
+              <Typography variant="body2" sx={{ color: item.status === 'Low' ? '#d32f2f' : '#2e7d32' }}>
+                {item.status}
+              </Typography>
+            </Box>
+          ))
+        )}
       </Box>
     </Box>
   );
