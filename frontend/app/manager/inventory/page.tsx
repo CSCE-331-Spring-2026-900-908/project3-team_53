@@ -6,33 +6,23 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { Get } from '@/utils/apiService';
 
-interface InventoryRelation {
+interface InventoryItem {
   id: number;
   name: string;
   quantity: number;
   status: string;
 }
 
-interface ItemIngredient {
-  id: number;
-  inventory: InventoryRelation;
-}
-
 export default function ManagerInventoryPage() {
-  const [inventoryItems, setInventoryItems] = useState<InventoryRelation[]>([]);
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchInventory = async () => {
       try {
-        const data: ItemIngredient[] = await Get('/item-ingredients');
+        const data: InventoryItem[] = await Get('/inventory');
         if (Array.isArray(data)) {
-          const uniqueInventory = data
-            .map((item) => item.inventory)
-            .filter((inventoryItem, index, arr) =>
-              arr.findIndex((entry) => entry.id === inventoryItem.id) === index,
-            );
-          setInventoryItems(uniqueInventory);
+          setInventoryItems(data);
         }
       } catch (error) {
         console.error('Failed to load inventory:', error);
