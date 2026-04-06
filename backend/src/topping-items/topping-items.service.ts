@@ -10,6 +10,9 @@ const SEED_TOPPINGS: Partial<ToppingItem>[] = [
   { name: 'Lychee Jelly', category: 'Jellies', price: 0.50, available: true },
   { name: 'Pudding', category: 'Custard', price: 0.75, available: true },
   { name: 'Cheese Foam', category: 'Foam', price: 1.00, available: true },
+  { name: 'Regular', category: 'Size', price: 0.00, available: true },
+  { name: 'Large', category: 'Size', price: 0.50, available: true },
+  { name: 'Small', category: 'Size', price: -0.50, available: true },
 ];
 
 @Injectable()
