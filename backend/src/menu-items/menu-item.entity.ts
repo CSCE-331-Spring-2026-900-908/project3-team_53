@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { ItemIngredient } from '../item-ingredients/item-ingredient.entity';
 
 @Entity('menu_items')
 export class MenuItem {
@@ -19,4 +20,7 @@ export class MenuItem {
 
   @Column({ default: true })
   available: boolean;
+
+  @OneToMany(() => ItemIngredient, (ii) => ii.menuItem)
+  itemIngredients: ItemIngredient[];
 }

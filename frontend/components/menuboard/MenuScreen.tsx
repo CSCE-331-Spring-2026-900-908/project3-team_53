@@ -10,7 +10,7 @@ interface MenuScreenProps {
 
 export default function MenuScreen({ items }: MenuScreenProps) {
   // Get unique categories
-  const categories = Array.from(new Set(items.map((i) => i.category)));
+  const categories = Array.from(new Set((items ?? []).map((i) => i.category)));
 
   return (
     <div className="w-full p-8 bg-[#FAF3E0] text-[#2D3436]">
@@ -34,7 +34,7 @@ export default function MenuScreen({ items }: MenuScreenProps) {
                   )}
                   <div>
                     <h3 className="text-xl font-semibold">{item.name}</h3>
-                    <p className="text-lg text-[#FF6B6B]">${item.price.toFixed(2)}</p>
+                    <p className="text-lg text-[#FF6B6B]">${Number(item.price).toFixed(2)}</p>
                     {!item.available && (
                       <p className="text-red-400">Unavailable</p>
                     )}

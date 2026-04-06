@@ -8,13 +8,23 @@ const SEED_ITEMS: Partial<MenuItem>[] = [
   { name: 'Taro Milk Tea', category: 'Milk Tea', price: 6.00, available: true },
   { name: 'Brown Sugar Milk Tea', category: 'Milk Tea', price: 6.50, available: true },
   { name: 'Jasmine Milk Tea', category: 'Milk Tea', price: 5.75, available: true },
+  { name: 'Chocolate Milk Tea', category: 'Milk Tea', price: 5.50, available: true },
+  { name: 'Red Bean Milk Tea', category: 'Milk Tea', price: 5.50, available: true },
   { name: 'Mango Green Tea', category: 'Fruit Tea', price: 5.50, available: true },
   { name: 'Passion Fruit Tea', category: 'Fruit Tea', price: 5.50, available: true },
   { name: 'Lychee Tea', category: 'Fruit Tea', price: 5.75, available: true },
   { name: 'Peach Oolong Tea', category: 'Fruit Tea', price: 5.75, available: true },
+  { name: 'Wintermelon Tea', category: 'Fruit Tea', price: 5.75, available: true },
   { name: 'Mango Smoothie', category: 'Smoothies', price: 6.50, available: true },
   { name: 'Strawberry Smoothie', category: 'Smoothies', price: 6.50, available: true },
   { name: 'Matcha Smoothie', category: 'Smoothies', price: 7.00, available: true },
+  { name: 'Banana & Blueberry Smoothie', category: 'Smoothies', price: 6.50, available: true },
+  { name: 'Taro Slush', category: 'Slush', price: 6.75, available: true },
+  { name: 'Watermelon Slush', category: 'Slush', price: 6.50, available: true },
+  { name: 'Mango Slush', category: 'Slush', price: 6.50, available: true },
+  { name: 'Brown Sugar Boba Latte', category: 'Latte', price: 6.50, available: true },
+  { name: 'Matcha Latte', category: 'Latte', price: 5.50, available: true },
+  { name: 'Vietnamese Latte', category: 'Latte', price: 4.50, available: true },
   { name: 'Popcorn Chicken', category: 'Snacks', price: 4.50, available: true },
   { name: 'Egg Puffs', category: 'Snacks', price: 3.50, available: true },
   { name: 'Mochi Donuts', category: 'Snacks', price: 4.00, available: true },
@@ -30,12 +40,12 @@ export class MenuItemsService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    const count = await this.menuItemRepo.count();
-    if (count === 0) {
-      this.logger.log('Menu items table is empty — seeding default items...');
-      const items = this.menuItemRepo.create(SEED_ITEMS);
-      await this.menuItemRepo.save(items);
-      this.logger.log(`Seeded ${items.length} menu items`);
+    for (const item of SEED_ITEMS) {
+      const exists = await this.menuItemRepo.findOneBy({ name: item.name });
+      if (!exists) {
+        await this.menuItemRepo.save(this.menuItemRepo.create(item));
+        this.logger.log(`Inserted menu item: ${item.name}`);
+      }
     }
   }
 

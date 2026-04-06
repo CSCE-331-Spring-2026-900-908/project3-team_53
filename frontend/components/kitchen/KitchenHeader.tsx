@@ -1,0 +1,136 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Chip from '@mui/material/Chip';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import TimerIcon from '@mui/icons-material/Timer';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import { DayStats, formatElapsed, getTimeTier } from '@/types/kitchen';
+
+interface KitchenHeaderProps {
+  pendingCount: number;
+  dayStats: DayStats;
+}
+
+export default function KitchenHeader({ pendingCount, dayStats }: KitchenHeaderProps) {
+  const [now, setNow] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setNow(new Date());
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const longestTier = getTimeTier(dayStats.longestWaitSeconds);
+
+  const tierColors: Record<string, string> = {
+    green: '#4caf50',
+    yellow: '#fbc02d',
+    orange: '#ff9800',
+    red: '#f44336',
+  };
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        px: 3,
+        py: 1.5,
+        bgcolor: '#1a1a2e',
+        borderBottom: '2px solid #16213e',
+        flexWrap: 'wrap',
+        gap: 1,
+      }}
+    >
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <Typography
+          variant="h5"
+          sx={{ color: '#fff', fontWeight: 700, letterSpacing: 0.5 }}
+        >
+          Kitchen Display
+        </Typography>
+        <Chip
+          icon={<AccessTimeIcon sx={{ color: '#ccc !important' }} />}
+          label={now ? now.toLocaleTimeString() : '--:--:--'}
+          sx={{
+            bgcolor: '#16213e',
+            color: '#ccc',
+            fontWeight: 600,
+            fontSize: '0.85rem',
+          }}
+        />
+      </Box>
+
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <StatBox
+          icon={<PendingActionsIcon sx={{ fontSize: 20 }} />}
+          label="Pending"
+          value={String(pendingCount)}
+          color="#64b5f6"
+        />
+        <StatBox
+          icon={<CheckCircleOutlineIcon sx={{ fontSize: 20 }} />}
+          label="Completed Today"
+          value={String(dayStats.completedOrders)}
+          color="#66bb6a"
+        />
+        <StatBox
+          icon={<TimerIcon sx={{ fontSize: 20 }} />}
+          label="Avg Wait (Today)"
+          value={dayStats.totalOrders > 0 ? formatElapsed(dayStats.avgWaitSeconds) : '--'}
+          color="#ce93d8"
+        />
+        <StatBox
+          icon={<WarningAmberIcon sx={{ fontSize: 20 }} />}
+          label="Longest (Today)"
+          value={dayStats.totalOrders > 0 ? formatElapsed(dayStats.longestWaitSeconds) : '--'}
+          color={tierColors[longestTier]}
+        />
+      </Box>
+    </Box>
+  );
+}
+
+function StatBox({
+  icon,
+  label,
+  value,
+  color,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  color: string;
+}) {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 0.75,
+        bgcolor: 'rgba(255,255,255,0.06)',
+        borderRadius: 2,
+        px: 1.5,
+        py: 0.75,
+      }}
+    >
+      <Box sx={{ color, display: 'flex', alignItems: 'center' }}>{icon}</Box>
+      <Box>
+        <Typography
+          sx={{ color: '#999', fontSize: '0.65rem', lineHeight: 1, textTransform: 'uppercase', letterSpacing: 0.5 }}
+        >
+          {label}
+        </Typography>
+        <Typography sx={{ color, fontWeight: 700, fontSize: '0.95rem', lineHeight: 1.3 }}>
+          {value}
+        </Typography>
+      </Box>
+    </Box>
+  );
+}
