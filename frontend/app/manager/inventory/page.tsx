@@ -3,6 +3,7 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+fetch('/api/inventory');
 
 const inventoryItems = [
   { item: 'Tapioca Pearls', stock: 'Low' },

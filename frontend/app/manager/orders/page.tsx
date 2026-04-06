@@ -2,6 +2,7 @@
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+fetch('/api/orders');
 
 const sampleOrders = [
   { id: 'ORD-1001', date: '2026-03-25', customer: 'Avery', total: '$12.40' },

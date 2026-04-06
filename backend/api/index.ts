@@ -33,7 +33,7 @@ let appHandler: any;
 async function getAppHandler() {
   if (!appHandler) {
     const { NestFactory } = await import('@nestjs/core');
-    const { AppModule } = await import('../src/app.module');
+    const { AppModule } = await import('../src/app.module.js');
     const app = await NestFactory.create(AppModule, { logger: ['error', 'warn'] });
 
     app.enableCors({
