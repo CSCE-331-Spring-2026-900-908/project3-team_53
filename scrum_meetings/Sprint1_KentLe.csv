@@ -1,0 +1,8 @@
+Task,Story Points,Completed (y/n),Date Completed
+Create employee database schema (id name role wage shift status),3,y,2026-03-27
+Add email column to employee table for Google OAuth support,1,y,2026-03-27
+Build mock frontend for manager interface with navigation,5,y,2026-03-29
+Style manager frontend pages to match project theme,2,y,2026-03-29
+Update backend README to document employee database,1,y,2026-03-29
+Resolve merge conflicts on Kent-Branch,1,y,2026-03-29
+Attempt to connect management pages to backend via apiService,5,y,2026-03-30

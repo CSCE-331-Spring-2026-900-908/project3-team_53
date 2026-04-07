@@ -8,6 +8,7 @@ import Image from 'next/image';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import { OrderType } from '@/types/customer';
+import WeatherWidget from '@/components/customer/WeatherWidget';
 
 interface WelcomeScreenProps {
   onSelectOrderType: (type: OrderType) => void;
@@ -25,8 +26,13 @@ export default function WelcomeScreen({ onSelectOrderType }: WelcomeScreenProps)
         bgcolor: '#FAF3E0',
         gap: 3,
         px: 4,
+        position: 'relative',
       }}
     >
+      <Box sx={{ position: 'absolute', top: 24, left: '50%', transform: 'translateX(-50%)' }}>
+        <WeatherWidget />
+      </Box>
+
       <Image
         src="/project_3_logo.png"
         alt="Boba Shop Logo"

@@ -1,0 +1,6 @@
+Task,Story Points,Completed (y/n),Date Completed
+Build cashier interface with item selection and order management,5,y,2026-03-28
+Implement customization modal for order modifications,5,y,2026-03-28
+Add order numbers to checkout process,3,y,2026-03-30
+Add item count badge to order panel header,2,y,2026-03-30
+Add Escape key shortcut to close customization modal,1,y,2026-03-30

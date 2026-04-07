@@ -1,0 +1,9 @@
+Task,Story Points,Completed (y/n),Date Completed
+Create initial menu board component files and page layout,3,y,2026-03-28
+Build working menu board with item display,5,y,2026-03-28
+Complete bare-bones menu board with pricing,3,y,2026-03-28
+Add comments and documentation to menu board code,1,y,2026-03-28
+Update fetch URL to point to production API,2,y,2026-03-30
+Debug and fix menu board display issues,3,y,2026-03-30
+Fix menu page rendering after merge conflicts,2,y,2026-03-30
+Implement toppings pricing on menu board,3,n,
