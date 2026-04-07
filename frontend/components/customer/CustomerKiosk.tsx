@@ -9,10 +9,10 @@ import {
   OrderType,
   PaymentType,
   PlacedOrder,
+  ToppingItem,
   Size,
   SugarLevel,
   IceLevel,
-  Topping,
 } from '@/types/customer';
 import { Get, Post } from '@/utils/apiService';
 import WelcomeScreen from '@/components/customer/WelcomeScreen';
@@ -42,6 +42,7 @@ export default function CustomerKiosk() {
   const [step, setStep] = useState<KioskStep>('welcome');
   const [orderType, setOrderType] = useState<OrderType>('dine_in');
   const [menuItems, setMenuItems] = useState<MenuItemType[]>(FALLBACK_MENU);
+  const [toppings, setToppings] = useState<ToppingItem[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [placedOrder, setPlacedOrder] = useState<PlacedOrder | null>(null);
 
@@ -52,9 +53,15 @@ export default function CustomerKiosk() {
           setMenuItems(data);
         }
       })
-      .catch(() => {
-        // Keep fallback data
-      });
+      .catch(() => {});
+
+    Get('/topping-items')
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setToppings(data.filter((t: ToppingItem) => t.category !== 'Size'));
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const handleSelectOrderType = (type: OrderType) => {
@@ -72,7 +79,7 @@ export default function CustomerKiosk() {
       size: Size,
       sugarLevel: SugarLevel,
       iceLevel: IceLevel,
-      toppings: Topping[],
+      toppings: string[],
     ) => {
       const cartItem: CartItem = {
         cartId: `${item.id}-${Date.now()}-${Math.random()}`,
@@ -158,6 +165,7 @@ export default function CustomerKiosk() {
       {step === 'menu' && (
         <MenuScreen
           menuItems={menuItems}
+          toppings={toppings}
           cart={cart}
           cartTotal={cartTotal}
           orderType={orderType}

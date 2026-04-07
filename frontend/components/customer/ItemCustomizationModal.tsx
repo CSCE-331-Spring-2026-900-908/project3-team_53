@@ -14,30 +14,31 @@ import CloseIcon from '@mui/icons-material/Close';
 import LocalCafeIcon from '@mui/icons-material/LocalCafe';
 import {
   MenuItem,
+  ToppingItem,
   SIZES,
   SUGAR_LEVELS,
   ICE_LEVELS,
-  TOPPING_OPTIONS,
   Size,
   SugarLevel,
   IceLevel,
-  Topping,
 } from '@/types/customer';
 
 interface ItemCustomizationModalProps {
   item: MenuItem;
+  toppings: ToppingItem[];
   open: boolean;
   onClose: () => void;
   onAdd: (
     size: Size,
     sugarLevel: SugarLevel,
     iceLevel: IceLevel,
-    toppings: Topping[],
+    toppings: string[],
   ) => void;
 }
 
 export default function ItemCustomizationModal({
   item,
+  toppings: availableToppings,
   open,
   onClose,
   onAdd,
@@ -45,20 +46,20 @@ export default function ItemCustomizationModal({
   const [size, setSize] = useState<Size>('Regular');
   const [sugarLevel, setSugarLevel] = useState<SugarLevel>('100%');
   const [iceLevel, setIceLevel] = useState<IceLevel>('Regular');
-  const [toppings, setToppings] = useState<Topping[]>([]);
+  const [selectedToppings, setSelectedToppings] = useState<string[]>([]);
 
-  const toggleTopping = (t: Topping) => {
-    setToppings((prev) =>
-      prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t],
+  const toggleTopping = (name: string) => {
+    setSelectedToppings((prev) =>
+      prev.includes(name) ? prev.filter((x) => x !== name) : [...prev, name],
     );
   };
 
   const handleAdd = () => {
-    onAdd(size, sugarLevel, iceLevel, toppings);
+    onAdd(size, sugarLevel, iceLevel, selectedToppings);
     setSize('Regular');
     setSugarLevel('100%');
     setIceLevel('Regular');
-    setToppings([]);
+    setSelectedToppings([]);
   };
 
   return (
@@ -168,24 +169,26 @@ export default function ItemCustomizationModal({
         </OptionSection>
 
         {/* Toppings */}
-        <OptionSection title="Toppings">
-          {TOPPING_OPTIONS.map((t) => (
-            <Chip
-              key={t}
-              label={t}
-              onClick={() => toggleTopping(t)}
-              sx={{
-                bgcolor: toppings.includes(t) ? '#FF6B6B' : '#FAF3E0',
-                color: toppings.includes(t) ? '#fff' : '#636E72',
-                fontWeight: toppings.includes(t) ? 700 : 400,
-                border: toppings.includes(t) ? 'none' : '1px solid #e0d5c0',
-                '&:hover': {
-                  bgcolor: toppings.includes(t) ? '#ee5a5a' : '#f0e6d3',
-                },
-              }}
-            />
-          ))}
-        </OptionSection>
+        {availableToppings.length > 0 && (
+          <OptionSection title="Toppings">
+            {availableToppings.map((t) => (
+              <Chip
+                key={t.id}
+                label={`${t.name} +$${Number(t.price).toFixed(2)}`}
+                onClick={() => toggleTopping(t.name)}
+                sx={{
+                  bgcolor: selectedToppings.includes(t.name) ? '#FF6B6B' : '#FAF3E0',
+                  color: selectedToppings.includes(t.name) ? '#fff' : '#636E72',
+                  fontWeight: selectedToppings.includes(t.name) ? 700 : 400,
+                  border: selectedToppings.includes(t.name) ? 'none' : '1px solid #e0d5c0',
+                  '&:hover': {
+                    bgcolor: selectedToppings.includes(t.name) ? '#ee5a5a' : '#f0e6d3',
+                  },
+                }}
+              />
+            ))}
+          </OptionSection>
+        )}
       </DialogContent>
 
       <DialogActions sx={{ px: 3, py: 2 }}>

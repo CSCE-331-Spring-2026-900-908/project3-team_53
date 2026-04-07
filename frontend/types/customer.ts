@@ -20,15 +20,13 @@ export type SugarLevel = (typeof SUGAR_LEVELS)[number];
 export const ICE_LEVELS = ['No Ice', 'Less Ice', 'Regular', 'Extra Ice'] as const;
 export type IceLevel = (typeof ICE_LEVELS)[number];
 
-export const TOPPING_OPTIONS = [
-  'Boba',
-  'Crystal Boba',
-  'Coconut Jelly',
-  'Aloe Vera',
-  'Pudding',
-  'Red Bean',
-] as const;
-export type Topping = (typeof TOPPING_OPTIONS)[number];
+export interface ToppingItem {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  available: boolean;
+}
 
 export interface CartItem {
   cartId: string;
@@ -37,7 +35,7 @@ export interface CartItem {
   size: Size;
   sugarLevel: SugarLevel;
   iceLevel: IceLevel;
-  toppings: Topping[];
+  toppings: string[];
 }
 
 export interface PlacedOrder {
