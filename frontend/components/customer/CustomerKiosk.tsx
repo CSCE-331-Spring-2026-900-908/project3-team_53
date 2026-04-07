@@ -117,11 +117,18 @@ export default function CustomerKiosk() {
   const tax = cartTotal * 0.0825;
   const grandTotal = cartTotal + tax;
 
-  const handlePlaceOrder = async (paymentType: PaymentType, changeDue: number) => {
+  const handlePlaceOrder = async (
+    paymentType: PaymentType,
+    changeDue: number,
+    customerName: string,
+    customerPhone: string,
+  ) => {
     const payload = {
       order_type: orderType,
       total: cartTotal,
       payment_type: paymentType,
+      customer_name: customerName || undefined,
+      customer_phone: customerPhone || undefined,
       items: cart.map((c) => ({
         menuItemId: c.menuItem.id,
         quantity: c.quantity,
@@ -135,16 +142,25 @@ export default function CustomerKiosk() {
 
     try {
       const order = await Post('/orders', payload);
-      setPlacedOrder({ ...order, payment_type: paymentType, change_due: changeDue });
+      setPlacedOrder({
+        ...order,
+        payment_type: paymentType,
+        change_due: changeDue,
+        customer_name: order.customer_name,
+        customer_phone: order.customer_phone,
+      });
       setStep('confirmation');
     } catch {
+      const fallbackId = Math.floor(Math.random() * 900) + 100;
       setPlacedOrder({
-        id: Math.floor(Math.random() * 900) + 100,
+        id: fallbackId,
         status: 'pending',
         order_type: orderType,
         total: cartTotal,
         payment_type: paymentType,
         change_due: changeDue,
+        customer_name: customerName || `Customer ${fallbackId}`,
+        customer_phone: customerPhone || undefined,
         created_at: new Date().toISOString(),
       });
       setStep('confirmation');

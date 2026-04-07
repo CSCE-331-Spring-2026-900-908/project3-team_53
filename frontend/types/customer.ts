@@ -45,5 +45,7 @@ export interface PlacedOrder {
   total: number;
   payment_type?: string;
   change_due?: number;
+  customer_name?: string;
+  customer_phone?: string;
   created_at: string;
 }
