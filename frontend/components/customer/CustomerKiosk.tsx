@@ -20,6 +20,8 @@ import MenuScreen from '@/components/customer/MenuScreen';
 import CheckoutScreen from '@/components/customer/CheckoutScreen';
 import ConfirmationScreen from '@/components/customer/ConfirmationScreen';
 import PaymentScreen from '@/components/customer/PaymentScreen';
+import { TranslationProvider } from '@/contexts/TranslationContext';
+import LanguageSelector from '@/components/customer/LanguageSelector';
 
 const FALLBACK_MENU: MenuItemType[] = [
   { id: 1, name: 'Classic Milk Tea', category: 'Milk Tea', price: 5.50, image: null, available: true },
@@ -174,47 +176,50 @@ export default function CustomerKiosk() {
   };
 
   return (
-    <Box sx={{ height: '100vh', width: '100vw', overflow: 'hidden', bgcolor: '#FAF3E0' }}>
-      {step === 'welcome' && (
-        <WelcomeScreen onSelectOrderType={handleSelectOrderType} />
-      )}
-      {step === 'menu' && (
-        <MenuScreen
-          menuItems={menuItems}
-          toppings={toppings}
-          cart={cart}
-          cartTotal={cartTotal}
-          orderType={orderType}
-          onToggleOrderType={toggleOrderType}
-          onAddToCart={addToCart}
-          onUpdateQuantity={updateCartQuantity}
-          onRemoveFromCart={removeFromCart}
-          onCheckout={() => setStep('checkout')}
-          onBack={() => setStep('welcome')}
-        />
-      )}
-      {step === 'checkout' && (
-        <CheckoutScreen
-          cart={cart}
-          cartTotal={cartTotal}
-          orderType={orderType}
-          onContinueToPayment={() => setStep('payment')}
-          onBack={() => setStep('menu')}
-        />
-      )}
-      {step === 'payment' && (
-        <PaymentScreen
-          grandTotal={grandTotal}
-          onPlaceOrder={handlePlaceOrder}
-          onBack={() => setStep('checkout')}
-        />
-      )}
-      {step === 'confirmation' && (
-        <ConfirmationScreen
-          order={placedOrder}
-          onStartOver={handleStartOver}
-        />
-      )}
-    </Box>
+    <TranslationProvider>
+      <Box sx={{ height: '100vh', width: '100vw', overflow: 'hidden', bgcolor: '#FAF3E0' }}>
+        {step === 'welcome' && (
+          <WelcomeScreen onSelectOrderType={handleSelectOrderType} />
+        )}
+        {step === 'menu' && (
+          <MenuScreen
+            menuItems={menuItems}
+            toppings={toppings}
+            cart={cart}
+            cartTotal={cartTotal}
+            orderType={orderType}
+            onToggleOrderType={toggleOrderType}
+            onAddToCart={addToCart}
+            onUpdateQuantity={updateCartQuantity}
+            onRemoveFromCart={removeFromCart}
+            onCheckout={() => setStep('checkout')}
+            onBack={() => setStep('welcome')}
+          />
+        )}
+        {step === 'checkout' && (
+          <CheckoutScreen
+            cart={cart}
+            cartTotal={cartTotal}
+            orderType={orderType}
+            onContinueToPayment={() => setStep('payment')}
+            onBack={() => setStep('menu')}
+          />
+        )}
+        {step === 'payment' && (
+          <PaymentScreen
+            grandTotal={grandTotal}
+            onPlaceOrder={handlePlaceOrder}
+            onBack={() => setStep('checkout')}
+          />
+        )}
+        {step === 'confirmation' && (
+          <ConfirmationScreen
+            order={placedOrder}
+            onStartOver={handleStartOver}
+          />
+        )}
+        <LanguageSelector />
+      </Box>
+    </TranslationProvider>
   );
 }

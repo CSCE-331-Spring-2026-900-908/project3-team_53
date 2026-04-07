@@ -14,6 +14,7 @@ import FastfoodIcon from '@mui/icons-material/Fastfood';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { MenuItem } from '@/types/customer';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface SnackAddModalProps {
   item: MenuItem;
@@ -28,6 +29,7 @@ export default function SnackAddModal({
   onClose,
   onAdd,
 }: SnackAddModalProps) {
+  const { t } = useTranslation();
   const [quantity, setQuantity] = useState(1);
 
   const handleAdd = () => {
@@ -54,7 +56,7 @@ export default function SnackAddModal({
         }}
       >
         <Typography sx={{ fontWeight: 700, fontSize: '1.3rem', color: '#2D3436' }}>
-          Add to Order
+          {t('Add to Order')}
         </Typography>
         <IconButton onClick={onClose} size="small">
           <CloseIcon />
@@ -78,7 +80,7 @@ export default function SnackAddModal({
           </Box>
           <Box>
             <Typography sx={{ fontWeight: 700, fontSize: '1.15rem', color: '#2D3436' }}>
-              {item.name}
+              {t(item.name)}
             </Typography>
             <Typography sx={{ color: '#FF6B6B', fontWeight: 700 }}>
               ${Number(item.price).toFixed(2)}
@@ -118,7 +120,7 @@ export default function SnackAddModal({
           onClick={onClose}
           sx={{ color: '#636E72', textTransform: 'none', fontSize: '1rem' }}
         >
-          Cancel
+          {t('Cancel')}
         </Button>
         <Button
           variant="contained"
@@ -135,7 +137,7 @@ export default function SnackAddModal({
             '&:hover': { bgcolor: '#ee5a5a' },
           }}
         >
-          Add {quantity} to Order &middot; ${(Number(item.price) * quantity).toFixed(2)}
+          {t('Add')} {quantity} {t('to Order')} &middot; ${(Number(item.price) * quantity).toFixed(2)}
         </Button>
       </DialogActions>
     </Dialog>

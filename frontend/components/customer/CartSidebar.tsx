@@ -11,6 +11,7 @@ import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import Chip from '@mui/material/Chip';
 import { CartItem, OrderType } from '@/types/customer';
 import CartItemRow from './CartItemRow';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface CartSidebarProps {
   open: boolean;
@@ -35,6 +36,8 @@ export default function CartSidebar({
   onRemove,
   onCheckout,
 }: CartSidebarProps) {
+  const { t } = useTranslation();
+
   return (
     <Drawer
       anchor="right"
@@ -59,7 +62,7 @@ export default function CartSidebar({
       >
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography sx={{ color: '#FAF3E0', fontWeight: 700, fontSize: '1.25rem' }}>
-            Your Order
+            {t('Your Order')}
           </Typography>
           <IconButton onClick={onClose} sx={{ color: '#FAF3E0' }}>
             <CloseIcon />
@@ -67,7 +70,7 @@ export default function CartSidebar({
         </Box>
         <Chip
           icon={<SwapHorizIcon sx={{ color: '#fff !important', fontSize: 18 }} />}
-          label={orderType === 'dine_in' ? 'Dine In' : 'Carry Out'}
+          label={orderType === 'dine_in' ? t('Dine In') : t('Carry Out')}
           onClick={onToggleOrderType}
           sx={{
             mt: 1,
@@ -85,7 +88,7 @@ export default function CartSidebar({
       <Box sx={{ flex: 1, overflowY: 'auto', px: 3 }}>
         {cart.length === 0 ? (
           <Typography sx={{ color: '#636E72', textAlign: 'center', mt: 6 }}>
-            Your cart is empty
+            {t('Your cart is empty')}
           </Typography>
         ) : (
           cart.map((item) => (
@@ -116,7 +119,7 @@ export default function CartSidebar({
             }}
           >
             <Typography sx={{ color: '#FAF3E0', fontWeight: 700, fontSize: '1.15rem' }}>
-              Total
+              {t('Total')}
             </Typography>
             <Typography sx={{ color: '#FF6B6B', fontWeight: 700, fontSize: '1.15rem' }}>
               ${cartTotal.toFixed(2)}
@@ -138,7 +141,7 @@ export default function CartSidebar({
               '&:hover': { bgcolor: '#ee5a5a' },
             }}
           >
-            Checkout
+            {t('Checkout')}
           </Button>
         </Box>
       )}

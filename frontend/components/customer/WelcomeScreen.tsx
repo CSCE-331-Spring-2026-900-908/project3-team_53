@@ -9,12 +9,15 @@ import RestaurantIcon from '@mui/icons-material/Restaurant';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import { OrderType } from '@/types/customer';
 import WeatherWidget from '@/components/customer/WeatherWidget';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface WelcomeScreenProps {
   onSelectOrderType: (type: OrderType) => void;
 }
 
 export default function WelcomeScreen({ onSelectOrderType }: WelcomeScreenProps) {
+  const { t } = useTranslation();
+
   return (
     <Box
       sx={{
@@ -50,7 +53,7 @@ export default function WelcomeScreen({ onSelectOrderType }: WelcomeScreenProps)
           mt: 2,
         }}
       >
-        Welcome!
+        {t('Welcome!')}
       </Typography>
 
       <Typography
@@ -60,7 +63,7 @@ export default function WelcomeScreen({ onSelectOrderType }: WelcomeScreenProps)
           textAlign: 'center',
         }}
       >
-        How would you like your order today?
+        {t('How would you like your order today?')}
       </Typography>
 
       <Box sx={{ display: 'flex', gap: 4, mt: 4 }}>
@@ -82,7 +85,7 @@ export default function WelcomeScreen({ onSelectOrderType }: WelcomeScreenProps)
             '&:hover': { bgcolor: '#ee5a5a', boxShadow: '0 6px 20px rgba(255,107,107,0.5)' },
           }}
         >
-          Dine In
+          {t('Dine In')}
         </Button>
         <Button
           variant="contained"
@@ -102,14 +105,14 @@ export default function WelcomeScreen({ onSelectOrderType }: WelcomeScreenProps)
             '&:hover': { bgcolor: '#3dbdb5', boxShadow: '0 6px 20px rgba(78,205,196,0.5)' },
           }}
         >
-          Carry Out
+          {t('Carry Out')}
         </Button>
       </Box>
 
       <Typography
         sx={{ color: '#b2bec3', fontSize: '0.95rem', mt: 6 }}
       >
-        Tap to begin your order
+        {t('Tap to begin your order')}
       </Typography>
     </Box>
   );
