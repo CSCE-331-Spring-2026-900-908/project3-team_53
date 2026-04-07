@@ -23,6 +23,12 @@ export class Order {
   @Column({ default: 'credit_card' })
   payment_type: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  customer_name: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  customer_phone: string | null;
+
   @Column('decimal', { precision: 8, scale: 2 })
   total: number;
 

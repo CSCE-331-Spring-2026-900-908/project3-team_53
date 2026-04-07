@@ -11,19 +11,21 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import {
   MenuItem as MenuItemType,
   CartItem,
+  ToppingItem,
   OrderType,
   Size,
   SugarLevel,
   IceLevel,
-  Topping,
 } from '@/types/customer';
 import CategorySidebar from './CategorySidebar';
 import MenuItemCard from './MenuItemCard';
 import ItemCustomizationModal from './ItemCustomizationModal';
+import SnackAddModal from './SnackAddModal';
 import CartSidebar from './CartSidebar';
 
 interface MenuScreenProps {
   menuItems: MenuItemType[];
+  toppings: ToppingItem[];
   cart: CartItem[];
   cartTotal: number;
   orderType: OrderType;
@@ -33,7 +35,7 @@ interface MenuScreenProps {
     size: Size,
     sugarLevel: SugarLevel,
     iceLevel: IceLevel,
-    toppings: Topping[],
+    toppings: string[],
   ) => void;
   onUpdateQuantity: (cartId: string, quantity: number) => void;
   onRemoveFromCart: (cartId: string) => void;
@@ -43,6 +45,7 @@ interface MenuScreenProps {
 
 export default function MenuScreen({
   menuItems,
+  toppings,
   cart,
   cartTotal,
   orderType,
@@ -185,14 +188,28 @@ export default function MenuScreen({
         </Box>
       )}
 
-      {/* Customization modal */}
-      {customizingItem && (
+      {/* Customization modal -- drinks get full options, snacks get quantity only */}
+      {customizingItem && customizingItem.category !== 'Snacks' && (
         <ItemCustomizationModal
+          item={customizingItem}
+          toppings={toppings}
+          open={!!customizingItem}
+          onClose={() => setCustomizingItem(null)}
+          onAdd={(size, sugarLevel, iceLevel, selectedToppings) => {
+            onAddToCart(customizingItem, size, sugarLevel, iceLevel, selectedToppings);
+            setCustomizingItem(null);
+          }}
+        />
+      )}
+      {customizingItem && customizingItem.category === 'Snacks' && (
+        <SnackAddModal
           item={customizingItem}
           open={!!customizingItem}
           onClose={() => setCustomizingItem(null)}
-          onAdd={(size, sugarLevel, iceLevel, toppings) => {
-            onAddToCart(customizingItem, size, sugarLevel, iceLevel, toppings);
+          onAdd={(quantity) => {
+            for (let i = 0; i < quantity; i++) {
+              onAddToCart(customizingItem, 'Regular', '100%', 'Regular', []);
+            }
             setCustomizingItem(null);
           }}
         />

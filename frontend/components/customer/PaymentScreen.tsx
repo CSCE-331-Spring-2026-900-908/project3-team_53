@@ -4,38 +4,43 @@ import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 import CircularProgress from '@mui/material/CircularProgress';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import SchoolIcon from '@mui/icons-material/School';
+import PersonIcon from '@mui/icons-material/Person';
 import { PaymentType } from '@/types/customer';
 
 interface PaymentScreenProps {
   grandTotal: number;
-  onPlaceOrder: (paymentType: PaymentType, changeDue: number) => void;
+  onPlaceOrder: (paymentType: PaymentType, changeDue: number, customerName: string, customerPhone: string) => void;
   onBack: () => void;
 }
 
-type PaymentStep = 'select' | 'processing' | 'cash';
-
-const DENOMINATIONS = [1, 5, 10, 20] as const;
+type PaymentStep = 'info' | 'select' | 'processing' | 'cash';
 
 export default function PaymentScreen({
   grandTotal,
   onPlaceOrder,
   onBack,
 }: PaymentScreenProps) {
-  const [paymentStep, setPaymentStep] = useState<PaymentStep>('select');
-  const [cashTendered, setCashTendered] = useState(0);
+  const [paymentStep, setPaymentStep] = useState<PaymentStep>('info');
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [cashInput, setCashInput] = useState('');
+  const cashTendered = parseFloat(cashInput) || 0;
 
   const changeDue = cashTendered - grandTotal;
   const cashSufficient = cashTendered >= grandTotal;
 
+  const strippedPhone = customerPhone.replace(/\D/g, '');
+
   const handleCardOrDiningDollars = (type: 'credit_card' | 'dining_dollars') => {
     setPaymentStep('processing');
     setTimeout(() => {
-      onPlaceOrder(type, 0);
+      onPlaceOrder(type, 0, customerName, strippedPhone);
     }, 1500);
   };
 
@@ -43,7 +48,7 @@ export default function PaymentScreen({
     if (!cashSufficient) return;
     setPaymentStep('processing');
     setTimeout(() => {
-      onPlaceOrder('cash', Math.round(changeDue * 100) / 100);
+      onPlaceOrder('cash', Math.round(changeDue * 100) / 100, customerName, strippedPhone);
     }, 800);
   };
 
@@ -89,10 +94,20 @@ export default function PaymentScreen({
       >
         <Button
           startIcon={<ArrowBackIcon />}
-          onClick={paymentStep === 'cash' ? () => setPaymentStep('select') : onBack}
+          onClick={
+            paymentStep === 'cash'
+              ? () => setPaymentStep('select')
+              : paymentStep === 'select'
+                ? () => setPaymentStep('info')
+                : onBack
+          }
           sx={{ color: '#FAF3E0', textTransform: 'none', fontSize: '1rem' }}
         >
-          {paymentStep === 'cash' ? 'Back to Payment Methods' : 'Back to Order Summary'}
+          {paymentStep === 'cash'
+            ? 'Back to Payment Methods'
+            : paymentStep === 'select'
+              ? 'Back to Customer Info'
+              : 'Back to Order Summary'}
         </Button>
       </Box>
 
@@ -126,6 +141,96 @@ export default function PaymentScreen({
             ${grandTotal.toFixed(2)}
           </Typography>
         </Box>
+
+        {paymentStep === 'info' && (
+          <Box sx={{ width: '100%', maxWidth: 500 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 3 }}>
+              <PersonIcon sx={{ color: '#2D3436', fontSize: 28 }} />
+              <Typography
+                sx={{ color: '#2D3436', fontWeight: 700, fontSize: '1.5rem', textAlign: 'center' }}
+              >
+                Customer Information
+              </Typography>
+            </Box>
+
+            <Typography sx={{ color: '#636E72', textAlign: 'center', mb: 3, fontSize: '0.95rem' }}>
+              Optional -- leave blank to skip
+            </Typography>
+
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 4 }}>
+              <TextField
+                label="Name"
+                placeholder="e.g. John"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                fullWidth
+                variant="outlined"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    bgcolor: '#FFF8EE',
+                    borderRadius: 3,
+                    fontSize: '1.1rem',
+                    '& fieldset': { borderColor: '#e0d5c0' },
+                    '&:hover fieldset': { borderColor: '#4ECDC4' },
+                    '&.Mui-focused fieldset': { borderColor: '#4ECDC4' },
+                  },
+                  '& .MuiInputLabel-root.Mui-focused': { color: '#4ECDC4' },
+                }}
+              />
+              <TextField
+                label="Phone Number"
+                placeholder="e.g. 979-555-1234"
+                value={customerPhone}
+                onChange={(e) => setCustomerPhone(e.target.value)}
+                fullWidth
+                variant="outlined"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    bgcolor: '#FFF8EE',
+                    borderRadius: 3,
+                    fontSize: '1.1rem',
+                    '& fieldset': { borderColor: '#e0d5c0' },
+                    '&:hover fieldset': { borderColor: '#4ECDC4' },
+                    '&.Mui-focused fieldset': { borderColor: '#4ECDC4' },
+                  },
+                  '& .MuiInputLabel-root.Mui-focused': { color: '#4ECDC4' },
+                }}
+              />
+            </Box>
+
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'center' }}>
+              <Button
+                variant="contained"
+                onClick={() => setPaymentStep('select')}
+                sx={{
+                  bgcolor: '#4ECDC4',
+                  color: '#fff',
+                  fontWeight: 700,
+                  textTransform: 'none',
+                  fontSize: '1.25rem',
+                  px: 8,
+                  py: 2,
+                  borderRadius: 4,
+                  minWidth: 300,
+                  boxShadow: '0 4px 14px rgba(78,205,196,0.4)',
+                  '&:hover': { bgcolor: '#3dbdb5', boxShadow: '0 6px 20px rgba(78,205,196,0.5)' },
+                }}
+              >
+                Continue to Payment
+              </Button>
+              <Button
+                onClick={() => {
+                  setCustomerName('');
+                  setCustomerPhone('');
+                  setPaymentStep('select');
+                }}
+                sx={{ color: '#636E72', textTransform: 'none', fontSize: '1rem' }}
+              >
+                Skip
+              </Button>
+            </Box>
+          </Box>
+        )}
 
         {paymentStep === 'select' && (
           <Box sx={{ width: '100%', maxWidth: 500 }}>
@@ -204,88 +309,33 @@ export default function PaymentScreen({
               Cash Payment
             </Typography>
 
-            {/* Cash tendered display */}
-            <Box
-              sx={{
-                bgcolor: '#FFF8EE',
-                border: '2px solid #f0e6d3',
-                borderRadius: 4,
-                px: 4,
-                py: 3,
-                mb: 3,
-                textAlign: 'center',
+            <TextField
+              label="Cash Tendered"
+              placeholder="0.00"
+              value={cashInput}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === '' || /^\d*\.?\d{0,2}$/.test(val)) {
+                  setCashInput(val);
+                }
               }}
-            >
-              <Typography sx={{ color: '#636E72', fontSize: '0.9rem', mb: 0.5 }}>
-                Cash Tendered
-              </Typography>
-              <Typography sx={{ color: '#2D3436', fontWeight: 700, fontSize: '2.5rem', lineHeight: 1 }}>
-                ${cashTendered.toFixed(2)}
-              </Typography>
-            </Box>
-
-            {/* Denomination buttons */}
-            <Box sx={{ display: 'flex', gap: 2, mb: 2, justifyContent: 'center' }}>
-              {DENOMINATIONS.map((d) => (
-                <Button
-                  key={d}
-                  variant="contained"
-                  onClick={() => setCashTendered((prev) => prev + d)}
-                  sx={{
-                    bgcolor: '#2D3436',
-                    color: '#fff',
-                    fontWeight: 700,
-                    fontSize: '1.1rem',
-                    py: 2,
-                    px: 3,
-                    borderRadius: 3,
-                    minWidth: 80,
-                    textTransform: 'none',
-                    '&:hover': { bgcolor: '#3d4a4c' },
-                  }}
-                >
-                  +${d}
-                </Button>
-              ))}
-            </Box>
-
-            {/* Exact + Clear row */}
-            <Box sx={{ display: 'flex', gap: 2, mb: 3, justifyContent: 'center' }}>
-              <Button
-                variant="outlined"
-                onClick={() => setCashTendered(Math.ceil(grandTotal * 100) / 100)}
-                sx={{
-                  borderColor: '#4ECDC4',
-                  color: '#4ECDC4',
-                  fontWeight: 700,
-                  fontSize: '1rem',
-                  py: 1.5,
-                  px: 4,
+              fullWidth
+              variant="outlined"
+              inputProps={{ inputMode: 'decimal' }}
+              sx={{
+                mb: 3,
+                '& .MuiOutlinedInput-root': {
+                  bgcolor: '#FFF8EE',
                   borderRadius: 3,
-                  textTransform: 'none',
-                  '&:hover': { borderColor: '#3dbdb5', bgcolor: 'rgba(78,205,196,0.08)' },
-                }}
-              >
-                Exact Amount
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={() => setCashTendered(0)}
-                sx={{
-                  borderColor: '#FF6B6B',
-                  color: '#FF6B6B',
+                  fontSize: '2rem',
                   fontWeight: 700,
-                  fontSize: '1rem',
-                  py: 1.5,
-                  px: 4,
-                  borderRadius: 3,
-                  textTransform: 'none',
-                  '&:hover': { borderColor: '#ee5a5a', bgcolor: 'rgba(255,107,107,0.08)' },
-                }}
-              >
-                Clear
-              </Button>
-            </Box>
+                  '& fieldset': { borderColor: '#e0d5c0', borderWidth: 2 },
+                  '&:hover fieldset': { borderColor: '#4ECDC4' },
+                  '&.Mui-focused fieldset': { borderColor: '#4ECDC4' },
+                },
+                '& .MuiInputLabel-root.Mui-focused': { color: '#4ECDC4' },
+              }}
+            />
 
             {/* Change / insufficient funds feedback */}
             {cashTendered > 0 && (

@@ -1,7 +1,31 @@
 'use client';
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Get } from '@/utils/apiService';
+
+interface ToppingData {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  available: boolean;
+}
+
 export default function CustomizationInfo() {
-  {/* This is just a static component to show the available customization options for drinks. */}
+  const [toppingNames, setToppingNames] = useState<string[]>([]);
+
+  useEffect(() => {
+    Get('/topping-items')
+      .then((data) => {
+        if (Array.isArray(data)) {
+          const names = data
+            .filter((t: ToppingData) => t.category !== 'Size' && t.available)
+            .map((t: ToppingData) => t.name);
+          setToppingNames(names);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="text-[#2D3436] mt-12">
       <h2 className="text-3xl font-bold mb-4">Drink Options</h2>
@@ -24,7 +48,7 @@ export default function CustomizationInfo() {
 
         <div>
           <h3 className="font-semibold text-2xl mb-2">Toppings</h3>
-          <p>Boba, Crystal Boba, Coconut Jelly, Aloe Vera, Pudding, Red Bean</p>
+          <p>{toppingNames.length > 0 ? toppingNames.join(', ') : 'Loading...'}</p>
         </div>
       </div>
     </div>

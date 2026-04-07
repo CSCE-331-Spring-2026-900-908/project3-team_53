@@ -69,6 +69,11 @@ export default function ConfirmationScreen({
             mt: 1,
           }}
         >
+          {order.customer_name && (
+            <Typography sx={{ color: '#2D3436', fontWeight: 700, fontSize: '1.25rem', mb: 2 }}>
+              Order for: {order.customer_name}
+            </Typography>
+          )}
           <Typography sx={{ color: '#636E72', fontSize: '1rem', mb: 1 }}>
             Your order number
           </Typography>

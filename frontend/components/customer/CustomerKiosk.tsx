@@ -9,10 +9,10 @@ import {
   OrderType,
   PaymentType,
   PlacedOrder,
+  ToppingItem,
   Size,
   SugarLevel,
   IceLevel,
-  Topping,
 } from '@/types/customer';
 import { Get, Post } from '@/utils/apiService';
 import WelcomeScreen from '@/components/customer/WelcomeScreen';
@@ -42,6 +42,7 @@ export default function CustomerKiosk() {
   const [step, setStep] = useState<KioskStep>('welcome');
   const [orderType, setOrderType] = useState<OrderType>('dine_in');
   const [menuItems, setMenuItems] = useState<MenuItemType[]>(FALLBACK_MENU);
+  const [toppings, setToppings] = useState<ToppingItem[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [placedOrder, setPlacedOrder] = useState<PlacedOrder | null>(null);
 
@@ -52,9 +53,15 @@ export default function CustomerKiosk() {
           setMenuItems(data);
         }
       })
-      .catch(() => {
-        // Keep fallback data
-      });
+      .catch(() => {});
+
+    Get('/topping-items')
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setToppings(data.filter((t: ToppingItem) => t.category !== 'Size'));
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const handleSelectOrderType = (type: OrderType) => {
@@ -72,7 +79,7 @@ export default function CustomerKiosk() {
       size: Size,
       sugarLevel: SugarLevel,
       iceLevel: IceLevel,
-      toppings: Topping[],
+      toppings: string[],
     ) => {
       const cartItem: CartItem = {
         cartId: `${item.id}-${Date.now()}-${Math.random()}`,
@@ -110,11 +117,18 @@ export default function CustomerKiosk() {
   const tax = cartTotal * 0.0825;
   const grandTotal = cartTotal + tax;
 
-  const handlePlaceOrder = async (paymentType: PaymentType, changeDue: number) => {
+  const handlePlaceOrder = async (
+    paymentType: PaymentType,
+    changeDue: number,
+    customerName: string,
+    customerPhone: string,
+  ) => {
     const payload = {
       order_type: orderType,
       total: cartTotal,
       payment_type: paymentType,
+      customer_name: customerName || undefined,
+      customer_phone: customerPhone || undefined,
       items: cart.map((c) => ({
         menuItemId: c.menuItem.id,
         quantity: c.quantity,
@@ -128,16 +142,25 @@ export default function CustomerKiosk() {
 
     try {
       const order = await Post('/orders', payload);
-      setPlacedOrder({ ...order, payment_type: paymentType, change_due: changeDue });
+      setPlacedOrder({
+        ...order,
+        payment_type: paymentType,
+        change_due: changeDue,
+        customer_name: order.customer_name,
+        customer_phone: order.customer_phone,
+      });
       setStep('confirmation');
     } catch {
+      const fallbackId = Math.floor(Math.random() * 900) + 100;
       setPlacedOrder({
-        id: Math.floor(Math.random() * 900) + 100,
+        id: fallbackId,
         status: 'pending',
         order_type: orderType,
         total: cartTotal,
         payment_type: paymentType,
         change_due: changeDue,
+        customer_name: customerName || `Customer ${fallbackId}`,
+        customer_phone: customerPhone || undefined,
         created_at: new Date().toISOString(),
       });
       setStep('confirmation');
@@ -158,6 +181,7 @@ export default function CustomerKiosk() {
       {step === 'menu' && (
         <MenuScreen
           menuItems={menuItems}
+          toppings={toppings}
           cart={cart}
           cartTotal={cartTotal}
           orderType={orderType}
