@@ -22,6 +22,7 @@ export class OrdersService {
       const order = queryRunner.manager.create(Order, {
         order_type: dto.order_type,
         total: dto.total,
+        payment_type: dto.payment_type ?? 'credit_card',
         status: 'pending',
       });
       const savedOrder = await queryRunner.manager.save(order);

@@ -80,6 +80,23 @@ export default function ConfirmationScreen({
           <Typography sx={{ color: '#636E72', fontSize: '1rem', mt: 2 }}>
             Total: ${Number(order.total).toFixed(2)}
           </Typography>
+          {order.payment_type && (
+            <Typography sx={{ color: '#636E72', fontSize: '0.9rem', mt: 1.5 }}>
+              Paid with{' '}
+              <Box component="span" sx={{ fontWeight: 700, color: '#2D3436' }}>
+                {order.payment_type === 'credit_card'
+                  ? 'Credit Card'
+                  : order.payment_type === 'cash'
+                    ? 'Cash'
+                    : 'Dining Dollars'}
+              </Box>
+            </Typography>
+          )}
+          {order.payment_type === 'cash' && order.change_due != null && order.change_due > 0 && (
+            <Typography sx={{ color: '#4ECDC4', fontWeight: 700, fontSize: '1.1rem', mt: 1 }}>
+              Change: ${order.change_due.toFixed(2)}
+            </Typography>
+          )}
         </Box>
       )}
 

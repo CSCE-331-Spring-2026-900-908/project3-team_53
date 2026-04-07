@@ -7,6 +7,7 @@ import {
   CartItem,
   KioskStep,
   OrderType,
+  PaymentType,
   PlacedOrder,
   Size,
   SugarLevel,
@@ -18,6 +19,7 @@ import WelcomeScreen from '@/components/customer/WelcomeScreen';
 import MenuScreen from '@/components/customer/MenuScreen';
 import CheckoutScreen from '@/components/customer/CheckoutScreen';
 import ConfirmationScreen from '@/components/customer/ConfirmationScreen';
+import PaymentScreen from '@/components/customer/PaymentScreen';
 
 const FALLBACK_MENU: MenuItemType[] = [
   { id: 1, name: 'Classic Milk Tea', category: 'Milk Tea', price: 5.50, image: null, available: true },
@@ -105,10 +107,14 @@ export default function CustomerKiosk() {
     0,
   );
 
-  const handlePlaceOrder = async () => {
+  const tax = cartTotal * 0.0825;
+  const grandTotal = cartTotal + tax;
+
+  const handlePlaceOrder = async (paymentType: PaymentType, changeDue: number) => {
     const payload = {
       order_type: orderType,
       total: cartTotal,
+      payment_type: paymentType,
       items: cart.map((c) => ({
         menuItemId: c.menuItem.id,
         quantity: c.quantity,
@@ -122,7 +128,7 @@ export default function CustomerKiosk() {
 
     try {
       const order = await Post('/orders', payload);
-      setPlacedOrder(order);
+      setPlacedOrder({ ...order, payment_type: paymentType, change_due: changeDue });
       setStep('confirmation');
     } catch {
       setPlacedOrder({
@@ -130,6 +136,8 @@ export default function CustomerKiosk() {
         status: 'pending',
         order_type: orderType,
         total: cartTotal,
+        payment_type: paymentType,
+        change_due: changeDue,
         created_at: new Date().toISOString(),
       });
       setStep('confirmation');
@@ -166,8 +174,15 @@ export default function CustomerKiosk() {
           cart={cart}
           cartTotal={cartTotal}
           orderType={orderType}
-          onPlaceOrder={handlePlaceOrder}
+          onContinueToPayment={() => setStep('payment')}
           onBack={() => setStep('menu')}
+        />
+      )}
+      {step === 'payment' && (
+        <PaymentScreen
+          grandTotal={grandTotal}
+          onPlaceOrder={handlePlaceOrder}
+          onBack={() => setStep('checkout')}
         />
       )}
       {step === 'confirmation' && (
