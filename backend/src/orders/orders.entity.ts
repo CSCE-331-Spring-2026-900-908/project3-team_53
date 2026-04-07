@@ -20,6 +20,9 @@ export class Order {
   @Column()
   order_type: string;
 
+  @Column({ default: 'credit_card' })
+  payment_type: string;
+
   @Column('decimal', { precision: 8, scale: 2 })
   total: number;
 

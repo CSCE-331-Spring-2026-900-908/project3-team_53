@@ -7,8 +7,9 @@ export interface MenuItem {
   available: boolean;
 }
 
-export type KioskStep = 'welcome' | 'menu' | 'checkout' | 'confirmation';
+export type KioskStep = 'welcome' | 'menu' | 'checkout' | 'payment' | 'confirmation';
 export type OrderType = 'dine_in' | 'carry_out';
+export type PaymentType = 'credit_card' | 'cash' | 'dining_dollars';
 
 export const SIZES = ['Small', 'Regular', 'Large'] as const;
 export type Size = (typeof SIZES)[number];
@@ -44,5 +45,7 @@ export interface PlacedOrder {
   status: string;
   order_type: string;
   total: number;
+  payment_type?: string;
+  change_due?: number;
   created_at: string;
 }

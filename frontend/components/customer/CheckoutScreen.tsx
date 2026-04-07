@@ -12,7 +12,7 @@ interface CheckoutScreenProps {
   cart: CartItem[];
   cartTotal: number;
   orderType: OrderType;
-  onPlaceOrder: () => void;
+  onContinueToPayment: () => void;
   onBack: () => void;
 }
 
@@ -20,7 +20,7 @@ export default function CheckoutScreen({
   cart,
   cartTotal,
   orderType,
-  onPlaceOrder,
+  onContinueToPayment,
   onBack,
 }: CheckoutScreenProps) {
   const tax = cartTotal * 0.0825;
@@ -160,7 +160,7 @@ export default function CheckoutScreen({
       >
         <Button
           variant="contained"
-          onClick={onPlaceOrder}
+          onClick={onContinueToPayment}
           sx={{
             bgcolor: '#FF6B6B',
             color: '#fff',
@@ -175,7 +175,7 @@ export default function CheckoutScreen({
             '&:hover': { bgcolor: '#ee5a5a', boxShadow: '0 6px 20px rgba(255,107,107,0.5)' },
           }}
         >
-          Place Order
+          Continue to Payment
         </Button>
       </Box>
     </Box>
