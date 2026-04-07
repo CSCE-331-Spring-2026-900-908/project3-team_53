@@ -29,7 +29,7 @@ export default function WelcomeScreen({ onSelectOrderType }: WelcomeScreenProps)
         position: 'relative',
       }}
     >
-      <Box sx={{ position: 'absolute', top: 24, right: 24 }}>
+      <Box sx={{ position: 'absolute', top: 24, left: '50%', transform: 'translateX(-50%)' }}>
         <WeatherWidget />
       </Box>
 

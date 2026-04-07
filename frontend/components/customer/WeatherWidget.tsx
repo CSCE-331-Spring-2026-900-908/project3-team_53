@@ -68,23 +68,23 @@ export default function WeatherWidget() {
         display: 'flex',
         alignItems: 'center',
         gap: 1,
-        bgcolor: 'rgba(255,255,255,0.6)',
-        backdropFilter: 'blur(6px)',
+        bgcolor: '#2D3436',
         borderRadius: 3,
         px: 2,
         py: 1,
+        boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
       }}
     >
       <ThermostatIcon sx={{ color: '#FF6B6B', fontSize: 22 }} />
       <Typography
-        sx={{ color: '#2D3436', fontWeight: 700, fontSize: '0.95rem' }}
+        sx={{ color: '#FFFFFF', fontWeight: 700, fontSize: '0.95rem' }}
       >
         {weather.temperature}{weather.unit}
       </Typography>
-      <Typography sx={{ color: '#636E72', fontSize: '0.85rem' }}>
+      <Typography sx={{ color: '#DFE6E9', fontSize: '0.85rem' }}>
         {weather.shortForecast}
       </Typography>
-      <Typography sx={{ color: '#b2bec3', fontSize: '0.75rem', ml: 0.5 }}>
+      <Typography sx={{ color: '#B2BEC3', fontSize: '0.75rem', ml: 0.5 }}>
         College Station, TX
       </Typography>
     </Box>
