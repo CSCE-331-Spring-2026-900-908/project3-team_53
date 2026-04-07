@@ -12,6 +12,7 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import SchoolIcon from '@mui/icons-material/School';
 import PersonIcon from '@mui/icons-material/Person';
 import { PaymentType } from '@/types/customer';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface PaymentScreenProps {
   grandTotal: number;
@@ -26,6 +27,7 @@ export default function PaymentScreen({
   onPlaceOrder,
   onBack,
 }: PaymentScreenProps) {
+  const { t } = useTranslation();
   const [paymentStep, setPaymentStep] = useState<PaymentStep>('info');
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
@@ -67,7 +69,7 @@ export default function PaymentScreen({
       >
         <CircularProgress size={64} sx={{ color: '#4ECDC4' }} />
         <Typography sx={{ color: '#2D3436', fontWeight: 700, fontSize: '1.5rem' }}>
-          Processing Payment...
+          {t('Processing Payment...')}
         </Typography>
       </Box>
     );
@@ -104,10 +106,10 @@ export default function PaymentScreen({
           sx={{ color: '#FAF3E0', textTransform: 'none', fontSize: '1rem' }}
         >
           {paymentStep === 'cash'
-            ? 'Back to Payment Methods'
+            ? t('Back to Payment Methods')
             : paymentStep === 'select'
-              ? 'Back to Customer Info'
-              : 'Back to Order Summary'}
+              ? t('Back to Customer Info')
+              : t('Back to Order Summary')}
         </Button>
       </Box>
 
@@ -135,7 +137,7 @@ export default function PaymentScreen({
           }}
         >
           <Typography sx={{ color: '#B2BEC3', fontSize: '1rem', mb: 0.5 }}>
-            Amount Due
+            {t('Amount Due')}
           </Typography>
           <Typography sx={{ color: '#FFFFFF', fontWeight: 700, fontSize: '3rem', lineHeight: 1 }}>
             ${grandTotal.toFixed(2)}
@@ -149,18 +151,18 @@ export default function PaymentScreen({
               <Typography
                 sx={{ color: '#2D3436', fontWeight: 700, fontSize: '1.5rem', textAlign: 'center' }}
               >
-                Customer Information
+                {t('Customer Information')}
               </Typography>
             </Box>
 
             <Typography sx={{ color: '#636E72', textAlign: 'center', mb: 3, fontSize: '0.95rem' }}>
-              Optional -- leave blank to skip
+              {t('Optional -- leave blank to skip')}
             </Typography>
 
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 4 }}>
               <TextField
-                label="Name"
-                placeholder="e.g. John"
+                label={t('Name')}
+                placeholder={t('e.g. John')}
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
                 fullWidth
@@ -178,8 +180,8 @@ export default function PaymentScreen({
                 }}
               />
               <TextField
-                label="Phone Number"
-                placeholder="e.g. 979-555-1234"
+                label={t('Phone Number')}
+                placeholder={t('e.g. 979-555-1234')}
                 value={customerPhone}
                 onChange={(e) => setCustomerPhone(e.target.value)}
                 fullWidth
@@ -216,7 +218,7 @@ export default function PaymentScreen({
                   '&:hover': { bgcolor: '#3dbdb5', boxShadow: '0 6px 20px rgba(78,205,196,0.5)' },
                 }}
               >
-                Continue to Payment
+                {t('Continue to Payment')}
               </Button>
               <Button
                 onClick={() => {
@@ -226,7 +228,7 @@ export default function PaymentScreen({
                 }}
                 sx={{ color: '#636E72', textTransform: 'none', fontSize: '1rem' }}
               >
-                Skip
+                {t('Skip')}
               </Button>
             </Box>
           </Box>
@@ -237,7 +239,7 @@ export default function PaymentScreen({
             <Typography
               sx={{ color: '#2D3436', fontWeight: 700, fontSize: '1.5rem', mb: 3, textAlign: 'center' }}
             >
-              Select Payment Method
+              {t('Select Payment Method')}
             </Typography>
 
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -257,7 +259,7 @@ export default function PaymentScreen({
                   '&:hover': { bgcolor: '#3dbdb5', boxShadow: '0 6px 20px rgba(78,205,196,0.5)' },
                 }}
               >
-                Credit / Debit Card
+                {t('Credit / Debit Card')}
               </Button>
 
               <Button
@@ -276,7 +278,7 @@ export default function PaymentScreen({
                   '&:hover': { bgcolor: '#ee5a5a', boxShadow: '0 6px 20px rgba(255,107,107,0.5)' },
                 }}
               >
-                Cash
+                {t('Cash')}
               </Button>
 
               <Button
@@ -295,7 +297,7 @@ export default function PaymentScreen({
                   '&:hover': { bgcolor: '#5a4bd6', boxShadow: '0 6px 20px rgba(108,92,231,0.5)' },
                 }}
               >
-                Dining Dollars
+                {t('Dining Dollars')}
               </Button>
             </Box>
           </Box>
@@ -306,11 +308,11 @@ export default function PaymentScreen({
             <Typography
               sx={{ color: '#2D3436', fontWeight: 700, fontSize: '1.5rem', mb: 3, textAlign: 'center' }}
             >
-              Cash Payment
+              {t('Cash Payment')}
             </Typography>
 
             <TextField
-              label="Cash Tendered"
+              label={t('Cash Tendered')}
               placeholder="0.00"
               value={cashInput}
               onChange={(e) => {
@@ -353,7 +355,7 @@ export default function PaymentScreen({
                 {cashSufficient ? (
                   <>
                     <Typography sx={{ color: '#636E72', fontSize: '0.9rem' }}>
-                      Change Due
+                      {t('Change Due')}
                     </Typography>
                     <Typography sx={{ color: '#4ECDC4', fontWeight: 700, fontSize: '2rem' }}>
                       ${changeDue.toFixed(2)}
@@ -361,7 +363,7 @@ export default function PaymentScreen({
                   </>
                 ) : (
                   <Typography sx={{ color: '#FF6B6B', fontWeight: 700, fontSize: '1.1rem' }}>
-                    Insufficient funds. Please add ${(grandTotal - cashTendered).toFixed(2)} more.
+                    {t('Insufficient funds. Please add')} ${(grandTotal - cashTendered).toFixed(2)} {t('more.')}
                   </Typography>
                 )}
               </Box>
@@ -390,7 +392,7 @@ export default function PaymentScreen({
                   '&.Mui-disabled': { bgcolor: '#ccc', color: '#fff' },
                 }}
               >
-                Confirm Cash Payment
+                {t('Confirm Cash Payment')}
               </Button>
             </Box>
           </Box>
