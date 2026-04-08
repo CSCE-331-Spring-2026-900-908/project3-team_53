@@ -77,6 +77,9 @@ export default function CashierPage() {
 
   const currentItems = MENU.find(m => m.category === activeCategory)?.items ?? [];
 
+  // Check if the item currently in the modal is a snack
+  const isSnack = MENU.find(m => m.category === 'Snacks')?.items.some(i => i.id === modalItem?.id) ?? false;
+
   // Close customization modal when Escape key is pressed
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -112,7 +115,8 @@ export default function CashierPage() {
         id: modalItem.id,
         name: modalItem.name,
         basePrice: modalItem.price + toppingTotal,
-        sugar, ice,
+        sugar: isSnack ? 'N/A' : sugar,
+        ice: isSnack ? 'N/A' : ice,
         toppings: selectedToppings,
         qty: 1,
         key,
@@ -250,9 +254,11 @@ export default function CashierPage() {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 'bold' }}>{o.name}</div>
-                    <div style={{ color: '#aaa', fontSize: '0.75rem', marginTop: '2px' }}>
-                      Sugar: {o.sugar} · Ice: {o.ice}
-                    </div>
+                    {o.sugar !== 'N/A' && (
+                      <div style={{ color: '#aaa', fontSize: '0.75rem', marginTop: '2px' }}>
+                        Sugar: {o.sugar} · Ice: {o.ice}
+                      </div>
+                    )}
                     {o.toppings.length > 0 && (
                       <div style={{ color: '#aaa', fontSize: '0.75rem' }}>
                         + {o.toppings.map(t => t.name).join(', ')}
@@ -321,35 +327,39 @@ export default function CashierPage() {
             <h2 style={{ color: '#fff', marginTop: 0 }}>{modalItem.name}</h2>
             <p style={{ color: '#aaa', marginTop: '-12px' }}>Base price: ${modalItem.price.toFixed(2)}</p>
 
-            {/* Sugar level selector */}
-            <div style={{ marginBottom: '20px' }}>
-              <h3 style={{ color: '#e94560', marginBottom: '10px' }}>Sugar Level</h3>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                {SUGAR_LEVELS.map(s => (
-                  <button key={s} onClick={() => setSugar(s)} style={{
-                    padding: '8px 16px', borderRadius: '20px', border: '2px solid',
-                    borderColor: sugar === s ? '#e94560' : '#0f3460',
-                    backgroundColor: sugar === s ? '#e94560' : 'transparent',
-                    color: '#fff', cursor: 'pointer', fontWeight: 'bold',
-                  }}>{s}</button>
-                ))}
+            {/* Sugar level selector — hidden for snacks */}
+            {!isSnack && (
+              <div style={{ marginBottom: '20px' }}>
+                <h3 style={{ color: '#e94560', marginBottom: '10px' }}>Sugar Level</h3>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {SUGAR_LEVELS.map(s => (
+                    <button key={s} onClick={() => setSugar(s)} style={{
+                      padding: '8px 16px', borderRadius: '20px', border: '2px solid',
+                      borderColor: sugar === s ? '#e94560' : '#0f3460',
+                      backgroundColor: sugar === s ? '#e94560' : 'transparent',
+                      color: '#fff', cursor: 'pointer', fontWeight: 'bold',
+                    }}>{s}</button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Ice level selector */}
-            <div style={{ marginBottom: '20px' }}>
-              <h3 style={{ color: '#e94560', marginBottom: '10px' }}>Ice Level</h3>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                {ICE_LEVELS.map(i => (
-                  <button key={i} onClick={() => setIce(i)} style={{
-                    padding: '8px 16px', borderRadius: '20px', border: '2px solid',
-                    borderColor: ice === i ? '#e94560' : '#0f3460',
-                    backgroundColor: ice === i ? '#e94560' : 'transparent',
-                    color: '#fff', cursor: 'pointer', fontWeight: 'bold',
-                  }}>{i}</button>
-                ))}
+            {/* Ice level selector — hidden for snacks */}
+            {!isSnack && (
+              <div style={{ marginBottom: '20px' }}>
+                <h3 style={{ color: '#e94560', marginBottom: '10px' }}>Ice Level</h3>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {ICE_LEVELS.map(i => (
+                    <button key={i} onClick={() => setIce(i)} style={{
+                      padding: '8px 16px', borderRadius: '20px', border: '2px solid',
+                      borderColor: ice === i ? '#e94560' : '#0f3460',
+                      backgroundColor: ice === i ? '#e94560' : 'transparent',
+                      color: '#fff', cursor: 'pointer', fontWeight: 'bold',
+                    }}>{i}</button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Toppings selector */}
             <div style={{ marginBottom: '24px' }}>
