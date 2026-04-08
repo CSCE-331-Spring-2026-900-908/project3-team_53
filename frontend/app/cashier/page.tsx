@@ -215,7 +215,7 @@ export default function CashierPage() {
     };
 
     try {
-      await Post('/api/orders', payload);
+      await Post('/orders', payload);
       setOrderNumber(generateOrderNumber());
       setPaymentType(pendingPaymentType);
       setTipAmount(tip);
