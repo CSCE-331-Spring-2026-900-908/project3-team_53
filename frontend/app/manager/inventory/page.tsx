@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 import { Get } from '@/utils/apiService';
 
 interface InventoryItem {
@@ -16,6 +17,16 @@ interface InventoryItem {
 export default function ManagerInventoryPage() {
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredItems = inventoryItems.filter((item) => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return true;
+
+    const matchesName = item.name.toLowerCase().includes(query);
+    const matchesId = item.id.toString().includes(query);
+    return matchesName || matchesId;
+  });
 
   useEffect(() => {
     const fetchInventory = async () => {
@@ -43,9 +54,17 @@ export default function ManagerInventoryPage() {
         Track stock levels and update inventory so the shop stays fully stocked.
       </Typography>
 
-      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 4 }}>
+      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 4, alignItems: 'center' }}>
         <Button variant="contained">Restock Item</Button>
         <Button variant="outlined">Create Order</Button>
+        <TextField
+          value={searchQuery}
+          onChange={(event) => setSearchQuery(event.target.value)}
+          label="Search by name or ID"
+          variant="outlined"
+          size="small"
+          sx={{ minWidth: 260 }}
+        />
       </Box>
 
       <Box sx={{ display: 'grid', gap: 2, maxWidth: 900 }}>
@@ -53,12 +72,12 @@ export default function ManagerInventoryPage() {
           <Typography variant="body1" sx={{ color: '#333333' }}>
             Loading inventory...
           </Typography>
-        ) : inventoryItems.length === 0 ? (
+        ) : filteredItems.length === 0 ? (
           <Typography variant="body1" sx={{ color: '#333333' }}>
             No inventory items found.
           </Typography>
         ) : (
-          inventoryItems.map((item) => (
+          filteredItems.map((item) => (
             <Box
               key={item.id}
               sx={{
