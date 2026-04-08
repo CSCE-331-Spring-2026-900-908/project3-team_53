@@ -37,6 +37,11 @@ const TOPPINGS = [
   { name: 'Red Bean', price: 0.75 },
 ];
 
+const DISCOUNTS = [
+  { label: '🎓 Student ID', pct: 15 },
+  { label: '🎖️ Military / Fire / Police', pct: 25 },
+];
+
 type Topping = { name: string; price: number };
 type OrderItem = {
   id: number;
@@ -65,6 +70,10 @@ export default function CashierPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showVoidConfirm, setShowVoidConfirm] = useState(false);
 
+  // Discount state
+  const [showDiscountModal, setShowDiscountModal] = useState(false);
+  const [appliedDiscount, setAppliedDiscount] = useState<{ label: string; pct: number } | null>(null);
+
   // Payment flow state
   const [showPaymentSelect, setShowPaymentSelect] = useState(false);
   const [showCustomerScreen, setShowCustomerScreen] = useState(false);
@@ -85,9 +94,13 @@ export default function CashierPage() {
   const isSnack = MENU.find(m => m.category === 'Snacks')?.items.some(i => i.id === modalItem?.id) ?? false;
 
   const subtotal = order.reduce((sum, o) => sum + o.basePrice * o.qty, 0);
-  const tax = subtotal * 0.0825;
-  const total = subtotal + tax;
-  const computedTip = selectedTipPct !== null ? parseFloat((total * selectedTipPct / 100).toFixed(2)) : parseFloat(customTip) || 0;
+  const discountAmt = appliedDiscount ? parseFloat((subtotal * appliedDiscount.pct / 100).toFixed(2)) : 0;
+  const discountedSubtotal = subtotal - discountAmt;
+  const tax = discountedSubtotal * 0.0825;
+  const total = discountedSubtotal + tax;
+  const computedTip = selectedTipPct !== null
+    ? parseFloat((total * selectedTipPct / 100).toFixed(2))
+    : parseFloat(customTip) || 0;
   const grandTotal = total + computedTip;
 
   useEffect(() => {
@@ -101,6 +114,7 @@ export default function CashierPage() {
     setPaymentType(null); setShowPaymentSelect(false);
     setShowCustomerScreen(false); setPendingPaymentType(null);
     setTipAmount(0); setCustomTip(''); setSelectedTipPct(null);
+    setAppliedDiscount(null);
   };
 
   const openModal = (item: MenuItem) => {
@@ -161,7 +175,6 @@ export default function CashierPage() {
 
   const addQty = (key: string) => setOrder(prev => prev.map(o => o.key === key ? { ...o, qty: o.qty + 1 } : o));
 
-  // Cashier selects payment type → show customer screen
   const selectPaymentType = (type: string) => {
     setPendingPaymentType(type);
     setShowPaymentSelect(false);
@@ -170,7 +183,6 @@ export default function CashierPage() {
     setShowCustomerScreen(true);
   };
 
-  // Customer confirms tip → submit order
   const handlePayment = async () => {
     if (order.length === 0 || isSubmitting || !pendingPaymentType) return;
     setIsSubmitting(true);
@@ -249,6 +261,7 @@ export default function CashierPage() {
             </span>
           )}
         </div>
+
         <div style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
           {order.length === 0 ? (
             <p style={{ color: '#666', textAlign: 'center', marginTop: '40px' }}>No items added yet</p>
@@ -277,10 +290,18 @@ export default function CashierPage() {
             ))
           )}
         </div>
+
+        {/* Totals and payment */}
         <div style={{ padding: '16px 20px', borderTop: '2px solid #333', backgroundColor: '#0f3460' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: '#aaa', marginBottom: '6px' }}>
             <span>Subtotal</span><span>${subtotal.toFixed(2)}</span>
           </div>
+          {appliedDiscount && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#2ecc71', marginBottom: '6px', fontSize: '0.9rem' }}>
+              <span>{appliedDiscount.label} ({appliedDiscount.pct}% off)</span>
+              <span>−${discountAmt.toFixed(2)}</span>
+            </div>
+          )}
           <div style={{ display: 'flex', justifyContent: 'space-between', color: '#aaa', marginBottom: '10px' }}>
             <span>Tax (8.25%)</span><span>${tax.toFixed(2)}</span>
           </div>
@@ -295,16 +316,27 @@ export default function CashierPage() {
             }}>
               {isSubmitting ? 'Submitting...' : '💳 Process Payment'}
             </button>
-            <button onClick={() => order.length > 0 && setShowVoidConfirm(true)} disabled={order.length === 0} style={{
-              padding: '12px', backgroundColor: order.length === 0 ? '#333' : '#e94560',
-              color: '#fff', border: 'none', borderRadius: '10px', fontSize: '1rem',
-              cursor: order.length === 0 ? 'not-allowed' : 'pointer',
-            }}>🗑 Void Order</button>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button onClick={() => order.length > 0 && setShowDiscountModal(true)} disabled={order.length === 0} style={{
+                flex: 1, padding: '12px',
+                backgroundColor: appliedDiscount ? '#1a4a2e' : order.length === 0 ? '#333' : '#0f3460',
+                color: appliedDiscount ? '#2ecc71' : order.length === 0 ? '#666' : '#fff',
+                border: appliedDiscount ? '2px solid #2ecc71' : '2px solid #333',
+                borderRadius: '10px', fontSize: '0.9rem', cursor: order.length === 0 ? 'not-allowed' : 'pointer', fontWeight: 'bold',
+              }}>
+                {appliedDiscount ? `✅ ${appliedDiscount.pct}% Off` : '🏷️ Discount'}
+              </button>
+              <button onClick={() => order.length > 0 && setShowVoidConfirm(true)} disabled={order.length === 0} style={{
+                flex: 1, padding: '12px', backgroundColor: order.length === 0 ? '#333' : '#e94560',
+                color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.9rem',
+                cursor: order.length === 0 ? 'not-allowed' : 'pointer', fontWeight: 'bold',
+              }}>🗑 Void Order</button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* TRANSACTION COMPLETE full-screen overlay */}
+      {/* TRANSACTION COMPLETE */}
       {paid && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: '#0f3460', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 300 }}>
           <div style={{ fontSize: '5rem', marginBottom: '24px' }}>✅</div>
@@ -313,6 +345,7 @@ export default function CashierPage() {
           <div style={{ color: '#aaa', fontSize: '1rem', marginTop: '12px' }}>
             {paymentType === 'cash' ? '💵 Cash' : paymentType === 'card' ? '💳 Card' : '📱 Mobile Pay'}
             {tipAmount > 0 && <span> · Tip: ${tipAmount.toFixed(2)}</span>}
+            {appliedDiscount && <span> · {appliedDiscount.label}</span>}
           </div>
           <p style={{ color: '#aaa', fontSize: '1rem', marginTop: '32px' }}>Returning to cashier...</p>
         </div>
@@ -353,7 +386,6 @@ export default function CashierPage() {
           <h1 style={{ color: '#e94560', fontSize: '2rem', marginBottom: '8px' }}>🧋 Review Your Order</h1>
           <p style={{ color: '#aaa', marginBottom: '28px', fontSize: '1rem' }}>Please review and select a tip</p>
 
-          {/* Order summary */}
           <div style={{ width: '100%', maxWidth: '500px', backgroundColor: '#16213e', borderRadius: '16px', padding: '20px', marginBottom: '28px', maxHeight: '240px', overflowY: 'auto' }}>
             {order.map(o => (
               <div key={o.key} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #0f3460' }}>
@@ -368,6 +400,12 @@ export default function CashierPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', color: '#aaa', marginTop: '10px', fontSize: '0.9rem' }}>
               <span>Subtotal</span><span>${subtotal.toFixed(2)}</span>
             </div>
+            {appliedDiscount && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#2ecc71', fontSize: '0.9rem' }}>
+                <span>{appliedDiscount.label} ({appliedDiscount.pct}% off)</span>
+                <span>−${discountAmt.toFixed(2)}</span>
+              </div>
+            )}
             <div style={{ display: 'flex', justifyContent: 'space-between', color: '#aaa', fontSize: '0.9rem' }}>
               <span>Tax (8.25%)</span><span>${tax.toFixed(2)}</span>
             </div>
@@ -376,7 +414,6 @@ export default function CashierPage() {
             </div>
           </div>
 
-          {/* Tip selection */}
           <div style={{ width: '100%', maxWidth: '500px' }}>
             <h2 style={{ color: '#fff', textAlign: 'center', marginBottom: '16px', fontSize: '1.3rem' }}>Add a Tip?</h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '16px' }}>
@@ -394,7 +431,8 @@ export default function CashierPage() {
                 );
               })}
               <button onClick={() => { setSelectedTipPct(null); setCustomTip('0'); }} style={{
-                padding: '20px 8px', borderRadius: '14px', border: `3px solid ${selectedTipPct === null && customTip === '0' ? '#e94560' : '#333'}`,
+                padding: '20px 8px', borderRadius: '14px',
+                border: `3px solid ${selectedTipPct === null && customTip === '0' ? '#e94560' : '#333'}`,
                 backgroundColor: selectedTipPct === null && customTip === '0' ? '#3a1a1a' : '#16213e',
                 color: '#aaa', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer',
               }}>No Tip</button>
@@ -407,11 +445,11 @@ export default function CashierPage() {
                 style={{ flex: 1, padding: '14px', backgroundColor: '#16213e', color: '#fff', border: '2px solid #333', borderRadius: '10px', fontSize: '1rem', outline: 'none' }}
               />
             </div>
-            <div style={{ backgroundColor: '#16213e', borderRadius: '12px', padding: '14px 20px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: '#aaa', fontSize: '1rem' }}>Tip</span>
-              <span style={{ color: '#2ecc71', fontWeight: 'bold', fontSize: '1.1rem' }}>${computedTip.toFixed(2)}</span>
+            <div style={{ backgroundColor: '#16213e', borderRadius: '12px', padding: '14px 20px', marginBottom: '12px', display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: '#aaa' }}>Tip</span>
+              <span style={{ color: '#2ecc71', fontWeight: 'bold' }}>${computedTip.toFixed(2)}</span>
             </div>
-            <div style={{ backgroundColor: '#0f3460', borderRadius: '12px', padding: '14px 20px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ backgroundColor: '#0f3460', borderRadius: '12px', padding: '14px 20px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 'bold' }}>Grand Total</span>
               <span style={{ color: '#2ecc71', fontWeight: 'bold', fontSize: '1.4rem' }}>${grandTotal.toFixed(2)}</span>
             </div>
@@ -423,6 +461,45 @@ export default function CashierPage() {
               width: '100%', padding: '14px', backgroundColor: 'transparent', color: '#aaa',
               border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer', marginTop: '12px',
             }}>← Back</button>
+          </div>
+        </div>
+      )}
+
+      {/* DISCOUNT modal */}
+      {showDiscountModal && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200 }}>
+          <div style={{ backgroundColor: '#16213e', borderRadius: '16px', padding: '32px', width: '400px', border: '2px solid #2ecc71', textAlign: 'center' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '12px' }}>🏷️</div>
+            <h2 style={{ color: '#fff', margin: '0 0 8px' }}>Apply Discount</h2>
+            <p style={{ color: '#aaa', marginBottom: '24px' }}>Verify customer eligibility before applying</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+              {DISCOUNTS.map(d => {
+                const isActive = appliedDiscount?.pct === d.pct;
+                return (
+                  <button key={d.pct} onClick={() => { setAppliedDiscount(isActive ? null : d); setShowDiscountModal(false); }} style={{
+                    padding: '20px', backgroundColor: isActive ? '#1a4a2e' : '#0f3460', color: '#fff',
+                    border: `2px solid ${isActive ? '#2ecc71' : '#333'}`, borderRadius: '12px',
+                    fontSize: '1.1rem', fontWeight: 'bold', cursor: 'pointer', textAlign: 'left',
+                  }}>
+                    <div>{d.label}</div>
+                    <div style={{ color: '#2ecc71', fontSize: '0.9rem', marginTop: '4px' }}>
+                      {d.pct}% off · saves ${(subtotal * d.pct / 100).toFixed(2)}
+                      {isActive && ' ✅ Applied'}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            {appliedDiscount && (
+              <button onClick={() => { setAppliedDiscount(null); setShowDiscountModal(false); }} style={{
+                width: '100%', padding: '12px', backgroundColor: '#e94560', color: '#fff',
+                border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer', marginBottom: '10px', fontWeight: 'bold',
+              }}>Remove Discount</button>
+            )}
+            <button onClick={() => setShowDiscountModal(false)} style={{
+              width: '100%', padding: '12px', backgroundColor: '#333', color: '#aaa',
+              border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer',
+            }}>Cancel</button>
           </div>
         </div>
       )}
@@ -448,7 +525,6 @@ export default function CashierPage() {
           <div style={{ backgroundColor: '#16213e', borderRadius: '16px', padding: '28px', width: '420px', maxHeight: '85vh', overflowY: 'auto', border: '2px solid #0f3460' }}>
             <h2 style={{ color: '#fff', marginTop: 0 }}>{editingKey ? '✏️ Edit ' : ''}{modalItem.name}</h2>
             <p style={{ color: '#aaa', marginTop: '-12px' }}>Base price: ${modalItem.price.toFixed(2)}</p>
-
             {!isSnack && (
               <div style={{ marginBottom: '20px' }}>
                 <h3 style={{ color: '#e94560', marginBottom: '10px' }}>Sugar Level</h3>
@@ -464,7 +540,6 @@ export default function CashierPage() {
                 </div>
               </div>
             )}
-
             {!isSnack && (
               <div style={{ marginBottom: '20px' }}>
                 <h3 style={{ color: '#e94560', marginBottom: '10px' }}>Ice Level</h3>
@@ -480,7 +555,6 @@ export default function CashierPage() {
                 </div>
               </div>
             )}
-
             {!isSnack && (
               <div style={{ marginBottom: '24px' }}>
                 <h3 style={{ color: '#e94560', marginBottom: '10px' }}>Toppings (+$0.75 each)</h3>
@@ -499,7 +573,6 @@ export default function CashierPage() {
                 </div>
               </div>
             )}
-
             <div style={{ display: 'flex', gap: '10px' }}>
               <button onClick={() => setModalItem(null)} style={{ flex: 1, padding: '14px', backgroundColor: '#333', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer' }}>Cancel</button>
               <button onClick={confirmAdd} style={{ flex: 2, padding: '14px', backgroundColor: '#e94560', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer' }}>
