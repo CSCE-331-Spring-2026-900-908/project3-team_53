@@ -4,11 +4,10 @@ const path = require('path');
 // ------------------------------
 // CONFIGURATION
 // ------------------------------
-const START_ORDER_ID = 10493;
-const START_ORDER_ITEM_ID = 20447;
-const TARGET_REVENUE = 1250000;
-const WEEKS = 65;
-const PEAK_DAYS = 4;
+const START_ORDER_ID = 88123;
+const START_ORDER_ITEM_ID = 175512;
+const TARGET_REVENUE = 300000; 
+const TOTAL_DAYS = 60; 
 
 // Menu items (id, name, category, base_price)
 const MENU_ITEMS = [
@@ -82,22 +81,30 @@ let itemsCSV = "id,quantity,size,sugar_level,ice_level,toppings,item_price,order
 
 let totalRevenue = 0;
 
-// Pick 4 peak days
-const peakOffsets = new Set();
-while (peakOffsets.size < PEAK_DAYS) {
-  peakOffsets.add(randInt(0, WEEKS * 7 - 1));
-}
-const peakDays = [...peakOffsets];
+// Four specific spike dates
+const PEAK_DATES = new Set([
+  "2026-02-14",
+  "2026-03-17",
+  "2026-04-01",
+  "2026-04-05"
+]);
 
-const startDate = new Date();
-startDate.setDate(startDate.getDate() - WEEKS * 7);
+// Start AFTER your existing data
+const startDate = new Date("2026-02-08");
 
-for (let day = 0; day < WEEKS * 7; day++) {
+for (let day = 0; day < TOTAL_DAYS; day++) {
   const date = new Date(startDate);
   date.setDate(startDate.getDate() + day);
 
-  let ordersToday = randInt(120, 220);
-  if (peakDays.includes(day)) ordersToday = Math.floor(ordersToday * 2.5);
+  const dateStr = date.toISOString().split("T")[0];
+
+  let ordersToday;
+
+  if (PEAK_DATES.has(dateStr)) {
+    ordersToday = randInt(1000, 1200); // huge spike days
+  } else {
+    ordersToday = randInt(120, 220);
+  }
 
   for (let i = 0; i < ordersToday; i++) {
     if (totalRevenue >= TARGET_REVENUE) break;
@@ -123,15 +130,17 @@ for (let day = 0; day < WEEKS * 7; day++) {
       const ice = rand(ICE);
 
       const toppingCount = randInt(0, 2);
-      const toppingList = [];
-      for (let t = 0; t < toppingCount; t++) {
-        toppingList.push(rand(TOPPINGS));
+      const toppingSet = new Set();
+      while (toppingSet.size < toppingCount) {
+        toppingSet.add(rand(TOPPINGS));
       }
+      const toppingList = [...toppingSet];
 
       const itemPrice = menu.price + size.adj + toppingList.length * 0.50;
       orderTotal += itemPrice;
 
-      itemsCSV += `${orderItemId},1,${size.name},${sugar},${ice},"${JSON.stringify(toppingList)}",${itemPrice.toFixed(2)},${orderId},${menu.id}\n`;
+      const toppingsCSV = JSON.stringify(toppingList).replace(/"/g, '""');
+      itemsCSV += `${orderItemId},1,${size.name},${sugar},${ice},"${toppingsCSV}",${itemPrice.toFixed(2)},${orderId},${menu.id}\n`;
       orderItemId++;
     }
 
@@ -147,8 +156,8 @@ for (let day = 0; day < WEEKS * 7; day++) {
 // ------------------------------
 // WRITE FILES
 // ------------------------------
-fs.writeFileSync(path.join(__dirname, "orders.csv"), ordersCSV);
-fs.writeFileSync(path.join(__dirname, "order_items.csv"), itemsCSV);
+fs.writeFileSync(path.join(__dirname, "orders_2.csv"), ordersCSV);
+fs.writeFileSync(path.join(__dirname, "order_items_2.csv"), itemsCSV);
 
 console.log("CSV generation complete!");
 console.log("Total Revenue:", totalRevenue.toFixed(2));
