@@ -69,6 +69,8 @@ export default function CashierPage() {
   const [orderNumber, setOrderNumber] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showVoidConfirm, setShowVoidConfirm] = useState(false);
+  const [showPaymentSelect, setShowPaymentSelect] = useState(false);
+  const [paymentType, setPaymentType] = useState<string | null>(null);
 
   // Modal state
   const [modalItem, setModalItem] = useState<MenuItem | null>(null);
@@ -167,19 +169,20 @@ export default function CashierPage() {
     setOrder(prev => prev.map(o => o.key === key ? { ...o, qty: o.qty + 1 } : o));
   };
 
-  const clearOrder = () => { setOrder([]); setPaid(false); setOrderNumber(''); };
+  const clearOrder = () => { setOrder([]); setPaid(false); setOrderNumber(''); setPaymentType(null); setShowPaymentSelect(false); };
 
   const subtotal = order.reduce((sum, o) => sum + o.basePrice * o.qty, 0);
   const tax = subtotal * 0.0825;
   const total = subtotal + tax;
 
   // Submit order to backend, then show confirmation
-  const handlePayment = async () => {
+  const handlePayment = async (selectedPaymentType: string) => {
     if (order.length === 0 || isSubmitting) return;
     setIsSubmitting(true);
+    setShowPaymentSelect(false);
 
     const payload = {
-      order_type: 'cashier',
+      order_type: selectedPaymentType,
       total: parseFloat(total.toFixed(2)),
       items: order.flatMap(o =>
         Array.from({ length: o.qty }, () => ({
@@ -198,8 +201,9 @@ export default function CashierPage() {
       await Post('/api/orders', payload);
       const num = generateOrderNumber();
       setOrderNumber(num);
+      setPaymentType(selectedPaymentType);
       setPaid(true);
-      setTimeout(() => { setOrder([]); setPaid(false); setOrderNumber(''); }, 3000);
+      setTimeout(() => { setOrder([]); setPaid(false); setOrderNumber(''); setPaymentType(null); }, 3000);
     } catch (err) {
       console.error('Order failed:', err);
       alert('Failed to submit order. Please try again.');
@@ -324,7 +328,7 @@ export default function CashierPage() {
 
           {(
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <button onClick={handlePayment} disabled={order.length === 0 || isSubmitting} style={{
+              <button onClick={() => order.length > 0 && setShowPaymentSelect(true)} disabled={order.length === 0 || isSubmitting} style={{
                 padding: '16px',
                 backgroundColor: order.length === 0 || isSubmitting ? '#555' : '#2ecc71',
                 color: '#fff', border: 'none', borderRadius: '10px', fontSize: '1.1rem', fontWeight: 'bold',
@@ -357,7 +361,42 @@ export default function CashierPage() {
           <div style={{ color: '#fff', fontSize: '1.8rem', marginTop: '16px', letterSpacing: '4px', fontWeight: 'bold' }}>
             Order {orderNumber}
           </div>
+          {paymentType && (
+            <div style={{ color: '#aaa', fontSize: '1rem', marginTop: '12px' }}>
+              Paid via {paymentType === 'cash' ? '💵 Cash' : paymentType === 'card' ? '💳 Card' : '📱 Mobile Pay'}
+            </div>
+          )}
           <p style={{ color: '#aaa', fontSize: '1rem', marginTop: '32px' }}>Returning to cashier...</p>
+        </div>
+      )}
+
+      {/* PAYMENT TYPE selection modal */}
+      {showPaymentSelect && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200 }}>
+          <div style={{ backgroundColor: '#16213e', borderRadius: '16px', padding: '32px', width: '400px', border: '2px solid #0f3460', textAlign: 'center' }}>
+            <h2 style={{ color: '#fff', margin: '0 0 8px' }}>Select Payment Method</h2>
+            <p style={{ color: '#aaa', marginBottom: '28px' }}>Total: <strong style={{ color: '#2ecc71', fontSize: '1.2rem' }}>${total.toFixed(2)}</strong></p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+              {[
+                { type: 'card', label: '💳 Credit / Debit Card' },
+                { type: 'cash', label: '💵 Cash' },
+                { type: 'mobile', label: '📱 Mobile Pay' },
+              ].map(({ type, label }) => (
+                <button key={type} onClick={() => handlePayment(type)} style={{
+                  padding: '18px', backgroundColor: '#0f3460', color: '#fff',
+                  border: '2px solid #333', borderRadius: '12px', fontSize: '1.1rem',
+                  fontWeight: 'bold', cursor: 'pointer',
+                }}
+                  onMouseEnter={e => (e.currentTarget.style.borderColor = '#2ecc71')}
+                  onMouseLeave={e => (e.currentTarget.style.borderColor = '#333')}
+                >{label}</button>
+              ))}
+            </div>
+            <button onClick={() => setShowPaymentSelect(false)} style={{
+              width: '100%', padding: '12px', backgroundColor: '#333', color: '#aaa',
+              border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer',
+            }}>Cancel</button>
+          </div>
         </div>
       )}
 
