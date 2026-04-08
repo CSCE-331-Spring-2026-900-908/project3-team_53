@@ -1,32 +1,14 @@
-import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOptionsWhere } from 'typeorm';
 import { Employee } from './employees.entity';
 
-const SEED_EMPLOYEES: Partial<Employee>[] = [
-  { name: 'Alice Johnson', role: 'Manager', shift: 'Morning', isWorking: true, wage: 22.5 },
-  { name: 'Bryan Lee', role: 'Barista', shift: 'Afternoon', isWorking: false, wage: 15.0 },
-  { name: 'Camila Davis', role: 'Cashier', shift: 'Evening', isWorking: true, wage: 14.75 },
-];
-
 @Injectable()
-export class EmployeesService implements OnModuleInit {
-  private readonly logger = new Logger(EmployeesService.name);
-
+export class EmployeesService {
   constructor(
     @InjectRepository(Employee)
     private readonly employeeRepo: Repository<Employee>,
   ) {}
-
-  async onModuleInit() {
-    const count = await this.employeeRepo.count();
-    if (count === 0) {
-      this.logger.log('Employees table is empty — seeding default employees...');
-      const employees = this.employeeRepo.create(SEED_EMPLOYEES);
-      await this.employeeRepo.save(employees);
-      this.logger.log(`Seeded ${employees.length} employees`);
-    }
-  }
 
   async findAll(role?: string): Promise<Employee[]> {
     const where: FindOptionsWhere<Employee> = {};

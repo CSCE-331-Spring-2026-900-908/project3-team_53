@@ -18,6 +18,8 @@ async function bootstrap() {
   const isVercelPreviewOrigin = (origin: string) =>
     /^https:\/\/project3-team-53(?:-[a-z0-9-]+)?\.vercel\.app$/i.test(origin);
 
+  app.setGlobalPrefix('api');
+
   app.enableCors({
     origin: (origin, callback) => {
       // Non-browser clients (no Origin header) should still be allowed.
