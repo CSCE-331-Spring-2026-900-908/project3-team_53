@@ -30,7 +30,7 @@ export default function OrderCard({ order, onComplete }: OrderProps) {
       </p>
 
       <ul>
-        {(order.items ?? []).map((item, index) => (
+        {order.items.map((item, index) => (
           <li key={index}>
             {item.name} x{item.quantity}
           </li>

@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { Post } from '@/utils/apiService';
 
 // Menu data with categories and items
 const MENU = [
@@ -66,6 +67,7 @@ export default function CashierPage() {
   const [order, setOrder] = useState<OrderItem[]>([]);
   const [paid, setPaid] = useState(false);
   const [orderNumber, setOrderNumber] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Modal state
   const [modalItem, setModalItem] = useState<MenuItem | null>(null);
@@ -137,13 +139,39 @@ export default function CashierPage() {
   const tax = subtotal * 0.0825;
   const total = subtotal + tax;
 
-  // Generate order number and show payment confirmation
-  const handlePayment = () => {
-    if (order.length === 0) return;
-    const num = generateOrderNumber();
-    setOrderNumber(num);
-    setPaid(true);
-    setTimeout(() => { setOrder([]); setPaid(false); setOrderNumber(''); }, 3000);
+  // Submit order to backend, then show confirmation
+  const handlePayment = async () => {
+    if (order.length === 0 || isSubmitting) return;
+    setIsSubmitting(true);
+
+    const payload = {
+      order_type: 'cashier',
+      total: parseFloat(total.toFixed(2)),
+      items: order.flatMap(o =>
+        Array.from({ length: o.qty }, () => ({
+          menuItemId: o.id,
+          quantity: 1,
+          size: 'Regular',
+          sugar_level: o.sugar,
+          ice_level: o.ice,
+          toppings: o.toppings.map(t => t.name),
+          item_price: parseFloat(o.basePrice.toFixed(2)),
+        }))
+      ),
+    };
+
+    try {
+      await Post('/api/orders', payload);
+      const num = generateOrderNumber();
+      setOrderNumber(num);
+      setPaid(true);
+      setTimeout(() => { setOrder([]); setPaid(false); setOrderNumber(''); }, 3000);
+    } catch (err) {
+      console.error('Order failed:', err);
+      alert('Failed to submit order. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -153,7 +181,7 @@ export default function CashierPage() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: '2px solid #333' }}>
         <div style={{ backgroundColor: '#16213e', padding: '16px 24px', borderBottom: '2px solid #333' }}>
           <h1 style={{ color: '#e94560', margin: 0, fontSize: '1.4rem', fontWeight: 'bold' }}>
-            🧋 Team 53 — Cashier POS
+            🧋 Team 53 – Cashier POS
           </h1>
         </div>
 
@@ -194,7 +222,6 @@ export default function CashierPage() {
         {/* Order header with item count badge */}
         <div style={{ padding: '16px 24px', borderBottom: '2px solid #333', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <h2 style={{ color: '#fff', margin: 0, fontSize: '1.2rem' }}>Current Order</h2>
-          {/* Badge showing total number of items in the order */}
           {order.length > 0 && (
             <span style={{
               backgroundColor: '#e94560',
@@ -258,7 +285,6 @@ export default function CashierPage() {
             <span>Total</span><span>${total.toFixed(2)}</span>
           </div>
 
-          {/* Show order number on successful payment */}
           {paid ? (
             <div style={{ backgroundColor: '#2ecc71', borderRadius: '10px', padding: '16px', textAlign: 'center', color: '#fff', fontWeight: 'bold', fontSize: '1.1rem' }}>
               ✅ Payment Complete!
@@ -268,12 +294,13 @@ export default function CashierPage() {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <button onClick={handlePayment} disabled={order.length === 0} style={{
-                padding: '16px', backgroundColor: order.length === 0 ? '#555' : '#2ecc71',
+              <button onClick={handlePayment} disabled={order.length === 0 || isSubmitting} style={{
+                padding: '16px',
+                backgroundColor: order.length === 0 || isSubmitting ? '#555' : '#2ecc71',
                 color: '#fff', border: 'none', borderRadius: '10px', fontSize: '1.1rem', fontWeight: 'bold',
-                cursor: order.length === 0 ? 'not-allowed' : 'pointer',
+                cursor: order.length === 0 || isSubmitting ? 'not-allowed' : 'pointer',
               }}>
-                💳 Process Payment
+                {isSubmitting ? 'Submitting...' : '💳 Process Payment'}
               </button>
               <button onClick={clearOrder} disabled={order.length === 0} style={{
                 padding: '12px', backgroundColor: order.length === 0 ? '#333' : '#e94560',
@@ -351,7 +378,7 @@ export default function CashierPage() {
                 flex: 2, padding: '14px', backgroundColor: '#e94560', color: '#fff',
                 border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer',
               }}>
-                Add to Order — ${(modalItem.price + selectedToppings.reduce((s, t) => s + t.price, 0)).toFixed(2)}
+                Add to Order – ${(modalItem.price + selectedToppings.reduce((s, t) => s + t.price, 0)).toFixed(2)}
               </button>
             </div>
           </div>
