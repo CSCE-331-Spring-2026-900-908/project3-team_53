@@ -1,12 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource, MoreThanOrEqual } from 'typeorm';
+import { Repository, DataSource, MoreThanOrEqual, QueryFailedError } from 'typeorm';
 import { Order, OrderItem } from './orders.entity';
 import { MenuItem } from '../menu-items/menu-item.entity';
 import { CreateOrderDto } from './create-order.dto';
 
 @Injectable()
 export class OrdersService {
+  private hasRetriedSequenceRepair = false;
+
   constructor(
     @InjectRepository(Order)
     private readonly orderRepo: Repository<Order>,
@@ -57,6 +59,17 @@ export class OrdersService {
       return result as Order;
     } catch (err) {
       await queryRunner.rollbackTransaction();
+
+      // If the DB sequence is behind existing rows, repair once and retry.
+      if (this.shouldRepairOrdersSequence(err) && !this.hasRetriedSequenceRepair) {
+        this.hasRetriedSequenceRepair = true;
+        await this.repairOrdersIdSequence();
+        try {
+          return await this.create(dto);
+        } finally {
+          this.hasRetriedSequenceRepair = false;
+        }
+      }
       throw err;
     } finally {
       await queryRunner.release();
@@ -128,5 +141,27 @@ export class OrdersService {
       avgWaitSeconds: Math.floor(totalWait / orders.length),
       longestWaitSeconds: longest,
     };
+  }
+
+  private shouldRepairOrdersSequence(err: unknown): boolean {
+    if (!(err instanceof QueryFailedError)) return false;
+    const driverError = (err as any).driverError as
+      | { code?: string; constraint?: string; table?: string }
+      | undefined;
+    return (
+      driverError?.code === '23505' &&
+      driverError?.table === 'orders' &&
+      driverError?.constraint?.startsWith('PK_') === true
+    );
+  }
+
+  private async repairOrdersIdSequence(): Promise<void> {
+    await this.dataSource.query(`
+      SELECT setval(
+        pg_get_serial_sequence('"orders"', 'id'),
+        COALESCE((SELECT MAX(id) FROM "orders"), 0) + 1,
+        false
+      );
+    `);
   }
 }
