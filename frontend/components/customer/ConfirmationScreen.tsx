@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { PlacedOrder } from '@/types/customer';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface ConfirmationScreenProps {
   order: PlacedOrder | null;
@@ -18,6 +19,7 @@ export default function ConfirmationScreen({
   order,
   onStartOver,
 }: ConfirmationScreenProps) {
+  const { t } = useTranslation();
   const [countdown, setCountdown] = useState(AUTO_RESET_SECONDS);
   const onStartOverRef = useRef(onStartOver);
   onStartOverRef.current = onStartOver;
@@ -55,7 +57,7 @@ export default function ConfirmationScreen({
       <Typography
         sx={{ color: '#2D3436', fontWeight: 700, fontSize: '2rem' }}
       >
-        Order Placed!
+        {t('Order Placed!')}
       </Typography>
 
       {order && (
@@ -69,8 +71,13 @@ export default function ConfirmationScreen({
             mt: 1,
           }}
         >
+          {order.customer_name && (
+            <Typography sx={{ color: '#2D3436', fontWeight: 700, fontSize: '1.25rem', mb: 2 }}>
+              {t('Order for:')} {order.customer_name}
+            </Typography>
+          )}
           <Typography sx={{ color: '#636E72', fontSize: '1rem', mb: 1 }}>
-            Your order number
+            {t('Your order number')}
           </Typography>
           <Typography
             sx={{ color: '#FF6B6B', fontWeight: 700, fontSize: '3.5rem', lineHeight: 1 }}
@@ -78,16 +85,32 @@ export default function ConfirmationScreen({
             #{order.id}
           </Typography>
           <Typography sx={{ color: '#636E72', fontSize: '1rem', mt: 2 }}>
-            Total: ${Number(order.total).toFixed(2)}
+            {t('Total')}: ${Number(order.total).toFixed(2)}
           </Typography>
+          {order.payment_type && (
+            <Typography sx={{ color: '#636E72', fontSize: '0.9rem', mt: 1.5 }}>
+              {t('Paid with')}{' '}
+              <Box component="span" sx={{ fontWeight: 700, color: '#2D3436' }}>
+                {order.payment_type === 'credit_card'
+                  ? t('Credit Card')
+                  : order.payment_type === 'cash'
+                    ? t('Cash')
+                    : t('Dining Dollars')}
+              </Box>
+            </Typography>
+          )}
+          {order.payment_type === 'cash' && order.change_due != null && order.change_due > 0 && (
+            <Typography sx={{ color: '#4ECDC4', fontWeight: 700, fontSize: '1.1rem', mt: 1 }}>
+              {t('Change')}: ${order.change_due.toFixed(2)}
+            </Typography>
+          )}
         </Box>
       )}
 
       <Typography
         sx={{ color: '#636E72', fontSize: '1.1rem', mt: 2, maxWidth: 400 }}
       >
-        Thank you! Your order is being prepared. Please wait for your number to
-        be called.
+        {t('Thank you! Your order is being prepared. Please wait for your number to be called.')}
       </Typography>
 
       <Button
@@ -107,11 +130,11 @@ export default function ConfirmationScreen({
           '&:hover': { bgcolor: '#ee5a5a', boxShadow: '0 6px 20px rgba(255,107,107,0.5)' },
         }}
       >
-        Start New Order
+        {t('Start New Order')}
       </Button>
 
       <Typography sx={{ color: '#b2bec3', fontSize: '0.85rem', mt: 2 }}>
-        Returning to start in {countdown} second{countdown !== 1 ? 's' : ''}...
+        {t('Returning to start in')} {countdown} {t(countdown !== 1 ? 'seconds' : 'second')}...
       </Typography>
     </Box>
   );

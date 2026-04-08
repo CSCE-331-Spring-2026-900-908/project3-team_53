@@ -9,6 +9,7 @@ import Box from '@mui/material/Box';
 import LocalCafeIcon from '@mui/icons-material/LocalCafe';
 import FastfoodIcon from '@mui/icons-material/Fastfood';
 import { MenuItem } from '@/types/customer';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface MenuItemCardProps {
   item: MenuItem;
@@ -16,6 +17,7 @@ interface MenuItemCardProps {
 }
 
 export default function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
+  const { t } = useTranslation();
   const isSnack = item.category === 'Snacks';
 
   return (
@@ -51,7 +53,7 @@ export default function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
           <Typography
             sx={{ fontWeight: 600, fontSize: '1rem', color: '#2D3436' }}
           >
-            {item.name}
+            {t(item.name)}
           </Typography>
           <Typography
             sx={{

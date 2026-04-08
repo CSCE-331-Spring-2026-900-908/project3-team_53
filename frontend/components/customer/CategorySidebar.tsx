@@ -3,6 +3,7 @@
 import React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface CategorySidebarProps {
   categories: string[];
@@ -15,6 +16,8 @@ export default function CategorySidebar({
   selected,
   onSelect,
 }: CategorySidebarProps) {
+  const { t } = useTranslation();
+
   return (
     <Box
       sx={{
@@ -48,7 +51,7 @@ export default function CategorySidebar({
             },
           }}
         >
-          {cat}
+          {t(cat)}
         </Button>
       ))}
     </Box>

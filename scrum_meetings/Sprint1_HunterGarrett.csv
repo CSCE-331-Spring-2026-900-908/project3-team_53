@@ -1,0 +1,9 @@
+Task,Story Points,Completed (y/n),Date Completed
+Set up local development environment and configure .env,1,y,2026-03-27
+Design sample Orders API structure,2,y,2026-03-27
+Build initial MVP of self-serve customer kiosk frontend,5,y,2026-03-27
+Connect kiosk frontend to backend with working order placement,5,y,2026-03-27
+Merge self-serve kiosk branch into main (PR #9),1,y,2026-03-27
+Implement kitchen display view with order tracking,5,y,2026-03-30
+Fix kitchen page issues after integration,2,y,2026-03-30
+Merge kitchen view branch into main (PR #23),1,y,2026-03-30

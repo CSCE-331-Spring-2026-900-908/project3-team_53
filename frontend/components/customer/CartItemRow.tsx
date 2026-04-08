@@ -8,6 +8,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { CartItem } from '@/types/customer';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface CartItemRowProps {
   item: CartItem;
@@ -20,11 +21,13 @@ export default function CartItemRow({
   onUpdateQuantity,
   onRemove,
 }: CartItemRowProps) {
+  const { t } = useTranslation();
+
   const customizations = [
-    item.size !== 'Regular' ? item.size : null,
-    item.sugarLevel !== '100%' ? `${item.sugarLevel} sugar` : null,
-    item.iceLevel !== 'Regular' ? item.iceLevel : null,
-    ...item.toppings,
+    item.size !== 'Regular' ? t(item.size) : null,
+    item.sugarLevel !== '100%' ? `${t(item.sugarLevel)} ${t('sugar')}` : null,
+    item.iceLevel !== 'Regular' ? t(item.iceLevel) : null,
+    ...item.toppings.map((tp) => t(tp)),
   ].filter(Boolean);
 
   return (
@@ -39,7 +42,7 @@ export default function CartItemRow({
     >
       <Box sx={{ flex: 1 }}>
         <Typography sx={{ color: '#FAF3E0', fontWeight: 600, fontSize: '1rem' }}>
-          {item.menuItem.name}
+          {t(item.menuItem.name)}
         </Typography>
         {customizations.length > 0 && (
           <Typography sx={{ color: '#b2bec3', fontSize: '0.8rem', mt: 0.5 }}>

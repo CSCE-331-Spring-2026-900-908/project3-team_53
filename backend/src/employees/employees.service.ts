@@ -4,9 +4,9 @@ import { Repository, FindOptionsWhere } from 'typeorm';
 import { Employee } from './employees.entity';
 
 const SEED_EMPLOYEES: Partial<Employee>[] = [
-  { name: 'Alice Johnson', role: 'Manager', email: 'alice.johnson@example.com', shift: 'Morning', isWorking: true, wage: 22.5 },
-  { name: 'Bryan Lee', role: 'Barista', email: 'bryan.lee@example.com', shift: 'Afternoon', isWorking: false, wage: 15.0 },
-  { name: 'Camila Davis', role: 'Cashier', email: 'camila.davis@example.com', shift: 'Evening', isWorking: true, wage: 14.75 },
+  { name: 'Alice Johnson', role: 'Manager', shift: 'Morning', isWorking: true, wage: 22.5 },
+  { name: 'Bryan Lee', role: 'Barista', shift: 'Afternoon', isWorking: false, wage: 15.0 },
+  { name: 'Camila Davis', role: 'Cashier', shift: 'Evening', isWorking: true, wage: 14.75 },
 ];
 
 @Injectable()

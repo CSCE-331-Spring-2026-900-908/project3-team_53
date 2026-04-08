@@ -11,19 +11,22 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import {
   MenuItem as MenuItemType,
   CartItem,
+  ToppingItem,
   OrderType,
   Size,
   SugarLevel,
   IceLevel,
-  Topping,
 } from '@/types/customer';
 import CategorySidebar from './CategorySidebar';
 import MenuItemCard from './MenuItemCard';
 import ItemCustomizationModal from './ItemCustomizationModal';
+import SnackAddModal from './SnackAddModal';
 import CartSidebar from './CartSidebar';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface MenuScreenProps {
   menuItems: MenuItemType[];
+  toppings: ToppingItem[];
   cart: CartItem[];
   cartTotal: number;
   orderType: OrderType;
@@ -33,7 +36,7 @@ interface MenuScreenProps {
     size: Size,
     sugarLevel: SugarLevel,
     iceLevel: IceLevel,
-    toppings: Topping[],
+    toppings: string[],
   ) => void;
   onUpdateQuantity: (cartId: string, quantity: number) => void;
   onRemoveFromCart: (cartId: string) => void;
@@ -43,6 +46,7 @@ interface MenuScreenProps {
 
 export default function MenuScreen({
   menuItems,
+  toppings,
   cart,
   cartTotal,
   orderType,
@@ -53,6 +57,8 @@ export default function MenuScreen({
   onCheckout,
   onBack,
 }: MenuScreenProps) {
+  const { t } = useTranslation();
+
   const categories = useMemo(() => {
     const cats = Array.from(new Set(menuItems.map((i) => i.category)));
     return cats.length > 0 ? cats : ['Milk Tea', 'Fruit Tea', 'Smoothies', 'Snacks'];
@@ -83,11 +89,11 @@ export default function MenuScreen({
           onClick={onBack}
           sx={{ color: '#FAF3E0', textTransform: 'none', fontSize: '1rem' }}
         >
-          Back
+          {t('Back')}
         </Button>
 
         <Typography sx={{ color: '#FAF3E0', fontWeight: 700, fontSize: '1.25rem' }}>
-          Build Your Order
+          {t('Build Your Order')}
         </Typography>
 
         <IconButton onClick={() => setCartOpen(true)} sx={{ color: '#FAF3E0' }}>
@@ -121,12 +127,12 @@ export default function MenuScreen({
           <Typography
             sx={{ color: '#2D3436', fontWeight: 700, fontSize: '1.5rem', mb: 2 }}
           >
-            {selectedCategory}
+            {t(selectedCategory)}
           </Typography>
 
           {filteredItems.length === 0 ? (
             <Typography sx={{ color: '#636E72', mt: 4, textAlign: 'center' }}>
-              No items available in this category yet.
+              {t('No items available in this category yet.')}
             </Typography>
           ) : (
             <Box
@@ -162,7 +168,7 @@ export default function MenuScreen({
           }}
         >
           <Typography sx={{ color: '#2D3436', fontSize: '1.1rem', fontWeight: 600 }}>
-            {cartCount} item{cartCount !== 1 ? 's' : ''} &middot; ${cartTotal.toFixed(2)}
+            {cartCount} {t(cartCount !== 1 ? 'items' : 'item')} &middot; ${cartTotal.toFixed(2)}
           </Typography>
           <Button
             variant="contained"
@@ -180,19 +186,33 @@ export default function MenuScreen({
               '&:hover': { bgcolor: '#ee5a5a' },
             }}
           >
-            View Cart
+            {t('View Cart')}
           </Button>
         </Box>
       )}
 
-      {/* Customization modal */}
-      {customizingItem && (
+      {/* Customization modal -- drinks get full options, snacks get quantity only */}
+      {customizingItem && customizingItem.category !== 'Snacks' && (
         <ItemCustomizationModal
+          item={customizingItem}
+          toppings={toppings}
+          open={!!customizingItem}
+          onClose={() => setCustomizingItem(null)}
+          onAdd={(size, sugarLevel, iceLevel, selectedToppings) => {
+            onAddToCart(customizingItem, size, sugarLevel, iceLevel, selectedToppings);
+            setCustomizingItem(null);
+          }}
+        />
+      )}
+      {customizingItem && customizingItem.category === 'Snacks' && (
+        <SnackAddModal
           item={customizingItem}
           open={!!customizingItem}
           onClose={() => setCustomizingItem(null)}
-          onAdd={(size, sugarLevel, iceLevel, toppings) => {
-            onAddToCart(customizingItem, size, sugarLevel, iceLevel, toppings);
+          onAdd={(quantity) => {
+            for (let i = 0; i < quantity; i++) {
+              onAddToCart(customizingItem, 'Regular', '100%', 'Regular', []);
+            }
             setCustomizingItem(null);
           }}
         />

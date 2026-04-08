@@ -7,8 +7,9 @@ export interface MenuItem {
   available: boolean;
 }
 
-export type KioskStep = 'welcome' | 'menu' | 'checkout' | 'confirmation';
+export type KioskStep = 'welcome' | 'menu' | 'checkout' | 'payment' | 'confirmation';
 export type OrderType = 'dine_in' | 'carry_out';
+export type PaymentType = 'credit_card' | 'cash' | 'dining_dollars';
 
 export const SIZES = ['Small', 'Regular', 'Large'] as const;
 export type Size = (typeof SIZES)[number];
@@ -19,15 +20,13 @@ export type SugarLevel = (typeof SUGAR_LEVELS)[number];
 export const ICE_LEVELS = ['No Ice', 'Less Ice', 'Regular', 'Extra Ice'] as const;
 export type IceLevel = (typeof ICE_LEVELS)[number];
 
-export const TOPPING_OPTIONS = [
-  'Boba',
-  'Crystal Boba',
-  'Coconut Jelly',
-  'Aloe Vera',
-  'Pudding',
-  'Red Bean',
-] as const;
-export type Topping = (typeof TOPPING_OPTIONS)[number];
+export interface ToppingItem {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  available: boolean;
+}
 
 export interface CartItem {
   cartId: string;
@@ -36,7 +35,7 @@ export interface CartItem {
   size: Size;
   sugarLevel: SugarLevel;
   iceLevel: IceLevel;
-  toppings: Topping[];
+  toppings: string[];
 }
 
 export interface PlacedOrder {
@@ -44,5 +43,9 @@ export interface PlacedOrder {
   status: string;
   order_type: string;
   total: number;
+  payment_type?: string;
+  change_due?: number;
+  customer_name?: string;
+  customer_phone?: string;
   created_at: string;
 }

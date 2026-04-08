@@ -11,5 +11,8 @@ export class CreateOrderItemDto {
 export class CreateOrderDto {
   order_type: string;
   total: number;
+  payment_type?: string;
+  customer_name?: string;
+  customer_phone?: string;
   items: CreateOrderItemDto[];
 }

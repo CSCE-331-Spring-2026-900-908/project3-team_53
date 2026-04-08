@@ -1,0 +1,16 @@
+Task,Story Points,Completed (y/n),Date Completed
+Set up project repository with frontend and backend boilerplate,3,y,2026-03-25
+Configure NestJS backend with MUI frontend and Axios HTTP client,3,y,2026-03-25
+Write README with tech stack setup instructions and environment config,2,y,2026-03-25
+Create portal landing page with responsive card layout,3,y,2026-03-26
+Deploy frontend and backend to Vercel,3,y,2026-03-26
+Integrate PostgreSQL database into backend configuration,5,y,2026-03-26
+Add application branding icons and web manifest,1,y,2026-03-26
+Build Orders API endpoint (GET /orders),5,y,2026-03-27
+Implement createOrder endpoint and refactor OrdersController,5,y,2026-03-27
+Review and merge PRs #7 through #11,2,y,2026-03-28
+Resolve CORS issues for production deployment,5,y,2026-03-30
+Add Vercel configuration for dynamic CORS headers,3,y,2026-03-30
+Refactor components to handle null values in order and menu items,2,y,2026-03-30
+Refactor kitchen page API calls to use centralized apiService,2,y,2026-03-30
+Add TypeScript configuration for backend module paths,1,y,2026-03-30

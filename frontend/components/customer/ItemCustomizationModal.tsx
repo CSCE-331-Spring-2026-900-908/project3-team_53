@@ -14,51 +14,54 @@ import CloseIcon from '@mui/icons-material/Close';
 import LocalCafeIcon from '@mui/icons-material/LocalCafe';
 import {
   MenuItem,
+  ToppingItem,
   SIZES,
   SUGAR_LEVELS,
   ICE_LEVELS,
-  TOPPING_OPTIONS,
   Size,
   SugarLevel,
   IceLevel,
-  Topping,
 } from '@/types/customer';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface ItemCustomizationModalProps {
   item: MenuItem;
+  toppings: ToppingItem[];
   open: boolean;
   onClose: () => void;
   onAdd: (
     size: Size,
     sugarLevel: SugarLevel,
     iceLevel: IceLevel,
-    toppings: Topping[],
+    toppings: string[],
   ) => void;
 }
 
 export default function ItemCustomizationModal({
   item,
+  toppings: availableToppings,
   open,
   onClose,
   onAdd,
 }: ItemCustomizationModalProps) {
+  const { t } = useTranslation();
   const [size, setSize] = useState<Size>('Regular');
   const [sugarLevel, setSugarLevel] = useState<SugarLevel>('100%');
   const [iceLevel, setIceLevel] = useState<IceLevel>('Regular');
-  const [toppings, setToppings] = useState<Topping[]>([]);
+  const [selectedToppings, setSelectedToppings] = useState<string[]>([]);
 
-  const toggleTopping = (t: Topping) => {
-    setToppings((prev) =>
-      prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t],
+  const toggleTopping = (name: string) => {
+    setSelectedToppings((prev) =>
+      prev.includes(name) ? prev.filter((x) => x !== name) : [...prev, name],
     );
   };
 
   const handleAdd = () => {
-    onAdd(size, sugarLevel, iceLevel, toppings);
+    onAdd(size, sugarLevel, iceLevel, selectedToppings);
     setSize('Regular');
     setSugarLevel('100%');
     setIceLevel('Regular');
-    setToppings([]);
+    setSelectedToppings([]);
   };
 
   return (
@@ -80,7 +83,7 @@ export default function ItemCustomizationModal({
         }}
       >
         <Typography sx={{ fontWeight: 700, fontSize: '1.3rem', color: '#2D3436' }}>
-          Customize Your Drink
+          {t('Customize Your Drink')}
         </Typography>
         <IconButton onClick={onClose} size="small">
           <CloseIcon />
@@ -105,7 +108,7 @@ export default function ItemCustomizationModal({
           </Box>
           <Box>
             <Typography sx={{ fontWeight: 700, fontSize: '1.15rem', color: '#2D3436' }}>
-              {item.name}
+              {t(item.name)}
             </Typography>
             <Typography sx={{ color: '#FF6B6B', fontWeight: 700 }}>
               ${Number(item.price).toFixed(2)}
@@ -114,11 +117,11 @@ export default function ItemCustomizationModal({
         </Box>
 
         {/* Size */}
-        <OptionSection title="Size">
+        <OptionSection title={t('Size')}>
           {SIZES.map((s) => (
             <Chip
               key={s}
-              label={s}
+              label={t(s)}
               onClick={() => setSize(s)}
               sx={{
                 bgcolor: size === s ? '#4ECDC4' : '#FAF3E0',
@@ -132,11 +135,11 @@ export default function ItemCustomizationModal({
         </OptionSection>
 
         {/* Sugar level */}
-        <OptionSection title="Sugar Level">
+        <OptionSection title={t('Sugar Level')}>
           {SUGAR_LEVELS.map((s) => (
             <Chip
               key={s}
-              label={s}
+              label={t(s)}
               onClick={() => setSugarLevel(s)}
               sx={{
                 bgcolor: sugarLevel === s ? '#4ECDC4' : '#FAF3E0',
@@ -150,11 +153,11 @@ export default function ItemCustomizationModal({
         </OptionSection>
 
         {/* Ice level */}
-        <OptionSection title="Ice Level">
+        <OptionSection title={t('Ice Level')}>
           {ICE_LEVELS.map((i) => (
             <Chip
               key={i}
-              label={i}
+              label={t(i)}
               onClick={() => setIceLevel(i)}
               sx={{
                 bgcolor: iceLevel === i ? '#4ECDC4' : '#FAF3E0',
@@ -168,24 +171,26 @@ export default function ItemCustomizationModal({
         </OptionSection>
 
         {/* Toppings */}
-        <OptionSection title="Toppings">
-          {TOPPING_OPTIONS.map((t) => (
-            <Chip
-              key={t}
-              label={t}
-              onClick={() => toggleTopping(t)}
-              sx={{
-                bgcolor: toppings.includes(t) ? '#FF6B6B' : '#FAF3E0',
-                color: toppings.includes(t) ? '#fff' : '#636E72',
-                fontWeight: toppings.includes(t) ? 700 : 400,
-                border: toppings.includes(t) ? 'none' : '1px solid #e0d5c0',
-                '&:hover': {
-                  bgcolor: toppings.includes(t) ? '#ee5a5a' : '#f0e6d3',
-                },
-              }}
-            />
-          ))}
-        </OptionSection>
+        {availableToppings.length > 0 && (
+          <OptionSection title={t('Toppings')}>
+            {availableToppings.map((topping) => (
+              <Chip
+                key={topping.id}
+                label={`${t(topping.name)} +$${Number(topping.price).toFixed(2)}`}
+                onClick={() => toggleTopping(topping.name)}
+                sx={{
+                  bgcolor: selectedToppings.includes(topping.name) ? '#FF6B6B' : '#FAF3E0',
+                  color: selectedToppings.includes(topping.name) ? '#fff' : '#636E72',
+                  fontWeight: selectedToppings.includes(topping.name) ? 700 : 400,
+                  border: selectedToppings.includes(topping.name) ? 'none' : '1px solid #e0d5c0',
+                  '&:hover': {
+                    bgcolor: selectedToppings.includes(topping.name) ? '#ee5a5a' : '#f0e6d3',
+                  },
+                }}
+              />
+            ))}
+          </OptionSection>
+        )}
       </DialogContent>
 
       <DialogActions sx={{ px: 3, py: 2 }}>
@@ -193,7 +198,7 @@ export default function ItemCustomizationModal({
           onClick={onClose}
           sx={{ color: '#636E72', textTransform: 'none', fontSize: '1rem' }}
         >
-          Cancel
+          {t('Cancel')}
         </Button>
         <Button
           variant="contained"
@@ -210,7 +215,7 @@ export default function ItemCustomizationModal({
             '&:hover': { bgcolor: '#ee5a5a' },
           }}
         >
-          Add to Order
+          {t('Add to Order')}
         </Button>
       </DialogActions>
     </Dialog>

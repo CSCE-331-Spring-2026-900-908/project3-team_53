@@ -22,9 +22,17 @@ export class OrdersService {
       const order = queryRunner.manager.create(Order, {
         order_type: dto.order_type,
         total: dto.total,
+        payment_type: dto.payment_type ?? 'credit_card',
+        customer_name: dto.customer_name || null,
+        customer_phone: dto.customer_phone || null,
         status: 'pending',
       });
       const savedOrder = await queryRunner.manager.save(order);
+
+      if (!savedOrder.customer_name) {
+        savedOrder.customer_name = `Customer ${savedOrder.id}`;
+        await queryRunner.manager.save(savedOrder);
+      }
 
       const orderItems = dto.items.map((item) =>
         queryRunner.manager.create(OrderItem, {

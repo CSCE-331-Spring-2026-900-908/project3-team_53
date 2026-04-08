@@ -7,17 +7,21 @@ import {
   CartItem,
   KioskStep,
   OrderType,
+  PaymentType,
   PlacedOrder,
+  ToppingItem,
   Size,
   SugarLevel,
   IceLevel,
-  Topping,
 } from '@/types/customer';
 import { Get, Post } from '@/utils/apiService';
 import WelcomeScreen from '@/components/customer/WelcomeScreen';
 import MenuScreen from '@/components/customer/MenuScreen';
 import CheckoutScreen from '@/components/customer/CheckoutScreen';
 import ConfirmationScreen from '@/components/customer/ConfirmationScreen';
+import PaymentScreen from '@/components/customer/PaymentScreen';
+import { TranslationProvider } from '@/contexts/TranslationContext';
+import LanguageSelector from '@/components/customer/LanguageSelector';
 
 const FALLBACK_MENU: MenuItemType[] = [
   { id: 1, name: 'Classic Milk Tea', category: 'Milk Tea', price: 5.50, image: null, available: true },
@@ -40,6 +44,7 @@ export default function CustomerKiosk() {
   const [step, setStep] = useState<KioskStep>('welcome');
   const [orderType, setOrderType] = useState<OrderType>('dine_in');
   const [menuItems, setMenuItems] = useState<MenuItemType[]>(FALLBACK_MENU);
+  const [toppings, setToppings] = useState<ToppingItem[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [placedOrder, setPlacedOrder] = useState<PlacedOrder | null>(null);
 
@@ -50,9 +55,15 @@ export default function CustomerKiosk() {
           setMenuItems(data);
         }
       })
-      .catch(() => {
-        // Keep fallback data
-      });
+      .catch(() => {});
+
+    Get('/topping-items')
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setToppings(data.filter((t: ToppingItem) => t.category !== 'Size'));
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const handleSelectOrderType = (type: OrderType) => {
@@ -70,7 +81,7 @@ export default function CustomerKiosk() {
       size: Size,
       sugarLevel: SugarLevel,
       iceLevel: IceLevel,
-      toppings: Topping[],
+      toppings: string[],
     ) => {
       const cartItem: CartItem = {
         cartId: `${item.id}-${Date.now()}-${Math.random()}`,
@@ -105,10 +116,21 @@ export default function CustomerKiosk() {
     0,
   );
 
-  const handlePlaceOrder = async () => {
+  const tax = cartTotal * 0.0825;
+  const grandTotal = cartTotal + tax;
+
+  const handlePlaceOrder = async (
+    paymentType: PaymentType,
+    changeDue: number,
+    customerName: string,
+    customerPhone: string,
+  ) => {
     const payload = {
       order_type: orderType,
       total: cartTotal,
+      payment_type: paymentType,
+      customer_name: customerName || undefined,
+      customer_phone: customerPhone || undefined,
       items: cart.map((c) => ({
         menuItemId: c.menuItem.id,
         quantity: c.quantity,
@@ -122,14 +144,25 @@ export default function CustomerKiosk() {
 
     try {
       const order = await Post('/orders', payload);
-      setPlacedOrder(order);
+      setPlacedOrder({
+        ...order,
+        payment_type: paymentType,
+        change_due: changeDue,
+        customer_name: order.customer_name,
+        customer_phone: order.customer_phone,
+      });
       setStep('confirmation');
     } catch {
+      const fallbackId = Math.floor(Math.random() * 900) + 100;
       setPlacedOrder({
-        id: Math.floor(Math.random() * 900) + 100,
+        id: fallbackId,
         status: 'pending',
         order_type: orderType,
         total: cartTotal,
+        payment_type: paymentType,
+        change_due: changeDue,
+        customer_name: customerName || `Customer ${fallbackId}`,
+        customer_phone: customerPhone || undefined,
         created_at: new Date().toISOString(),
       });
       setStep('confirmation');
@@ -143,39 +176,50 @@ export default function CustomerKiosk() {
   };
 
   return (
-    <Box sx={{ height: '100vh', width: '100vw', overflow: 'hidden', bgcolor: '#FAF3E0' }}>
-      {step === 'welcome' && (
-        <WelcomeScreen onSelectOrderType={handleSelectOrderType} />
-      )}
-      {step === 'menu' && (
-        <MenuScreen
-          menuItems={menuItems}
-          cart={cart}
-          cartTotal={cartTotal}
-          orderType={orderType}
-          onToggleOrderType={toggleOrderType}
-          onAddToCart={addToCart}
-          onUpdateQuantity={updateCartQuantity}
-          onRemoveFromCart={removeFromCart}
-          onCheckout={() => setStep('checkout')}
-          onBack={() => setStep('welcome')}
-        />
-      )}
-      {step === 'checkout' && (
-        <CheckoutScreen
-          cart={cart}
-          cartTotal={cartTotal}
-          orderType={orderType}
-          onPlaceOrder={handlePlaceOrder}
-          onBack={() => setStep('menu')}
-        />
-      )}
-      {step === 'confirmation' && (
-        <ConfirmationScreen
-          order={placedOrder}
-          onStartOver={handleStartOver}
-        />
-      )}
-    </Box>
+    <TranslationProvider>
+      <Box sx={{ height: '100vh', width: '100vw', overflow: 'hidden', bgcolor: '#FAF3E0' }}>
+        {step === 'welcome' && (
+          <WelcomeScreen onSelectOrderType={handleSelectOrderType} />
+        )}
+        {step === 'menu' && (
+          <MenuScreen
+            menuItems={menuItems}
+            toppings={toppings}
+            cart={cart}
+            cartTotal={cartTotal}
+            orderType={orderType}
+            onToggleOrderType={toggleOrderType}
+            onAddToCart={addToCart}
+            onUpdateQuantity={updateCartQuantity}
+            onRemoveFromCart={removeFromCart}
+            onCheckout={() => setStep('checkout')}
+            onBack={() => setStep('welcome')}
+          />
+        )}
+        {step === 'checkout' && (
+          <CheckoutScreen
+            cart={cart}
+            cartTotal={cartTotal}
+            orderType={orderType}
+            onContinueToPayment={() => setStep('payment')}
+            onBack={() => setStep('menu')}
+          />
+        )}
+        {step === 'payment' && (
+          <PaymentScreen
+            grandTotal={grandTotal}
+            onPlaceOrder={handlePlaceOrder}
+            onBack={() => setStep('checkout')}
+          />
+        )}
+        {step === 'confirmation' && (
+          <ConfirmationScreen
+            order={placedOrder}
+            onStartOver={handleStartOver}
+          />
+        )}
+        <LanguageSelector />
+      </Box>
+    </TranslationProvider>
   );
 }

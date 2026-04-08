@@ -7,12 +7,13 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { CartItem, OrderType } from '@/types/customer';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface CheckoutScreenProps {
   cart: CartItem[];
   cartTotal: number;
   orderType: OrderType;
-  onPlaceOrder: () => void;
+  onContinueToPayment: () => void;
   onBack: () => void;
 }
 
@@ -20,9 +21,10 @@ export default function CheckoutScreen({
   cart,
   cartTotal,
   orderType,
-  onPlaceOrder,
+  onContinueToPayment,
   onBack,
 }: CheckoutScreenProps) {
+  const { t } = useTranslation();
   const tax = cartTotal * 0.0825;
   const grandTotal = cartTotal + tax;
 
@@ -50,7 +52,7 @@ export default function CheckoutScreen({
           onClick={onBack}
           sx={{ color: '#FAF3E0', textTransform: 'none', fontSize: '1rem' }}
         >
-          Back to Menu
+          {t('Back to Menu')}
         </Button>
       </Box>
 
@@ -69,7 +71,7 @@ export default function CheckoutScreen({
           <Typography
             sx={{ color: '#2D3436', fontWeight: 700, fontSize: '1.75rem', mb: 1 }}
           >
-            Order Summary
+            {t('Order Summary')}
           </Typography>
           <Box
             sx={{
@@ -84,7 +86,7 @@ export default function CheckoutScreen({
               mb: 3,
             }}
           >
-            {orderType === 'dine_in' ? 'Dine In' : 'Carry Out'}
+            {orderType === 'dine_in' ? t('Dine In') : t('Carry Out')}
           </Box>
 
           {cart.map((item) => {
@@ -108,11 +110,11 @@ export default function CheckoutScreen({
               >
                 <Box>
                   <Typography sx={{ color: '#2D3436', fontWeight: 600 }}>
-                    {item.quantity}x {item.menuItem.name}
+                    {item.quantity}x {t(item.menuItem.name)}
                   </Typography>
                   {customizations.length > 0 && (
                     <Typography sx={{ color: '#636E72', fontSize: '0.8rem', mt: 0.25 }}>
-                      {customizations.join(' · ')}
+                      {customizations.map((c) => t(c as string)).join(' · ')}
                     </Typography>
                   )}
                 </Box>
@@ -126,11 +128,11 @@ export default function CheckoutScreen({
           <Divider sx={{ borderColor: '#e0d5c0', my: 2 }} />
 
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-            <Typography sx={{ color: '#636E72' }}>Subtotal</Typography>
+            <Typography sx={{ color: '#636E72' }}>{t('Subtotal')}</Typography>
             <Typography sx={{ color: '#2D3436' }}>${cartTotal.toFixed(2)}</Typography>
           </Box>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-            <Typography sx={{ color: '#636E72' }}>Tax (8.25%)</Typography>
+            <Typography sx={{ color: '#636E72' }}>{t('Tax')} (8.25%)</Typography>
             <Typography sx={{ color: '#2D3436' }}>${tax.toFixed(2)}</Typography>
           </Box>
 
@@ -138,7 +140,7 @@ export default function CheckoutScreen({
 
           <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
             <Typography sx={{ color: '#2D3436', fontWeight: 700, fontSize: '1.25rem' }}>
-              Total
+              {t('Total')}
             </Typography>
             <Typography sx={{ color: '#FF6B6B', fontWeight: 700, fontSize: '1.25rem' }}>
               ${grandTotal.toFixed(2)}
@@ -160,7 +162,7 @@ export default function CheckoutScreen({
       >
         <Button
           variant="contained"
-          onClick={onPlaceOrder}
+          onClick={onContinueToPayment}
           sx={{
             bgcolor: '#FF6B6B',
             color: '#fff',
@@ -175,7 +177,7 @@ export default function CheckoutScreen({
             '&:hover': { bgcolor: '#ee5a5a', boxShadow: '0 6px 20px rgba(255,107,107,0.5)' },
           }}
         >
-          Place Order
+          {t('Continue to Payment')}
         </Button>
       </Box>
     </Box>
