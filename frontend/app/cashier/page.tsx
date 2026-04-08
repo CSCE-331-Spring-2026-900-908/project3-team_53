@@ -291,14 +291,7 @@ export default function CashierPage() {
             <span>Total</span><span>${total.toFixed(2)}</span>
           </div>
 
-          {paid ? (
-            <div style={{ backgroundColor: '#2ecc71', borderRadius: '10px', padding: '16px', textAlign: 'center', color: '#fff', fontWeight: 'bold', fontSize: '1.1rem' }}>
-              ✅ Payment Complete!
-              <div style={{ fontSize: '1.4rem', marginTop: '8px', letterSpacing: '2px' }}>
-                Order {orderNumber}
-              </div>
-            </div>
-          ) : (
+          {(
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <button onClick={handlePayment} disabled={order.length === 0 || isSubmitting} style={{
                 padding: '16px',
@@ -317,8 +310,25 @@ export default function CashierPage() {
               </button>
             </div>
           )}
+
         </div>
       </div>
+
+      {/* FULL SCREEN: Transaction complete overlay */}
+      {paid && (
+        <div style={{
+          position: 'fixed', inset: 0, backgroundColor: '#0f3460',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          zIndex: 200, animation: 'fadeIn 0.3s ease',
+        }}>
+          <div style={{ fontSize: '5rem', marginBottom: '24px' }}>✅</div>
+          <h1 style={{ color: '#2ecc71', fontSize: '2.5rem', margin: 0, fontWeight: 'bold' }}>Transaction Complete</h1>
+          <div style={{ color: '#fff', fontSize: '1.8rem', marginTop: '16px', letterSpacing: '4px', fontWeight: 'bold' }}>
+            Order {orderNumber}
+          </div>
+          <p style={{ color: '#aaa', fontSize: '1rem', marginTop: '32px' }}>Returning to cashier...</p>
+        </div>
+      )}
 
       {/* MODAL: Drink customization popup */}
       {modalItem && (
