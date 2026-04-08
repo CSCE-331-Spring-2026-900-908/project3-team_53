@@ -1,48 +1,18 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Post } from '@/utils/apiService';
-
-const MENU = [
-  { category: 'Milk Tea', items: [
-    { id: 1, name: 'Classic Milk Tea', price: 5.50 },
-    { id: 2, name: 'Taro Milk Tea', price: 6.00 },
-    { id: 3, name: 'Brown Sugar Milk Tea', price: 6.50 },
-    { id: 4, name: 'Jasmine Milk Tea', price: 5.75 },
-  ]},
-  { category: 'Fruit Tea', items: [
-    { id: 5, name: 'Strawberry Fruit Tea', price: 5.50 },
-    { id: 6, name: 'Mango Fruit Tea', price: 5.75 },
-    { id: 7, name: 'Passion Fruit Tea', price: 6.00 },
-    { id: 8, name: 'Lychee Fruit Tea', price: 5.50 },
-  ]},
-  { category: 'Smoothies', items: [
-    { id: 9, name: 'Taro Smoothie', price: 6.50 },
-    { id: 10, name: 'Mango Smoothie', price: 6.50 },
-    { id: 11, name: 'Strawberry Smoothie', price: 6.75 },
-  ]},
-  { category: 'Snacks', items: [
-    { id: 12, name: 'Egg Waffle', price: 4.00 },
-    { id: 13, name: 'Popcorn Chicken', price: 5.00 },
-  ]},
-];
+import { Get, Post } from '@/utils/apiService';
 
 const SUGAR_LEVELS = ['0%', '25%', '50%', '75%', '100%'];
 const ICE_LEVELS = ['No Ice', 'Less Ice', 'Regular Ice', 'Extra Ice'];
-const TOPPINGS = [
-  { name: 'Boba Pearls', price: 0.75 },
-  { name: 'Pudding', price: 0.75 },
-  { name: 'Lychee Jelly', price: 0.75 },
-  { name: 'Grass Jelly', price: 0.75 },
-  { name: 'Aloe Vera', price: 0.75 },
-  { name: 'Red Bean', price: 0.75 },
-];
 
 const DISCOUNTS = [
   { label: '🎓 Student ID', pct: 15 },
   { label: '🎖️ Military / Fire / Police', pct: 25 },
 ];
 
-type Topping = { name: string; price: number };
+type Topping = { id: number; name: string; price: number };
+type MenuItem = { id: number; name: string; category: string; price: number; available: boolean };
+type MenuCategory = { category: string; items: MenuItem[] };
 type OrderItem = {
   id: number;
   name: string;
@@ -52,8 +22,8 @@ type OrderItem = {
   toppings: Topping[];
   qty: number;
   key: string;
+  isSnack: boolean;
 };
-type MenuItem = { id: number; name: string; price: number };
 
 function generateOrderNumber(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -63,7 +33,12 @@ function generateOrderNumber(): string {
 }
 
 export default function CashierPage() {
-  const [activeCategory, setActiveCategory] = useState('Milk Tea');
+  // Menu data from DB
+  const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([]);
+  const [toppings, setToppings] = useState<Topping[]>([]);
+  const [loadingMenu, setLoadingMenu] = useState(true);
+
+  const [activeCategory, setActiveCategory] = useState('');
   const [order, setOrder] = useState<OrderItem[]>([]);
   const [paid, setPaid] = useState(false);
   const [orderNumber, setOrderNumber] = useState('');
@@ -90,8 +65,46 @@ export default function CashierPage() {
   const [selectedToppings, setSelectedToppings] = useState<Topping[]>([]);
   const [editingKey, setEditingKey] = useState<string | null>(null);
 
-  const currentItems = MENU.find(m => m.category === activeCategory)?.items ?? [];
-  const isSnack = MENU.find(m => m.category === 'Snacks')?.items.some(i => i.id === modalItem?.id) ?? false;
+  // Fetch menu items and toppings on load
+  useEffect(() => {
+    const fetchMenu = async () => {
+      try {
+        const [items, tops] = await Promise.all([
+          Get('/api/menu-items'),
+          Get('/api/topping-items'),
+        ]);
+
+        // Group menu items by category
+        const grouped: Record<string, MenuItem[]> = {};
+        items.filter((i: any) => i.available).forEach((item: any) => {
+          const cat = item.category || 'Other';
+          if (!grouped[cat]) grouped[cat] = [];
+          grouped[cat].push({ id: item.id, name: item.name, category: item.category, price: parseFloat(item.price), available: item.available });
+        });
+        const categories = Object.entries(grouped).map(([category, items]) => ({ category, items }));
+        setMenuCategories(categories);
+        if (categories.length > 0) setActiveCategory(categories[0].category);
+
+        setToppings(tops.filter((t: any) => t.available).map((t: any) => ({
+          id: t.id, name: t.name, price: parseFloat(t.price),
+        })));
+      } catch (err) {
+        console.error('Failed to load menu:', err);
+      } finally {
+        setLoadingMenu(false);
+      }
+    };
+    fetchMenu();
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => { if (e.key === 'Escape') setModalItem(null); };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const currentItems = menuCategories.find(m => m.category === activeCategory)?.items ?? [];
+  const isSnack = modalItem?.category?.toLowerCase() === 'snack' || modalItem?.category?.toLowerCase() === 'snacks';
 
   const subtotal = order.reduce((sum, o) => sum + o.basePrice * o.qty, 0);
   const discountAmt = appliedDiscount ? parseFloat((subtotal * appliedDiscount.pct / 100).toFixed(2)) : 0;
@@ -102,12 +115,6 @@ export default function CashierPage() {
     ? parseFloat((total * selectedTipPct / 100).toFixed(2))
     : parseFloat(customTip) || 0;
   const grandTotal = total + computedTip;
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => { if (e.key === 'Escape') setModalItem(null); };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
   const clearOrder = () => {
     setOrder([]); setPaid(false); setOrderNumber('');
@@ -123,7 +130,7 @@ export default function CashierPage() {
   };
 
   const openEditModal = (orderItem: OrderItem) => {
-    const menuItem = MENU.flatMap(m => m.items).find(i => i.id === orderItem.id);
+    const menuItem = menuCategories.flatMap(m => m.items).find(i => i.id === orderItem.id);
     if (!menuItem) return;
     setModalItem(menuItem);
     setSugar(orderItem.sugar === 'N/A' ? '100%' : orderItem.sugar);
@@ -134,8 +141,8 @@ export default function CashierPage() {
 
   const toggleTopping = (topping: Topping) => {
     setSelectedToppings(prev =>
-      prev.find(t => t.name === topping.name)
-        ? prev.filter(t => t.name !== topping.name)
+      prev.find(t => t.id === topping.id)
+        ? prev.filter(t => t.id !== topping.id)
         : [...prev, topping]
     );
   };
@@ -143,11 +150,14 @@ export default function CashierPage() {
   const confirmAdd = () => {
     if (!modalItem) return;
     const toppingTotal = selectedToppings.reduce((s, t) => s + t.price, 0);
-    const newKey = `${modalItem.id}-${sugar}-${ice}-${selectedToppings.map(t => t.name).join(',')}`;
+    const newKey = `${modalItem.id}-${sugar}-${ice}-${selectedToppings.map(t => t.id).join(',')}`;
+    const itemIsSnack = modalItem.category?.toLowerCase() === 'snack' || modalItem.category?.toLowerCase() === 'snacks';
+
     if (editingKey) {
       setOrder(prev => prev.map(o => o.key !== editingKey ? o : {
         ...o, basePrice: modalItem.price + toppingTotal,
-        sugar: isSnack ? 'N/A' : sugar, ice: isSnack ? 'N/A' : ice,
+        sugar: itemIsSnack ? 'N/A' : sugar,
+        ice: itemIsSnack ? 'N/A' : ice,
         toppings: selectedToppings, key: newKey,
       }));
     } else {
@@ -157,8 +167,10 @@ export default function CashierPage() {
         return [...prev, {
           id: modalItem.id, name: modalItem.name,
           basePrice: modalItem.price + toppingTotal,
-          sugar: isSnack ? 'N/A' : sugar, ice: isSnack ? 'N/A' : ice,
+          sugar: itemIsSnack ? 'N/A' : sugar,
+          ice: itemIsSnack ? 'N/A' : ice,
           toppings: selectedToppings, qty: 1, key: newKey,
+          isSnack: itemIsSnack,
         }];
       });
     }
@@ -217,6 +229,15 @@ export default function CashierPage() {
     }
   };
 
+  if (loadingMenu) {
+    return (
+      <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center', backgroundColor: '#1a1a2e', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ color: '#e94560', fontSize: '3rem' }}>🧋</div>
+        <div style={{ color: '#fff', fontSize: '1.2rem' }}>Loading menu...</div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: 'flex', height: '100vh', fontFamily: 'Arial, sans-serif', backgroundColor: '#1a1a2e', overflow: 'hidden' }}>
 
@@ -225,10 +246,10 @@ export default function CashierPage() {
         <div style={{ backgroundColor: '#16213e', padding: '16px 24px', borderBottom: '2px solid #333' }}>
           <h1 style={{ color: '#e94560', margin: 0, fontSize: '1.4rem', fontWeight: 'bold' }}>🧋 Team 53 – Cashier POS</h1>
         </div>
-        <div style={{ display: 'flex', backgroundColor: '#16213e', borderBottom: '2px solid #333' }}>
-          {MENU.map(m => (
+        <div style={{ display: 'flex', backgroundColor: '#16213e', borderBottom: '2px solid #333', overflowX: 'auto' }}>
+          {menuCategories.map(m => (
             <button key={m.category} onClick={() => setActiveCategory(m.category)} style={{
-              flex: 1, padding: '14px 8px', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold',
+              flex: '0 0 auto', padding: '14px 16px', border: 'none', cursor: 'pointer', fontSize: '0.95rem', fontWeight: 'bold', whiteSpace: 'nowrap',
               backgroundColor: activeCategory === m.category ? '#e94560' : 'transparent',
               color: activeCategory === m.category ? '#fff' : '#aaa',
               borderBottom: activeCategory === m.category ? '3px solid #fff' : '3px solid transparent',
@@ -261,7 +282,6 @@ export default function CashierPage() {
             </span>
           )}
         </div>
-
         <div style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
           {order.length === 0 ? (
             <p style={{ color: '#666', textAlign: 'center', marginTop: '40px' }}>No items added yet</p>
@@ -290,8 +310,6 @@ export default function CashierPage() {
             ))
           )}
         </div>
-
-        {/* Totals and payment */}
         <div style={{ padding: '16px 20px', borderTop: '2px solid #333', backgroundColor: '#0f3460' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', color: '#aaa', marginBottom: '6px' }}>
             <span>Subtotal</span><span>${subtotal.toFixed(2)}</span>
@@ -313,9 +331,7 @@ export default function CashierPage() {
               padding: '16px', backgroundColor: order.length === 0 || isSubmitting ? '#555' : '#2ecc71',
               color: '#fff', border: 'none', borderRadius: '10px', fontSize: '1.1rem', fontWeight: 'bold',
               cursor: order.length === 0 || isSubmitting ? 'not-allowed' : 'pointer',
-            }}>
-              {isSubmitting ? 'Submitting...' : '💳 Process Payment'}
-            </button>
+            }}>{isSubmitting ? 'Submitting...' : '💳 Process Payment'}</button>
             <div style={{ display: 'flex', gap: '8px' }}>
               <button onClick={() => order.length > 0 && setShowDiscountModal(true)} disabled={order.length === 0} style={{
                 flex: 1, padding: '12px',
@@ -323,9 +339,7 @@ export default function CashierPage() {
                 color: appliedDiscount ? '#2ecc71' : order.length === 0 ? '#666' : '#fff',
                 border: appliedDiscount ? '2px solid #2ecc71' : '2px solid #333',
                 borderRadius: '10px', fontSize: '0.9rem', cursor: order.length === 0 ? 'not-allowed' : 'pointer', fontWeight: 'bold',
-              }}>
-                {appliedDiscount ? `✅ ${appliedDiscount.pct}% Off` : '🏷️ Discount'}
-              </button>
+              }}>{appliedDiscount ? `✅ ${appliedDiscount.pct}% Off` : '🏷️ Discount'}</button>
               <button onClick={() => order.length > 0 && setShowVoidConfirm(true)} disabled={order.length === 0} style={{
                 flex: 1, padding: '12px', backgroundColor: order.length === 0 ? '#333' : '#e94560',
                 color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.9rem',
@@ -358,11 +372,7 @@ export default function CashierPage() {
             <h2 style={{ color: '#fff', margin: '0 0 8px' }}>Select Payment Method</h2>
             <p style={{ color: '#aaa', marginBottom: '28px' }}>Total: <strong style={{ color: '#2ecc71', fontSize: '1.2rem' }}>${total.toFixed(2)}</strong></p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
-              {[
-                { type: 'card', label: '💳 Credit / Debit Card' },
-                { type: 'cash', label: '💵 Cash' },
-                { type: 'mobile', label: '📱 Mobile Pay' },
-              ].map(({ type, label }) => (
+              {[{ type: 'card', label: '💳 Credit / Debit Card' }, { type: 'cash', label: '💵 Cash' }, { type: 'mobile', label: '📱 Mobile Pay' }].map(({ type, label }) => (
                 <button key={type} onClick={() => selectPaymentType(type)} style={{
                   padding: '18px', backgroundColor: '#0f3460', color: '#fff',
                   border: '2px solid #333', borderRadius: '12px', fontSize: '1.1rem', fontWeight: 'bold', cursor: 'pointer',
@@ -372,10 +382,7 @@ export default function CashierPage() {
                 >{label}</button>
               ))}
             </div>
-            <button onClick={() => setShowPaymentSelect(false)} style={{
-              width: '100%', padding: '12px', backgroundColor: '#333', color: '#aaa',
-              border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer',
-            }}>Cancel</button>
+            <button onClick={() => setShowPaymentSelect(false)} style={{ width: '100%', padding: '12px', backgroundColor: '#333', color: '#aaa', border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer' }}>Cancel</button>
           </div>
         </div>
       )}
@@ -385,7 +392,6 @@ export default function CashierPage() {
         <div style={{ position: 'fixed', inset: 0, backgroundColor: '#0a0a1a', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 250, padding: '40px' }}>
           <h1 style={{ color: '#e94560', fontSize: '2rem', marginBottom: '8px' }}>🧋 Review Your Order</h1>
           <p style={{ color: '#aaa', marginBottom: '28px', fontSize: '1rem' }}>Please review and select a tip</p>
-
           <div style={{ width: '100%', maxWidth: '500px', backgroundColor: '#16213e', borderRadius: '16px', padding: '20px', marginBottom: '28px', maxHeight: '240px', overflowY: 'auto' }}>
             {order.map(o => (
               <div key={o.key} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #0f3460' }}>
@@ -394,26 +400,18 @@ export default function CashierPage() {
                   {o.sugar !== 'N/A' && <div style={{ color: '#aaa', fontSize: '0.8rem' }}>Sugar: {o.sugar} · Ice: {o.ice}</div>}
                   {o.toppings.length > 0 && <div style={{ color: '#aaa', fontSize: '0.8rem' }}>+ {o.toppings.map(t => t.name).join(', ')}</div>}
                 </div>
-                <div style={{ color: '#e94560', fontWeight: 'bold', fontSize: '1rem' }}>${(o.basePrice * o.qty).toFixed(2)}</div>
+                <div style={{ color: '#e94560', fontWeight: 'bold' }}>${(o.basePrice * o.qty).toFixed(2)}</div>
               </div>
             ))}
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#aaa', marginTop: '10px', fontSize: '0.9rem' }}>
-              <span>Subtotal</span><span>${subtotal.toFixed(2)}</span>
-            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#aaa', marginTop: '10px', fontSize: '0.9rem' }}><span>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
             {appliedDiscount && (
               <div style={{ display: 'flex', justifyContent: 'space-between', color: '#2ecc71', fontSize: '0.9rem' }}>
-                <span>{appliedDiscount.label} ({appliedDiscount.pct}% off)</span>
-                <span>−${discountAmt.toFixed(2)}</span>
+                <span>{appliedDiscount.label} ({appliedDiscount.pct}% off)</span><span>−${discountAmt.toFixed(2)}</span>
               </div>
             )}
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#aaa', fontSize: '0.9rem' }}>
-              <span>Tax (8.25%)</span><span>${tax.toFixed(2)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#fff', fontWeight: 'bold', fontSize: '1.1rem', marginTop: '8px' }}>
-              <span>Total</span><span>${total.toFixed(2)}</span>
-            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#aaa', fontSize: '0.9rem' }}><span>Tax (8.25%)</span><span>${tax.toFixed(2)}</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#fff', fontWeight: 'bold', fontSize: '1.1rem', marginTop: '8px' }}><span>Total</span><span>${total.toFixed(2)}</span></div>
           </div>
-
           <div style={{ width: '100%', maxWidth: '500px' }}>
             <h2 style={{ color: '#fff', textAlign: 'center', marginBottom: '16px', fontSize: '1.3rem' }}>Add a Tip?</h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '16px' }}>
@@ -425,9 +423,7 @@ export default function CashierPage() {
                     padding: '20px 8px', borderRadius: '14px', border: `3px solid ${isSelected ? '#2ecc71' : '#333'}`,
                     backgroundColor: isSelected ? '#1a4a2e' : '#16213e', color: '#fff',
                     fontSize: '1.1rem', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center',
-                  }}>
-                    {pct}%<br /><span style={{ fontSize: '0.85rem', color: '#aaa' }}>${amt.toFixed(2)}</span>
-                  </button>
+                  }}>{pct}%<br /><span style={{ fontSize: '0.85rem', color: '#aaa' }}>${amt.toFixed(2)}</span></button>
                 );
               })}
               <button onClick={() => { setSelectedTipPct(null); setCustomTip('0'); }} style={{
@@ -438,29 +434,21 @@ export default function CashierPage() {
               }}>No Tip</button>
             </div>
             <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-              <input
-                type="number" min="0" step="0.01" placeholder="Custom tip $"
-                value={customTip}
+              <input type="number" min="0" step="0.01" placeholder="Custom tip $" value={customTip}
                 onChange={e => { setCustomTip(e.target.value); setSelectedTipPct(null); }}
-                style={{ flex: 1, padding: '14px', backgroundColor: '#16213e', color: '#fff', border: '2px solid #333', borderRadius: '10px', fontSize: '1rem', outline: 'none' }}
-              />
+                style={{ flex: 1, padding: '14px', backgroundColor: '#16213e', color: '#fff', border: '2px solid #333', borderRadius: '10px', fontSize: '1rem', outline: 'none' }} />
             </div>
             <div style={{ backgroundColor: '#16213e', borderRadius: '12px', padding: '14px 20px', marginBottom: '12px', display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: '#aaa' }}>Tip</span>
-              <span style={{ color: '#2ecc71', fontWeight: 'bold' }}>${computedTip.toFixed(2)}</span>
+              <span style={{ color: '#aaa' }}>Tip</span><span style={{ color: '#2ecc71', fontWeight: 'bold' }}>${computedTip.toFixed(2)}</span>
             </div>
             <div style={{ backgroundColor: '#0f3460', borderRadius: '12px', padding: '14px 20px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 'bold' }}>Grand Total</span>
               <span style={{ color: '#2ecc71', fontWeight: 'bold', fontSize: '1.4rem' }}>${grandTotal.toFixed(2)}</span>
             </div>
-            <button onClick={handlePayment} style={{
-              width: '100%', padding: '20px', backgroundColor: '#2ecc71', color: '#fff',
-              border: 'none', borderRadius: '14px', fontSize: '1.3rem', fontWeight: 'bold', cursor: 'pointer',
-            }}>✅ Confirm & Pay ${grandTotal.toFixed(2)}</button>
-            <button onClick={() => { setShowCustomerScreen(false); setShowPaymentSelect(true); }} style={{
-              width: '100%', padding: '14px', backgroundColor: 'transparent', color: '#aaa',
-              border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer', marginTop: '12px',
-            }}>← Back</button>
+            <button onClick={handlePayment} style={{ width: '100%', padding: '20px', backgroundColor: '#2ecc71', color: '#fff', border: 'none', borderRadius: '14px', fontSize: '1.3rem', fontWeight: 'bold', cursor: 'pointer' }}>
+              ✅ Confirm & Pay ${grandTotal.toFixed(2)}
+            </button>
+            <button onClick={() => { setShowCustomerScreen(false); setShowPaymentSelect(true); }} style={{ width: '100%', padding: '14px', backgroundColor: 'transparent', color: '#aaa', border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer', marginTop: '12px' }}>← Back</button>
           </div>
         </div>
       )}
@@ -483,23 +471,16 @@ export default function CashierPage() {
                   }}>
                     <div>{d.label}</div>
                     <div style={{ color: '#2ecc71', fontSize: '0.9rem', marginTop: '4px' }}>
-                      {d.pct}% off · saves ${(subtotal * d.pct / 100).toFixed(2)}
-                      {isActive && ' ✅ Applied'}
+                      {d.pct}% off · saves ${(subtotal * d.pct / 100).toFixed(2)}{isActive && ' ✅ Applied'}
                     </div>
                   </button>
                 );
               })}
             </div>
             {appliedDiscount && (
-              <button onClick={() => { setAppliedDiscount(null); setShowDiscountModal(false); }} style={{
-                width: '100%', padding: '12px', backgroundColor: '#e94560', color: '#fff',
-                border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer', marginBottom: '10px', fontWeight: 'bold',
-              }}>Remove Discount</button>
+              <button onClick={() => { setAppliedDiscount(null); setShowDiscountModal(false); }} style={{ width: '100%', padding: '12px', backgroundColor: '#e94560', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer', marginBottom: '10px', fontWeight: 'bold' }}>Remove Discount</button>
             )}
-            <button onClick={() => setShowDiscountModal(false)} style={{
-              width: '100%', padding: '12px', backgroundColor: '#333', color: '#aaa',
-              border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer',
-            }}>Cancel</button>
+            <button onClick={() => setShowDiscountModal(false)} style={{ width: '100%', padding: '12px', backgroundColor: '#333', color: '#aaa', border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer' }}>Cancel</button>
           </div>
         </div>
       )}
@@ -530,12 +511,7 @@ export default function CashierPage() {
                 <h3 style={{ color: '#e94560', marginBottom: '10px' }}>Sugar Level</h3>
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                   {SUGAR_LEVELS.map(s => (
-                    <button key={s} onClick={() => setSugar(s)} style={{
-                      padding: '8px 16px', borderRadius: '20px', border: '2px solid',
-                      borderColor: sugar === s ? '#e94560' : '#0f3460',
-                      backgroundColor: sugar === s ? '#e94560' : 'transparent',
-                      color: '#fff', cursor: 'pointer', fontWeight: 'bold',
-                    }}>{s}</button>
+                    <button key={s} onClick={() => setSugar(s)} style={{ padding: '8px 16px', borderRadius: '20px', border: '2px solid', borderColor: sugar === s ? '#e94560' : '#0f3460', backgroundColor: sugar === s ? '#e94560' : 'transparent', color: '#fff', cursor: 'pointer', fontWeight: 'bold' }}>{s}</button>
                   ))}
                 </div>
               </div>
@@ -545,29 +521,21 @@ export default function CashierPage() {
                 <h3 style={{ color: '#e94560', marginBottom: '10px' }}>Ice Level</h3>
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                   {ICE_LEVELS.map(i => (
-                    <button key={i} onClick={() => setIce(i)} style={{
-                      padding: '8px 16px', borderRadius: '20px', border: '2px solid',
-                      borderColor: ice === i ? '#e94560' : '#0f3460',
-                      backgroundColor: ice === i ? '#e94560' : 'transparent',
-                      color: '#fff', cursor: 'pointer', fontWeight: 'bold',
-                    }}>{i}</button>
+                    <button key={i} onClick={() => setIce(i)} style={{ padding: '8px 16px', borderRadius: '20px', border: '2px solid', borderColor: ice === i ? '#e94560' : '#0f3460', backgroundColor: ice === i ? '#e94560' : 'transparent', color: '#fff', cursor: 'pointer', fontWeight: 'bold' }}>{i}</button>
                   ))}
                 </div>
               </div>
             )}
-            {!isSnack && (
+            {!isSnack && toppings.length > 0 && (
               <div style={{ marginBottom: '24px' }}>
-                <h3 style={{ color: '#e94560', marginBottom: '10px' }}>Toppings (+$0.75 each)</h3>
+                <h3 style={{ color: '#e94560', marginBottom: '10px' }}>Toppings</h3>
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  {TOPPINGS.map(t => {
-                    const selected = !!selectedToppings.find(s => s.name === t.name);
+                  {toppings.map(t => {
+                    const selected = !!selectedToppings.find(s => s.id === t.id);
                     return (
-                      <button key={t.name} onClick={() => toggleTopping(t)} style={{
-                        padding: '8px 16px', borderRadius: '20px', border: '2px solid',
-                        borderColor: selected ? '#2ecc71' : '#0f3460',
-                        backgroundColor: selected ? '#2ecc71' : 'transparent',
-                        color: '#fff', cursor: 'pointer', fontWeight: 'bold',
-                      }}>{t.name}</button>
+                      <button key={t.id} onClick={() => toggleTopping(t)} style={{ padding: '8px 16px', borderRadius: '20px', border: '2px solid', borderColor: selected ? '#2ecc71' : '#0f3460', backgroundColor: selected ? '#2ecc71' : 'transparent', color: '#fff', cursor: 'pointer', fontWeight: 'bold' }}>
+                        {t.name} +${t.price.toFixed(2)}
+                      </button>
                     );
                   })}
                 </div>
