@@ -1,10 +1,29 @@
 'use client';
 
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Card from '@/components/portal/card';
+import { Get } from '@/utils/apiService';
 
 export default function ManagerDashboard() {
+  const [employeeCount, setEmployeeCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchEmployeeCount = async () => {
+      try {
+        const data = await Get('/employees');
+        if (Array.isArray(data)) {
+          setEmployeeCount(data.length);
+        }
+      } catch (error) {
+        console.error('Failed to load employees:', error);
+      }
+    };
+
+    fetchEmployeeCount();
+  }, []);
+
   return (
     <Box
       sx={{
@@ -23,6 +42,9 @@ export default function ManagerDashboard() {
       <Box sx={{ maxWidth: 980, textAlign: 'center' }}>
         <Typography variant="h2" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
           Boba Shop Manager Interface
+        </Typography>
+        <Typography variant="body1" sx={{ color: '#333333' }}>
+          {employeeCount === null ? 'Loading employee data…' : `${employeeCount} employees currently registered`}
         </Typography>
       </Box>
 

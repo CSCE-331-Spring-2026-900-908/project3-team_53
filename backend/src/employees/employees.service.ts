@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, FindOptionsWhere } from 'typeorm';
 import { Employee } from './employees.entity';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class EmployeesService {
   ) {}
 
   async findAll(role?: string): Promise<Employee[]> {
-    const where: Record<string, unknown> = {};
+    const where: FindOptionsWhere<Employee> = {};
     if (role) {
       where.role = role;
     }

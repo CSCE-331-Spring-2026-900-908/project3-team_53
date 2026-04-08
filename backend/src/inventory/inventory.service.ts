@@ -11,8 +11,24 @@ export class InventoryService {
   ) {}
 
   async findAll(): Promise<Inventory[]> {
-    return this.inventoryRepo.find({
-      order: { name: 'ASC' },
+    const inventoryItems = await this.inventoryRepo.find({
+      order: { id: 'ASC' },
     });
+
+    const updates: Inventory[] = [];
+    for (const item of inventoryItems) {
+      const isLowStock = item.quantity < item.maxStock * 0.2;
+      const desiredStatus = isLowStock ? 'Low Stock' : 'In Stock';
+      if (item.status !== desiredStatus) {
+        item.status = desiredStatus;
+        updates.push(item);
+      }
+    }
+
+    if (updates.length > 0) {
+      await this.inventoryRepo.save(updates);
+    }
+
+    return inventoryItems;
   }
 }

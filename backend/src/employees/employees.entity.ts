@@ -8,7 +8,7 @@ export class Employee {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ default: 'Employee' })
   role: string;
 
   @Column()

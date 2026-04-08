@@ -1,17 +1,50 @@
 'use client';
 
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import { Get } from '@/utils/apiService';
 
-const inventoryItems = [
-  { item: 'Tapioca Pearls', stock: 'Low' },
-  { item: 'Milk Tea Base', stock: 'In Stock' },
-  { item: 'Strawberry Syrup', stock: 'Medium' },
-  { item: 'Tea Bags', stock: 'In Stock' },
-];
+interface InventoryItem {
+  id: number;
+  name: string;
+  quantity: number;
+  status: string;
+}
 
 export default function ManagerInventoryPage() {
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredItems = inventoryItems.filter((item) => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return true;
+
+    const matchesName = item.name.toLowerCase().includes(query);
+    const matchesId = item.id.toString().includes(query);
+    return matchesName || matchesId;
+  });
+
+  useEffect(() => {
+    const fetchInventory = async () => {
+      try {
+        const data: InventoryItem[] = await Get('/inventory');
+        if (Array.isArray(data)) {
+          setInventoryItems(data);
+        }
+      } catch (error) {
+        console.error('Failed to load inventory:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInventory();
+  }, []);
+
   return (
     <Box sx={{ minHeight: '80vh', px: 4, py: 6, backgroundColor: '#f7f7f7', color: '#000000' }}>
       <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2, color: '#000000' }}>
@@ -21,33 +54,64 @@ export default function ManagerInventoryPage() {
         Track stock levels and update inventory so the shop stays fully stocked.
       </Typography>
 
-      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 4 }}>
+      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 4, alignItems: 'center' }}>
         <Button variant="contained">Restock Item</Button>
         <Button variant="outlined">Create Order</Button>
+        <TextField
+          value={searchQuery}
+          onChange={(event) => setSearchQuery(event.target.value)}
+          label="Search by name or ID"
+          variant="outlined"
+          size="small"
+          sx={{ minWidth: 260 }}
+        />
       </Box>
 
       <Box sx={{ display: 'grid', gap: 2, maxWidth: 900 }}>
-        {inventoryItems.map((item) => (
-          <Box
-            key={item.item}
-            sx={{
-              p: 3,
-              backgroundColor: '#ffffff',
-              borderRadius: 2,
-              boxShadow: 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              {item.item}
-            </Typography>
-            <Typography variant="body2" sx={{ color: item.stock === 'Low' ? '#d32f2f' : '#2e7d32' }}>
-              {item.stock}
-            </Typography>
-          </Box>
-        ))}
+        {loading ? (
+          <Typography variant="body1" sx={{ color: '#333333' }}>
+            Loading inventory...
+          </Typography>
+        ) : filteredItems.length === 0 ? (
+          <Typography variant="body1" sx={{ color: '#333333' }}>
+            No inventory items found.
+          </Typography>
+        ) : (
+          filteredItems.map((item) => (
+            <Box
+              key={item.id}
+              sx={{
+                p: 3,
+                backgroundColor: '#ffffff',
+                borderRadius: 2,
+                boxShadow: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                    {item.name}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#999999' }}>
+                    (ID: {item.id})
+                  </Typography>
+                </Box>
+                <Typography variant="body2" sx={{ color: '#666666' }}>
+                  Quantity: {item.quantity}
+                </Typography>
+              </Box>
+              <Typography
+                variant="body2"
+                sx={{ color: item.status.toLowerCase().includes('low') ? '#d32f2f' : '#2e7d32' }}
+              >
+                {item.status}
+              </Typography>
+            </Box>
+          ))
+        )}
       </Box>
     </Box>
   );
