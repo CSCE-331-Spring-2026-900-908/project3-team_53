@@ -36,6 +36,8 @@ async function getAppHandler() {
     const { AppModule } = await import('../src/app.module.js');
     const app = await NestFactory.create(AppModule, { logger: ['error', 'warn'] });
 
+    app.setGlobalPrefix('api');
+
     app.enableCors({
       origin: (origin, callback) => {
         if (!origin) return callback(null, true);
