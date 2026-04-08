@@ -60,10 +60,10 @@ export class OrdersService {
     } catch (err) {
       await queryRunner.rollbackTransaction();
 
-      // If the DB sequence is behind existing rows, repair once and retry.
-      if (this.shouldRepairOrdersSequence(err) && !this.hasRetriedSequenceRepair) {
+      // If a PK sequence is behind existing rows, repair once and retry.
+      if (this.shouldRepairPkSequence(err) && !this.hasRetriedSequenceRepair) {
         this.hasRetriedSequenceRepair = true;
-        await this.repairOrdersIdSequence();
+        await this.repairOrderSequences();
         try {
           return await this.create(dto);
         } finally {
@@ -143,23 +143,31 @@ export class OrdersService {
     };
   }
 
-  private shouldRepairOrdersSequence(err: unknown): boolean {
+  private shouldRepairPkSequence(err: unknown): boolean {
     if (!(err instanceof QueryFailedError)) return false;
     const driverError = (err as any).driverError as
       | { code?: string; constraint?: string; table?: string }
       | undefined;
+    const table = driverError?.table;
     return (
       driverError?.code === '23505' &&
-      driverError?.table === 'orders' &&
+      (table === 'orders' || table === 'order_items') &&
       driverError?.constraint?.startsWith('PK_') === true
     );
   }
 
-  private async repairOrdersIdSequence(): Promise<void> {
+  private async repairOrderSequences(): Promise<void> {
     await this.dataSource.query(`
       SELECT setval(
         pg_get_serial_sequence('"orders"', 'id'),
         COALESCE((SELECT MAX(id) FROM "orders"), 0) + 1,
+        false
+      );
+    `);
+    await this.dataSource.query(`
+      SELECT setval(
+        pg_get_serial_sequence('"order_items"', 'id'),
+        COALESCE((SELECT MAX(id) FROM "order_items"), 0) + 1,
         false
       );
     `);
