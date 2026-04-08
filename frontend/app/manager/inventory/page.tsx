@@ -72,9 +72,14 @@ export default function ManagerInventoryPage() {
               }}
             >
               <Box>
-                <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                  {item.name}
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                    {item.name}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#999999' }}>
+                    (ID: {item.id})
+                  </Typography>
+                </Box>
                 <Typography variant="body2" sx={{ color: '#666666' }}>
                   Quantity: {item.quantity}
                 </Typography>

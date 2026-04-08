@@ -68,7 +68,7 @@ export class InventoryService implements OnModuleInit {
 
   async findAll(): Promise<Inventory[]> {
     return this.inventoryRepo.find({
-      order: { name: 'ASC' },
+      order: { id: 'ASC' },
     });
   }
 }
