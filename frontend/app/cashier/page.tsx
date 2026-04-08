@@ -75,6 +75,7 @@ export default function CashierPage() {
   const [sugar, setSugar] = useState('100%');
   const [ice, setIce] = useState('Regular Ice');
   const [selectedToppings, setSelectedToppings] = useState<Topping[]>([]);
+  const [editingKey, setEditingKey] = useState<string | null>(null);
 
   const currentItems = MENU.find(m => m.category === activeCategory)?.items ?? [];
 
@@ -95,6 +96,17 @@ export default function CashierPage() {
     setSugar('100%');
     setIce('Regular Ice');
     setSelectedToppings([]);
+    setEditingKey(null);
+  };
+
+  const openEditModal = (orderItem: OrderItem) => {
+    const menuItem = MENU.flatMap(m => m.items).find(i => i.id === orderItem.id);
+    if (!menuItem) return;
+    setModalItem(menuItem);
+    setSugar(orderItem.sugar === 'N/A' ? '100%' : orderItem.sugar);
+    setIce(orderItem.ice === 'N/A' ? 'Regular Ice' : orderItem.ice);
+    setSelectedToppings(orderItem.toppings);
+    setEditingKey(orderItem.key);
   };
 
   const toggleTopping = (topping: Topping) => {
@@ -108,22 +120,39 @@ export default function CashierPage() {
   const confirmAdd = () => {
     if (!modalItem) return;
     const toppingTotal = selectedToppings.reduce((s, t) => s + t.price, 0);
-    const key = `${modalItem.id}-${sugar}-${ice}-${selectedToppings.map(t => t.name).join(',')}`;
-    setOrder(prev => {
-      const existing = prev.find(o => o.key === key);
-      if (existing) return prev.map(o => o.key === key ? { ...o, qty: o.qty + 1 } : o);
-      return [...prev, {
-        id: modalItem.id,
-        name: modalItem.name,
-        basePrice: modalItem.price + toppingTotal,
-        sugar: isSnack ? 'N/A' : sugar,
-        ice: isSnack ? 'N/A' : ice,
-        toppings: selectedToppings,
-        qty: 1,
-        key,
-      }];
-    });
+    const newKey = `${modalItem.id}-${sugar}-${ice}-${selectedToppings.map(t => t.name).join(',')}`;
+
+    if (editingKey) {
+      // Replace the existing item with updated customizations
+      setOrder(prev => prev.map(o => {
+        if (o.key !== editingKey) return o;
+        return {
+          ...o,
+          basePrice: modalItem.price + toppingTotal,
+          sugar: isSnack ? 'N/A' : sugar,
+          ice: isSnack ? 'N/A' : ice,
+          toppings: selectedToppings,
+          key: newKey,
+        };
+      }));
+    } else {
+      setOrder(prev => {
+        const existing = prev.find(o => o.key === newKey);
+        if (existing) return prev.map(o => o.key === newKey ? { ...o, qty: o.qty + 1 } : o);
+        return [...prev, {
+          id: modalItem.id,
+          name: modalItem.name,
+          basePrice: modalItem.price + toppingTotal,
+          sugar: isSnack ? 'N/A' : sugar,
+          ice: isSnack ? 'N/A' : ice,
+          toppings: selectedToppings,
+          qty: 1,
+          key: newKey,
+        }];
+      });
+    }
     setModalItem(null);
+    setEditingKey(null);
   };
 
   const removeItem = (key: string) => {
@@ -267,6 +296,7 @@ export default function CashierPage() {
                     )}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <button onClick={() => openEditModal(o)} style={{ padding: '4px 10px', borderRadius: '8px', border: 'none', backgroundColor: '#0f3460', color: '#aaa', cursor: 'pointer', fontSize: '0.75rem', border: '1px solid #333' }}>✏️ Edit</button>
                     <button onClick={() => removeItem(o.key)} style={{ width: '28px', height: '28px', borderRadius: '50%', border: 'none', backgroundColor: '#e94560', color: '#fff', cursor: 'pointer', fontWeight: 'bold' }}>−</button>
                     <span style={{ color: '#fff', minWidth: '20px', textAlign: 'center', fontWeight: 'bold' }}>{o.qty}</span>
                     <button onClick={() => addQty(o.key)} style={{ width: '28px', height: '28px', borderRadius: '50%', border: 'none', backgroundColor: '#2ecc71', color: '#fff', cursor: 'pointer', fontWeight: 'bold' }}>+</button>
@@ -356,7 +386,7 @@ export default function CashierPage() {
       {modalItem && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
           <div style={{ backgroundColor: '#16213e', borderRadius: '16px', padding: '28px', width: '420px', maxHeight: '85vh', overflowY: 'auto', border: '2px solid #0f3460' }}>
-            <h2 style={{ color: '#fff', marginTop: 0 }}>{modalItem.name}</h2>
+            <h2 style={{ color: '#fff', marginTop: 0 }}>{editingKey ? '✏️ Edit ' : ''}{modalItem.name}</h2>
             <p style={{ color: '#aaa', marginTop: '-12px' }}>Base price: ${modalItem.price.toFixed(2)}</p>
 
             {/* Sugar level selector — hidden for snacks */}
@@ -422,7 +452,7 @@ export default function CashierPage() {
                 flex: 2, padding: '14px', backgroundColor: '#e94560', color: '#fff',
                 border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer',
               }}>
-                Add to Order – ${(modalItem.price + selectedToppings.reduce((s, t) => s + t.price, 0)).toFixed(2)}
+                {editingKey ? '✅ Save Changes' : `Add to Order – $${(modalItem.price + selectedToppings.reduce((s, t) => s + t.price, 0)).toFixed(2)}`}
               </button>
             </div>
           </div>
