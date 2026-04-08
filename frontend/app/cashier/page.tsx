@@ -70,8 +70,8 @@ export default function CashierPage() {
     const fetchMenu = async () => {
       try {
         const [items, tops] = await Promise.all([
-          Get('/api/menu-items'),
-          Get('/api/topping-items'),
+          Get('/menu-items'),
+          Get('/topping-items'),
         ]);
 
         // Group menu items by category
