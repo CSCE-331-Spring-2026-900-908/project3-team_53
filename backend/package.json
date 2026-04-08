@@ -25,6 +25,8 @@
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/typeorm": "^11.0.0",
+    "@types/multer": "^2.1.0",
+    "multer": "^2.1.1",
     "pg": "^8.20.0",
     "postgresql": "^0.0.1",
     "reflect-metadata": "^0.2.2",
