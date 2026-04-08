@@ -103,7 +103,10 @@ export default function ManagerInventoryPage() {
                   Quantity: {item.quantity}
                 </Typography>
               </Box>
-              <Typography variant="body2" sx={{ color: item.status === 'Low' ? '#d32f2f' : '#2e7d32' }}>
+              <Typography
+                variant="body2"
+                sx={{ color: item.status.toLowerCase().includes('low') ? '#d32f2f' : '#2e7d32' }}
+              >
                 {item.status}
               </Typography>
             </Box>
