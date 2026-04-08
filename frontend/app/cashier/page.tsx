@@ -361,23 +361,25 @@ export default function CashierPage() {
               </div>
             )}
 
-            {/* Toppings selector */}
-            <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ color: '#e94560', marginBottom: '10px' }}>Toppings (+$0.75 each)</h3>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                {TOPPINGS.map(t => {
-                  const selected = !!selectedToppings.find(s => s.name === t.name);
-                  return (
-                    <button key={t.name} onClick={() => toggleTopping(t)} style={{
-                      padding: '8px 16px', borderRadius: '20px', border: '2px solid',
-                      borderColor: selected ? '#2ecc71' : '#0f3460',
-                      backgroundColor: selected ? '#2ecc71' : 'transparent',
-                      color: '#fff', cursor: 'pointer', fontWeight: 'bold',
-                    }}>{t.name}</button>
-                  );
-                })}
+            {/* Toppings selector — hidden for snacks */}
+            {!isSnack && (
+              <div style={{ marginBottom: '24px' }}>
+                <h3 style={{ color: '#e94560', marginBottom: '10px' }}>Toppings (+$0.75 each)</h3>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {TOPPINGS.map(t => {
+                    const selected = !!selectedToppings.find(s => s.name === t.name);
+                    return (
+                      <button key={t.name} onClick={() => toggleTopping(t)} style={{
+                        padding: '8px 16px', borderRadius: '20px', border: '2px solid',
+                        borderColor: selected ? '#2ecc71' : '#0f3460',
+                        backgroundColor: selected ? '#2ecc71' : 'transparent',
+                        color: '#fff', cursor: 'pointer', fontWeight: 'bold',
+                      }}>{t.name}</button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
 
             <div style={{ display: 'flex', gap: '10px' }}>
               <button onClick={() => setModalItem(null)} style={{
