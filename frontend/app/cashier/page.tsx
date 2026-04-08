@@ -68,6 +68,7 @@ export default function CashierPage() {
   const [paid, setPaid] = useState(false);
   const [orderNumber, setOrderNumber] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showVoidConfirm, setShowVoidConfirm] = useState(false);
 
   // Modal state
   const [modalItem, setModalItem] = useState<MenuItem | null>(null);
@@ -301,12 +302,12 @@ export default function CashierPage() {
               }}>
                 {isSubmitting ? 'Submitting...' : '💳 Process Payment'}
               </button>
-              <button onClick={clearOrder} disabled={order.length === 0} style={{
+              <button onClick={() => order.length > 0 && setShowVoidConfirm(true)} disabled={order.length === 0} style={{
                 padding: '12px', backgroundColor: order.length === 0 ? '#333' : '#e94560',
                 color: '#fff', border: 'none', borderRadius: '10px', fontSize: '1rem',
                 cursor: order.length === 0 ? 'not-allowed' : 'pointer',
               }}>
-                🗑 Clear Order
+                🗑 Void Order
               </button>
             </div>
           )}
@@ -327,6 +328,27 @@ export default function CashierPage() {
             Order {orderNumber}
           </div>
           <p style={{ color: '#aaa', fontSize: '1rem', marginTop: '32px' }}>Returning to cashier...</p>
+        </div>
+      )}
+
+      {/* VOID ORDER confirmation dialog */}
+      {showVoidConfirm && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200 }}>
+          <div style={{ backgroundColor: '#16213e', borderRadius: '16px', padding: '32px', width: '360px', border: '2px solid #e94560', textAlign: 'center' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🗑</div>
+            <h2 style={{ color: '#fff', margin: '0 0 12px' }}>Void Order?</h2>
+            <p style={{ color: '#aaa', marginBottom: '28px' }}>This will cancel the entire order. This action cannot be undone.</p>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button onClick={() => setShowVoidConfirm(false)} style={{
+                flex: 1, padding: '14px', backgroundColor: '#333', color: '#fff',
+                border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer', fontWeight: 'bold',
+              }}>Keep Order</button>
+              <button onClick={() => { clearOrder(); setShowVoidConfirm(false); }} style={{
+                flex: 1, padding: '14px', backgroundColor: '#e94560', color: '#fff',
+                border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer', fontWeight: 'bold',
+              }}>Yes, Void It</button>
+            </div>
+          </div>
         </div>
       )}
 
