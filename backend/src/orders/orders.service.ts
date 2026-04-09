@@ -4,6 +4,7 @@ import { Repository, DataSource, MoreThanOrEqual, QueryFailedError } from 'typeo
 import { Order, OrderItem } from './orders.entity';
 import { MenuItem } from '../menu-items/menu-item.entity';
 import { CreateOrderDto } from './create-order.dto';
+import { Between } from 'typeorm';
 
 @Injectable()
 export class OrdersService {
@@ -172,4 +173,34 @@ export class OrdersService {
       );
     `);
   }
+
+  async findByDate(date: string): Promise<Order[]> {
+    const start = new Date(`${date}T00:00:00`);
+    const end = new Date(`${date}T23:59:59.999`);
+
+    return this.orderRepo.find({
+      where: {
+        created_at: Between(start, end),
+      },
+      relations: ['items', 'items.menuItem'],
+      order: { created_at: 'ASC' },
+    });
+  }
+
+
+  async calendarSummary() {
+    const raw = await this.orderRepo
+      .createQueryBuilder('order')
+      .select("DATE(order.created_at)", "date")
+      .addSelect("COUNT(*)", "count")
+      .groupBy("DATE(order.created_at)")
+      .orderBy("DATE(order.created_at)", "DESC")
+      .getRawMany();
+
+    return raw.map(row => ({
+      date: row.date,
+      count: Number(row.count),
+    }));
+  }
+
 }
