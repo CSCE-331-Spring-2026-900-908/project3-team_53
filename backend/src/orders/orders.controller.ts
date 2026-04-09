@@ -31,4 +31,15 @@ export class OrdersController {
   complete(@Param('id', ParseIntPipe) id: number): Promise<Order> {
     return this.ordersService.complete(id);
   }
+
+  @Get('by-date/:date')
+  findByDate(@Param('date') date: string): Promise<Order[]> {
+    return this.ordersService.findByDate(date);
+  }
+
+  @Get('calendar-summary')
+  calendarSummary() {
+    return this.ordersService.calendarSummary();
+  }
+
 }
