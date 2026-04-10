@@ -16,7 +16,7 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Get, Post, Delete } from '@/utils/apiService';
+import { Get, Post, Patch, Delete } from '@/utils/apiService';
 
 interface Employee {
   id: number;
@@ -96,13 +96,25 @@ export default function ManagerEmployeesPage() {
     }
 
     if (editingEmployee) {
-      setEmployees((current) =>
-        current.map((employee) =>
-          employee.id === editingEmployee.id
-            ? { ...employee, ...formState }
-            : employee
-        )
-      );
+      try {
+        const updatedEmployee = await Patch(`/employees/${editingEmployee.id}`, {
+          name: formState.name.trim(),
+          role: formState.role.trim(),
+          shift: formState.shift,
+          isWorking: formState.isWorking,
+          wage: formState.wage,
+        });
+
+        setEmployees((current) =>
+          current.map((employee) =>
+            employee.id === editingEmployee.id
+              ? updatedEmployee
+              : employee
+          )
+        );
+      } catch (error) {
+        console.error('Failed to update employee:', error);
+      }
       closeDialog();
       return;
     }
@@ -223,14 +235,14 @@ export default function ManagerEmployeesPage() {
               onChange={(event) => handleFieldChange('shift', event.target.value)}
               fullWidth
             >
-              <MenuItem value="morning">Morning</MenuItem>
-              <MenuItem value="afternoon">Afternoon</MenuItem>
-              <MenuItem value="evening">Evening</MenuItem>
+              <MenuItem value="Morning">Morning</MenuItem>
+              <MenuItem value="Afternoon">Afternoon</MenuItem>
+              <MenuItem value="Evening">Evening</MenuItem>
             </TextField>
             <TextField
               label="Wage"
               type="number"
-              inputProps={{ min: 0, step: 0.5 }}
+              inputProps={{ min: 0, step: 0.25 }}
               value={formState.wage}
               onChange={(event) => handleFieldChange('wage', Number(event.target.value))}
               fullWidth
