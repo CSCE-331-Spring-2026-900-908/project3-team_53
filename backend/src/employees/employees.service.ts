@@ -16,6 +16,10 @@ export class EmployeesService {
     return this.employeeRepo.save(employee);
   }
 
+  async delete(id: number): Promise<void> {
+    await this.employeeRepo.delete(id);
+  }
+
   async findAll(role?: string): Promise<Employee[]> {
     const where: FindOptionsWhere<Employee> = {};
     if (role) {

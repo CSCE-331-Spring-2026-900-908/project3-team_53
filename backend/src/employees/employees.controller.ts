@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Query, Patch, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, Delete, Param } from '@nestjs/common';
 import { EmployeesService } from './employees.service';
 import { Employee } from './employees.entity';
 import { CreateEmployeeDto } from './create-employee.dto';
@@ -17,8 +17,8 @@ export class EmployeesController {
     return this.employeesService.findAll(role);
   }
 
-  @Patch(':id/complete')
-  complete(@Param('id') id: number): Promise<Employee> {
-    return this.employeesService.update(id, { completed: true });
+  @Delete(':id')
+  remove(@Param('id') id: number): Promise<void> {
+    return this.employeesService.delete(id);
   }
 }

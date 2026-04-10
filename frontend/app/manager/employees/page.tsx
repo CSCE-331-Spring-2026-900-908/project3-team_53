@@ -16,7 +16,7 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Get, Post } from '@/utils/apiService';
+import { Get, Post, Delete } from '@/utils/apiService';
 
 interface Employee {
   id: number;
@@ -123,13 +123,18 @@ export default function ManagerEmployeesPage() {
     }
   };
 
-  const handleRemove = (employeeId: number, employeeName: string) => {
+  const handleRemove = async (employeeId: number, employeeName: string) => {
     const confirmDelete = window.confirm(`Are you sure you want to delete '${employeeName}'?`);
     if (!confirmDelete) {
       return;
     }
 
-    setEmployees((current) => current.filter((employee) => employee.id !== employeeId));
+    try {
+      await Delete(`/employees/${employeeId}`);
+      setEmployees((current) => current.filter((employee) => employee.id !== employeeId));
+    } catch (error) {
+      console.error('Failed to delete employee:', error);
+    }
   };
 
   return (
