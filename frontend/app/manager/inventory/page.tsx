@@ -5,12 +5,17 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 import { Get } from '@/utils/apiService';
 
 interface InventoryItem {
   id: number;
   name: string;
   quantity: number;
+  maxStock?: number;
   supplier?: string;
   status: string;
 }
@@ -19,7 +24,9 @@ export default function ManagerInventoryPage() {
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isQuickRestockOpen, setIsQuickRestockOpen] = useState(false);
 
+  const lowStockItems = inventoryItems.filter((item) => item.status.toLowerCase().includes('low'));
   const filteredItems = inventoryItems.filter((item) => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return true;
@@ -46,6 +53,23 @@ export default function ManagerInventoryPage() {
     fetchInventory();
   }, []);
 
+  const openQuickRestock = () => setIsQuickRestockOpen(true);
+  const closeQuickRestock = () => setIsQuickRestockOpen(false);
+  const confirmQuickRestock = () => {
+    setInventoryItems((items) =>
+      items.map((item) =>
+        item.status.toLowerCase().includes('low')
+          ? {
+              ...item,
+              quantity: item.maxStock ?? item.quantity,
+              status: 'In Stock',
+            }
+          : item,
+      ),
+    );
+    setIsQuickRestockOpen(false);
+  };
+
   return (
     <Box sx={{ minHeight: '80vh', px: 4, py: 6, backgroundColor: '#f7f7f7', color: '#000000' }}>
       <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2, color: '#000000' }}>
@@ -56,7 +80,9 @@ export default function ManagerInventoryPage() {
       </Typography>
 
       <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 4, alignItems: 'center' }}>
-        <Button variant="contained">Restock Item</Button>
+        <Button variant="contained" onClick={openQuickRestock}>
+          Quick Restock
+        </Button>
         <Button variant="outlined">Create Order</Button>
         <TextField
           value={searchQuery}
@@ -67,6 +93,30 @@ export default function ManagerInventoryPage() {
           sx={{ minWidth: 260 }}
         />
       </Box>
+
+      <Dialog open={isQuickRestockOpen} onClose={closeQuickRestock} aria-labelledby="quick-restock-dialog-title">
+        <DialogTitle id="quick-restock-dialog-title">Quick Restock Confirmation</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ color: '#333333', mb: 2 }}>
+            {lowStockItems.length > 0
+              ? `This will fully restock all ${lowStockItems.length} item(s) marked as low stock and update their status to In Stock.`
+              : 'No items are currently marked as low stock.'}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={confirmQuickRestock}
+            disabled={lowStockItems.length === 0}
+          >
+            Confirm
+          </Button>
+          <Button variant="outlined" onClick={closeQuickRestock}>
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Box sx={{ display: 'grid', gap: 2, maxWidth: 900 }}>
         {loading ? (
