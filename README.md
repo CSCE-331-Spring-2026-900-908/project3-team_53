@@ -19,7 +19,40 @@ API Base URL: https://project3-team-53-backend.vercel.app/api
 
 ## Prerequisites
 
-Install [Node.js](https://nodejs.org/) (current LTS is fine). Use the installer for your OS.
+- [Node.js](https://nodejs.org/) (current LTS is fine). Use the installer for your OS.
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) for running a local PostgreSQL database.
+
+## Local database setup (Docker)
+
+1. Install and open [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+2. Make sure Docker Desktop is **running** (you should see the Docker icon in your system tray / menu bar).
+3. From the **project root**, start the database container:
+
+   ```bash
+   docker compose up -d
+   ```
+
+   This pulls the official PostgreSQL 17 image and starts a container with:
+   - **Host:** `localhost`
+   - **Port:** `5432`
+   - **User / Password:** `postgres` / `postgres`
+   - **Database:** `postgres`
+
+   Data is persisted in a Docker volume (`pgdata`), so it survives container restarts.
+
+4. To verify the database is running:
+
+   ```bash
+   docker compose ps
+   ```
+
+5. To stop the database:
+
+   ```bash
+   docker compose down
+   ```
+
+   Add the `-v` flag (`docker compose down -v`) to also delete the stored data and start fresh.
 
 ## Setup
 
@@ -48,10 +81,9 @@ Install [Node.js](https://nodejs.org/) (current LTS is fine). Use the installer 
    DB_PASSWORD=postgres
    DB_NAME=postgres
 
-   # Database configuration - dont change these
-   DB_SYNCHRONIZE=false
-   DB_SSL=true
-   DB_SSL_REJECT_UNAUTHORIZED=false
+   # Local Docker database - no SSL needed
+   DB_SYNCHRONIZE=true
+   DB_SSL=false
    ```
 
    If you omit `backend/.env`, the API listens on port **3001** by default (`main.ts`) and uses the default local PostgreSQL values shown above.
@@ -65,9 +97,8 @@ Install [Node.js](https://nodejs.org/) (current LTS is fine). Use the installer 
 
 ## Run locally
 
-Start the **backend** first, then the **frontend** (the UI calls the API on port 3001).
-
-- **Backend** (from `backend/`): `npm run start:dev` → `http://localhost:3001`
-- **Frontend** (from `frontend/`): `npm run dev` → `http://localhost:3000` (default Next.js port)
+1. Start the **database** (if not already running): `docker compose up -d`
+2. Start the **backend** (from `backend/`): `npm run start:dev` → `http://localhost:3001`
+3. Start the **frontend** (from `frontend/`): `npm run dev` → `http://localhost:3000` (default Next.js port)
 
 API routes use the `/api` prefix (for example: `GET http://localhost:3001/api/hello`).

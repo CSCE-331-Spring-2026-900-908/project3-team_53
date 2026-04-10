@@ -4,6 +4,7 @@ import { Repository, DataSource, MoreThanOrEqual, QueryFailedError } from 'typeo
 import { Order, OrderItem } from './orders.entity';
 import { MenuItem } from '../menu-items/menu-item.entity';
 import { CreateOrderDto } from './create-order.dto';
+import { Between } from 'typeorm';
 
 @Injectable()
 export class OrdersService {
@@ -60,10 +61,10 @@ export class OrdersService {
     } catch (err) {
       await queryRunner.rollbackTransaction();
 
-      // If the DB sequence is behind existing rows, repair once and retry.
-      if (this.shouldRepairOrdersSequence(err) && !this.hasRetriedSequenceRepair) {
+      // If a PK sequence is behind existing rows, repair once and retry.
+      if (this.shouldRepairPkSequence(err) && !this.hasRetriedSequenceRepair) {
         this.hasRetriedSequenceRepair = true;
-        await this.repairOrdersIdSequence();
+        await this.repairOrderSequences();
         try {
           return await this.create(dto);
         } finally {
@@ -143,19 +144,20 @@ export class OrdersService {
     };
   }
 
-  private shouldRepairOrdersSequence(err: unknown): boolean {
+  private shouldRepairPkSequence(err: unknown): boolean {
     if (!(err instanceof QueryFailedError)) return false;
     const driverError = (err as any).driverError as
       | { code?: string; constraint?: string; table?: string }
       | undefined;
+    const table = driverError?.table;
     return (
       driverError?.code === '23505' &&
-      driverError?.table === 'orders' &&
+      (table === 'orders' || table === 'order_items') &&
       driverError?.constraint?.startsWith('PK_') === true
     );
   }
 
-  private async repairOrdersIdSequence(): Promise<void> {
+  private async repairOrderSequences(): Promise<void> {
     await this.dataSource.query(`
       SELECT setval(
         pg_get_serial_sequence('"orders"', 'id'),
@@ -163,5 +165,42 @@ export class OrdersService {
         false
       );
     `);
+    await this.dataSource.query(`
+      SELECT setval(
+        pg_get_serial_sequence('"order_items"', 'id'),
+        COALESCE((SELECT MAX(id) FROM "order_items"), 0) + 1,
+        false
+      );
+    `);
   }
+
+  async findByDate(date: string): Promise<Order[]> {
+    const start = new Date(`${date}T00:00:00`);
+    const end = new Date(`${date}T23:59:59.999`);
+
+    return this.orderRepo.find({
+      where: {
+        created_at: Between(start, end),
+      },
+      relations: ['items', 'items.menuItem'],
+      order: { created_at: 'ASC' },
+    });
+  }
+
+
+  async calendarSummary() {
+    const raw = await this.orderRepo
+      .createQueryBuilder('order')
+      .select("DATE(order.created_at)", "date")
+      .addSelect("COUNT(*)", "count")
+      .groupBy("DATE(order.created_at)")
+      .orderBy("DATE(order.created_at)", "DESC")
+      .getRawMany();
+
+    return raw.map(row => ({
+      date: row.date,
+      count: Number(row.count),
+    }));
+  }
+
 }

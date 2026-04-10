@@ -25,12 +25,6 @@ type OrderItem = {
   isSnack: boolean;
 };
 
-function generateOrderNumber(): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '#';
-  for (let i = 0; i < 4; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
-  return result;
-}
 
 export default function CashierPage() {
   // Menu data from DB
@@ -51,12 +45,16 @@ export default function CashierPage() {
 
   // Payment flow state
   const [showPaymentSelect, setShowPaymentSelect] = useState(false);
+  const [showCustomerInfo, setShowCustomerInfo] = useState(false);
   const [showCustomerScreen, setShowCustomerScreen] = useState(false);
+  const [showProcessing, setShowProcessing] = useState(false);
   const [pendingPaymentType, setPendingPaymentType] = useState<string | null>(null);
   const [paymentType, setPaymentType] = useState<string | null>(null);
   const [tipAmount, setTipAmount] = useState(0);
   const [customTip, setCustomTip] = useState('');
   const [selectedTipPct, setSelectedTipPct] = useState<number | null>(null);
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
 
   // Customization modal state
   const [modalItem, setModalItem] = useState<MenuItem | null>(null);
@@ -70,8 +68,8 @@ export default function CashierPage() {
     const fetchMenu = async () => {
       try {
         const [items, tops] = await Promise.all([
-          Get('/api/menu-items'),
-          Get('/api/topping-items'),
+          Get('/menu-items'),
+          Get('/topping-items'),
         ]);
 
         // Group menu items by category
@@ -119,9 +117,11 @@ export default function CashierPage() {
   const clearOrder = () => {
     setOrder([]); setPaid(false); setOrderNumber('');
     setPaymentType(null); setShowPaymentSelect(false);
-    setShowCustomerScreen(false); setPendingPaymentType(null);
+    setShowCustomerInfo(false); setShowCustomerScreen(false);
+    setShowProcessing(false); setPendingPaymentType(null);
     setTipAmount(0); setCustomTip(''); setSelectedTipPct(null);
     setAppliedDiscount(null);
+    setCustomerName(''); setCustomerPhone('');
   };
 
   const openModal = (item: MenuItem) => {
@@ -190,20 +190,30 @@ export default function CashierPage() {
   const selectPaymentType = (type: string) => {
     setPendingPaymentType(type);
     setShowPaymentSelect(false);
-    setSelectedTipPct(null);
-    setCustomTip('');
-    setShowCustomerScreen(true);
+    setShowCustomerInfo(true);
   };
 
   const handlePayment = async () => {
     if (order.length === 0 || isSubmitting || !pendingPaymentType) return;
     setIsSubmitting(true);
     setShowCustomerScreen(false);
+    setShowProcessing(true);
     const tip = computedTip;
+
+    const paymentTypeMap: Record<string, string> = {
+      card: 'credit_card',
+      cash: 'cash',
+      dining_dollars: 'dining_dollars',
+    };
+
+    const strippedPhone = customerPhone.replace(/\D/g, '');
 
     const payload = {
       order_type: pendingPaymentType,
       total: parseFloat((total + tip).toFixed(2)),
+      payment_type: paymentTypeMap[pendingPaymentType] || pendingPaymentType,
+      customer_name: customerName || undefined,
+      customer_phone: strippedPhone || undefined,
       items: order.flatMap(o =>
         Array.from({ length: o.qty }, () => ({
           menuItemId: o.id, quantity: 1, size: 'Regular',
@@ -215,14 +225,16 @@ export default function CashierPage() {
     };
 
     try {
-      await Post('/api/orders', payload);
-      setOrderNumber(generateOrderNumber());
+      const result = await Post('/orders', payload);
+      setOrderNumber('#' + result.id);
       setPaymentType(pendingPaymentType);
       setTipAmount(tip);
+      setShowProcessing(false);
       setPaid(true);
-      setTimeout(() => clearOrder(), 3000);
+      setTimeout(() => clearOrder(), 10000);
     } catch (err) {
       console.error('Order failed:', err);
+      setShowProcessing(false);
       alert('Failed to submit order. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -350,14 +362,27 @@ export default function CashierPage() {
         </div>
       </div>
 
+      {/* PROCESSING PAYMENT */}
+      {showProcessing && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: '#0a0a1a', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 275 }}>
+          <div style={{ width: '64px', height: '64px', border: '6px solid #333', borderTop: '6px solid #2ecc71', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: '28px' }} />
+          <h1 style={{ color: '#fff', fontSize: '1.8rem', margin: 0, fontWeight: 'bold' }}>Processing Payment...</h1>
+          <p style={{ color: '#aaa', fontSize: '1rem', marginTop: '12px' }}>Please wait</p>
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        </div>
+      )}
+
       {/* TRANSACTION COMPLETE */}
       {paid && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: '#0f3460', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 300 }}>
           <div style={{ fontSize: '5rem', marginBottom: '24px' }}>✅</div>
           <h1 style={{ color: '#2ecc71', fontSize: '2.5rem', margin: 0, fontWeight: 'bold' }}>Transaction Complete</h1>
+          {customerName && (
+            <div style={{ color: '#fff', fontSize: '1.2rem', marginTop: '12px', fontWeight: 600 }}>Order for: {customerName}</div>
+          )}
           <div style={{ color: '#fff', fontSize: '1.8rem', marginTop: '16px', letterSpacing: '4px', fontWeight: 'bold' }}>Order {orderNumber}</div>
           <div style={{ color: '#aaa', fontSize: '1rem', marginTop: '12px' }}>
-            {paymentType === 'cash' ? '💵 Cash' : paymentType === 'card' ? '💳 Card' : '📱 Mobile Pay'}
+            {paymentType === 'cash' ? '💵 Cash' : paymentType === 'card' ? '💳 Card' : '🎓 Dining Dollars'}
             {tipAmount > 0 && <span> · Tip: ${tipAmount.toFixed(2)}</span>}
             {appliedDiscount && <span> · {appliedDiscount.label}</span>}
           </div>
@@ -372,7 +397,7 @@ export default function CashierPage() {
             <h2 style={{ color: '#fff', margin: '0 0 8px' }}>Select Payment Method</h2>
             <p style={{ color: '#aaa', marginBottom: '28px' }}>Total: <strong style={{ color: '#2ecc71', fontSize: '1.2rem' }}>${total.toFixed(2)}</strong></p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
-              {[{ type: 'card', label: '💳 Credit / Debit Card' }, { type: 'cash', label: '💵 Cash' }, { type: 'mobile', label: '📱 Mobile Pay' }].map(({ type, label }) => (
+              {[{ type: 'card', label: '💳 Credit / Debit Card' }, { type: 'cash', label: '💵 Cash' }, { type: 'dining_dollars', label: '🎓 Dining Dollars' }].map(({ type, label }) => (
                 <button key={type} onClick={() => selectPaymentType(type)} style={{
                   padding: '18px', backgroundColor: '#0f3460', color: '#fff',
                   border: '2px solid #333', borderRadius: '12px', fontSize: '1.1rem', fontWeight: 'bold', cursor: 'pointer',
@@ -383,6 +408,48 @@ export default function CashierPage() {
               ))}
             </div>
             <button onClick={() => setShowPaymentSelect(false)} style={{ width: '100%', padding: '12px', backgroundColor: '#333', color: '#aaa', border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer' }}>Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {/* CUSTOMER INFO: Name + Phone */}
+      {showCustomerInfo && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: '#0a0a1a', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 250, padding: '40px' }}>
+          <div style={{ fontSize: '3rem', marginBottom: '16px' }}>👤</div>
+          <h1 style={{ color: '#e94560', fontSize: '2rem', marginBottom: '8px' }}>Customer Information</h1>
+          <p style={{ color: '#aaa', marginBottom: '32px', fontSize: '1rem' }}>Optional — leave blank to skip</p>
+          <div style={{ width: '100%', maxWidth: '420px', display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '32px' }}>
+            <div>
+              <label style={{ color: '#aaa', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>Name</label>
+              <input
+                type="text"
+                placeholder="e.g. John"
+                value={customerName}
+                onChange={e => setCustomerName(e.target.value)}
+                style={{ width: '100%', padding: '14px', backgroundColor: '#16213e', color: '#fff', border: '2px solid #333', borderRadius: '10px', fontSize: '1.1rem', outline: 'none', boxSizing: 'border-box' }}
+              />
+            </div>
+            <div>
+              <label style={{ color: '#aaa', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>Phone Number</label>
+              <input
+                type="tel"
+                placeholder="e.g. 979-555-1234"
+                value={customerPhone}
+                onChange={e => setCustomerPhone(e.target.value)}
+                style={{ width: '100%', padding: '14px', backgroundColor: '#16213e', color: '#fff', border: '2px solid #333', borderRadius: '10px', fontSize: '1.1rem', outline: 'none', boxSizing: 'border-box' }}
+              />
+            </div>
+          </div>
+          <div style={{ width: '100%', maxWidth: '420px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <button onClick={() => { setShowCustomerInfo(false); setSelectedTipPct(null); setCustomTip(''); setShowCustomerScreen(true); }} style={{
+              width: '100%', padding: '18px', backgroundColor: '#2ecc71', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer',
+            }}>Continue to Tip</button>
+            <button onClick={() => { setCustomerName(''); setCustomerPhone(''); setShowCustomerInfo(false); setSelectedTipPct(null); setCustomTip(''); setShowCustomerScreen(true); }} style={{
+              width: '100%', padding: '14px', backgroundColor: 'transparent', color: '#aaa', border: '2px solid #333', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer',
+            }}>Skip</button>
+            <button onClick={() => { setShowCustomerInfo(false); setShowPaymentSelect(true); }} style={{
+              width: '100%', padding: '14px', backgroundColor: 'transparent', color: '#aaa', border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer', marginTop: '4px',
+            }}>← Back to Payment Methods</button>
           </div>
         </div>
       )}
@@ -448,7 +515,7 @@ export default function CashierPage() {
             <button onClick={handlePayment} style={{ width: '100%', padding: '20px', backgroundColor: '#2ecc71', color: '#fff', border: 'none', borderRadius: '14px', fontSize: '1.3rem', fontWeight: 'bold', cursor: 'pointer' }}>
               ✅ Confirm & Pay ${grandTotal.toFixed(2)}
             </button>
-            <button onClick={() => { setShowCustomerScreen(false); setShowPaymentSelect(true); }} style={{ width: '100%', padding: '14px', backgroundColor: 'transparent', color: '#aaa', border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer', marginTop: '12px' }}>← Back</button>
+            <button onClick={() => { setShowCustomerScreen(false); setShowCustomerInfo(true); }} style={{ width: '100%', padding: '14px', backgroundColor: 'transparent', color: '#aaa', border: 'none', borderRadius: '10px', fontSize: '1rem', cursor: 'pointer', marginTop: '12px' }}>← Back</button>
           </div>
         </div>
       )}
