@@ -11,6 +11,7 @@ interface InventoryItem {
   id: number;
   name: string;
   quantity: number;
+  supplier?: string;
   status: string;
 }
 
@@ -96,12 +97,17 @@ export default function ManagerInventoryPage() {
                     {item.name}
                   </Typography>
                   <Typography variant="body2" sx={{ color: '#999999' }}>
-                    (ID: {item.id})
+                    (<strong>ID:</strong> {item.id})
                   </Typography>
                 </Box>
                 <Typography variant="body2" sx={{ color: '#666666' }}>
-                  Quantity: {item.quantity}
+                  <strong>Quantity:</strong> {item.quantity}
                 </Typography>
+                {item.supplier && (
+                  <Typography variant="body2" sx={{ color: '#666666', mt: 0.5 }}>
+                    <strong>Supplier:</strong> {item.supplier}
+                  </Typography>
+                )}
               </Box>
               <Typography
                 variant="body2"
