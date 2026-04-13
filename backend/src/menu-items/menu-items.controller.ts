@@ -1,8 +1,10 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
   UploadedFile,
@@ -15,6 +17,7 @@ import { unlink } from 'fs/promises';
 import { join } from 'path';
 import { MenuItemsService } from './menu-items.service';
 import { MenuItem } from './menu-item.entity';
+import { UpdateMenuItemDto } from './update-menu-item.dto';
 import { menuImageMulterOptions } from './menu-image.multer';
 import {
   getUploadDirectory,
@@ -26,8 +29,22 @@ export class MenuItemsController {
   constructor(private readonly menuItemsService: MenuItemsService) {}
 
   @Get()
-  findAll(@Query('category') category?: string): Promise<MenuItem[]> {
-    return this.menuItemsService.findAll(category);
+  findAll(
+    @Query('category') category?: string,
+    @Query('includeUnavailable') includeUnavailable?: string,
+  ): Promise<MenuItem[]> {
+    return this.menuItemsService.findAll(
+      category,
+      includeUnavailable === 'true',
+    );
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateMenuItemDto,
+  ): Promise<MenuItem> {
+    return this.menuItemsService.update(id, dto);
   }
 
   @Post(':id/image')
