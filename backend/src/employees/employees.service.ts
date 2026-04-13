@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOptionsWhere } from 'typeorm';
 import { Employee } from './employees.entity';
+import { CreateEmployeeDto } from './create-employee.dto';
 
 @Injectable()
 export class EmployeesService {
@@ -9,6 +10,24 @@ export class EmployeesService {
     @InjectRepository(Employee)
     private readonly employeeRepo: Repository<Employee>,
   ) {}
+
+  async create(dto: CreateEmployeeDto): Promise<Employee> {
+    const employee = this.employeeRepo.create(dto);
+    return this.employeeRepo.save(employee);
+  }
+
+  async update(id: number, dto: Partial<CreateEmployeeDto>): Promise<Employee> {
+    await this.employeeRepo.update(id, dto);
+    const employee = await this.employeeRepo.findOneBy({ id });
+    if (!employee) {
+      throw new NotFoundException(`Employee with id ${id} not found`);
+    }
+    return employee;
+  }
+
+  async delete(id: number): Promise<void> {
+    await this.employeeRepo.delete(id);
+  }
 
   async findAll(role?: string): Promise<Employee[]> {
     const where: FindOptionsWhere<Employee> = {};

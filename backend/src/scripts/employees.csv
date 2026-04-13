@@ -1,0 +1,17 @@
+id,name,role,shift,isWorking,wage
+1,Sarah Chen,Manager,Morning,true,22.00
+2,Marcus Johnson,Manager,Evening,false,22.00
+3,Lily Tran,Cashier,Morning,true,14.50
+4,David Park,Cashier,Afternoon,true,14.50
+5,Jessica Martinez,Cashier,Evening,false,14.50
+6,Kevin Nguyen,Barista,Morning,true,16.00
+7,Emma Wilson,Barista,Morning,true,16.00
+8,Ryan Lee,Barista,Afternoon,true,16.00
+9,Olivia Davis,Barista,Afternoon,false,16.00
+10,Brandon Kim,Barista,Evening,false,16.00
+11,Sophia Anderson,Barista,Evening,false,16.00
+12,Jason Thomas,Cook,Morning,true,15.00
+13,Mia Garcia,Cook,Afternoon,true,15.00
+14,Daniel Brown,Cook,Evening,false,15.00
+15,Chloe Taylor,Employee,Morning,true,13.00
+16,Ethan Moore,Employee,Afternoon,false,13.00

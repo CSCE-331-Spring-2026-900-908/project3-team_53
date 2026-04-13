@@ -1,0 +1,25 @@
+id,name,category,price,image,available
+1,Classic Milk Tea,Milk Tea,5.50,,true
+2,Taro Milk Tea,Milk Tea,6.00,,true
+3,Brown Sugar Milk Tea,Milk Tea,6.50,,true
+4,Jasmine Milk Tea,Milk Tea,5.75,,true
+5,Mango Green Tea,Fruit Tea,5.50,,true
+6,Passion Fruit Tea,Fruit Tea,5.50,,true
+7,Lychee Tea,Fruit Tea,5.75,,true
+8,Peach Oolong Tea,Fruit Tea,5.75,,true
+9,Mango Smoothie,Smoothies,6.50,,true
+10,Strawberry Smoothie,Smoothies,6.50,,true
+11,Matcha Smoothie,Smoothies,7.00,,true
+12,Popcorn Chicken,Snacks,4.50,,true
+13,Egg Puffs,Snacks,3.50,,true
+14,Mochi Donuts,Snacks,4.00,,true
+15,Chocolate Milk Tea,Milk Tea,5.50,,true
+16,Red Bean Milk Tea,Milk Tea,5.50,,true
+17,Wintermelon Tea,Fruit Tea,5.75,,true
+18,Banana & Blueberry Smoothie,Smoothies,6.50,,true
+19,Taro Slush,Slush,6.75,,true
+20,Watermelon Slush,Slush,6.50,,true
+21,Mango Slush,Slush,6.50,,true
+22,Brown Sugar Boba Latte,Latte,6.50,,true
+23,Matcha Latte,Latte,5.50,,true
+24,Vietnamese Latte,Latte,4.50,,true

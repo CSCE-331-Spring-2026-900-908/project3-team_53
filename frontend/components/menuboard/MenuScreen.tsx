@@ -3,6 +3,7 @@
 import React from 'react';
 import { MenuItem } from '@/types/menuboard';
 import CustomizationInfo from './CustomizationInfo';
+import { publicAssetUrl } from '@/utils/publicAssetUrl';
 
 interface MenuScreenProps {
   items: MenuItem[];
@@ -20,14 +21,16 @@ export default function MenuScreen({ items }: MenuScreenProps) {
           <div className="flex flex-col gap-4">
             {items
               .filter((item) => item.category === category)
-              .map((item) => (
+              .map((item) => {
+                const imgSrc = publicAssetUrl(item.image);
+                return (
                 <div
                   key={item.id}
                   className="p-4 bg-[#FFF8EE] rounded shadow flex items-center gap-4"
                 >
-                  {item.image && (
+                  {imgSrc && (
                     <img
-                      src={item.image}
+                      src={imgSrc}
                       alt={item.name}
                       className="w-24 h-24 object-cover rounded"
                     />
@@ -40,7 +43,8 @@ export default function MenuScreen({ items }: MenuScreenProps) {
                     )}
                   </div>
                 </div>
-              ))}
+                );
+              })}
           </div>
         </div>
       ))}
