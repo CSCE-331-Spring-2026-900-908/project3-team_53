@@ -55,7 +55,8 @@ export default function ManagerDashboard() {
           maxWidth: 1100,
           gridTemplateColumns: {
             xs: '1fr',
-            md: 'repeat(3, minmax(0, 1fr))',
+            sm: 'repeat(2, minmax(0, 1fr))',
+            md: 'repeat(2, minmax(0, 1fr))',
           },
           gap: 2,
         }}
@@ -75,6 +76,12 @@ export default function ManagerDashboard() {
         <Card href="/manager/inventory">
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
             Inventory
+          </Typography>
+        </Card>
+
+        <Card href="/manager/menu">
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+            Menu items
           </Typography>
         </Card>
       </Box>

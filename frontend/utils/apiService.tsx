@@ -15,6 +15,12 @@ export const Post = async (url: string, data: any) => {
     return response.data;
 };
 
+/** Multipart upload; do not set Content-Type (axios adds boundary). */
+export const postFormData = async (url: string, formData: FormData) => {
+    const response = await apiService.post(url, formData);
+    return response.data;
+};
+
 export const Put = async (url: string, data: any) => {
     const response = await apiService.put(url, data);
     return response.data;
