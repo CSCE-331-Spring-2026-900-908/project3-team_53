@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Get, Post } from '@/utils/apiService';
+import { publicAssetUrl } from '@/utils/publicAssetUrl';
 
 const SUGAR_LEVELS = ['0%', '25%', '50%', '75%', '100%'];
 const ICE_LEVELS = ['No Ice', 'Less Ice', 'Regular Ice', 'Extra Ice'];
@@ -11,7 +12,28 @@ const DISCOUNTS = [
 ];
 
 type Topping = { id: number; name: string; price: number };
-type MenuItem = { id: number; name: string; category: string; price: number; available: boolean };
+type MenuItem = {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  image: string | null;
+  available: boolean;
+};
+type ApiMenuItem = {
+  id: number;
+  name: string;
+  category: string | null;
+  price: number | string;
+  image: string | null;
+  available: boolean;
+};
+type ApiTopping = {
+  id: number;
+  name: string;
+  price: number | string;
+  available: boolean;
+};
 type MenuCategory = { category: string; items: MenuItem[] };
 type OrderItem = {
   id: number;
@@ -74,17 +96,24 @@ export default function CashierPage() {
 
         // Group menu items by category
         const grouped: Record<string, MenuItem[]> = {};
-        items.filter((i: any) => i.available).forEach((item: any) => {
+        (items as ApiMenuItem[]).filter((item) => item.available).forEach((item) => {
           const cat = item.category || 'Other';
           if (!grouped[cat]) grouped[cat] = [];
-          grouped[cat].push({ id: item.id, name: item.name, category: item.category, price: parseFloat(item.price), available: item.available });
+          grouped[cat].push({
+            id: item.id,
+            name: item.name,
+            category: item.category ?? 'Other',
+            price: parseFloat(String(item.price)),
+            image: item.image ?? null,
+            available: item.available,
+          });
         });
         const categories = Object.entries(grouped).map(([category, items]) => ({ category, items }));
         setMenuCategories(categories);
         if (categories.length > 0) setActiveCategory(categories[0].category);
 
-        setToppings(tops.filter((t: any) => t.available).map((t: any) => ({
-          id: t.id, name: t.name, price: parseFloat(t.price),
+        setToppings((tops as ApiTopping[]).filter((t) => t.available).map((t) => ({
+          id: t.id, name: t.name, price: parseFloat(String(t.price)),
         })));
       } catch (err) {
         console.error('Failed to load menu:', err);
@@ -269,18 +298,31 @@ export default function CashierPage() {
           ))}
         </div>
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', alignContent: 'start' }}>
-          {currentItems.map(item => (
-            <button key={item.id} onClick={() => openModal(item)} style={{
-              backgroundColor: '#16213e', border: '2px solid #0f3460', borderRadius: '12px',
-              padding: '20px 16px', cursor: 'pointer', textAlign: 'left', color: '#fff',
-            }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = '#e94560')}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = '#0f3460')}
-            >
-              <div style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '6px' }}>{item.name}</div>
-              <div style={{ color: '#e94560', fontSize: '1.1rem', fontWeight: 'bold' }}>${item.price.toFixed(2)}</div>
-            </button>
-          ))}
+          {currentItems.map(item => {
+            const imageSrc = publicAssetUrl(item.image);
+            return (
+              <button key={item.id} onClick={() => openModal(item)} style={{
+                backgroundColor: '#16213e', border: '2px solid #0f3460', borderRadius: '12px',
+                padding: '16px', cursor: 'pointer', textAlign: 'left', color: '#fff',
+                overflow: 'hidden',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = '#e94560')}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = '#0f3460')}
+              >
+                {imageSrc && (
+                  <div style={{ width: '100%', height: '110px', marginBottom: '12px', borderRadius: '10px', overflow: 'hidden', backgroundColor: '#0f3460' }}>
+                    <img
+                      src={imageSrc}
+                      alt={item.name}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  </div>
+                )}
+                <div style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '6px' }}>{item.name}</div>
+                <div style={{ color: '#e94560', fontSize: '1.1rem', fontWeight: 'bold' }}>${item.price.toFixed(2)}</div>
+              </button>
+            );
+          })}
         </div>
       </div>
 

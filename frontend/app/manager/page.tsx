@@ -81,7 +81,7 @@ export default function ManagerDashboard() {
 
         <Card href="/manager/menu">
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
-            Menu items
+            Catalog
           </Typography>
         </Card>
       </Box>

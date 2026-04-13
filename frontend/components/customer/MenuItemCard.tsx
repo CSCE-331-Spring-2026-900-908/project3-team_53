@@ -10,6 +10,7 @@ import LocalCafeIcon from '@mui/icons-material/LocalCafe';
 import FastfoodIcon from '@mui/icons-material/Fastfood';
 import { MenuItem } from '@/types/customer';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { publicAssetUrl } from '@/utils/publicAssetUrl';
 
 interface MenuItemCardProps {
   item: MenuItem;
@@ -19,6 +20,7 @@ interface MenuItemCardProps {
 export default function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
   const { t } = useTranslation();
   const isSnack = item.category === 'Snacks';
+  const imageSrc = publicAssetUrl(item.image);
 
   return (
     <Card
@@ -37,16 +39,39 @@ export default function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
         <Box
           sx={{
             height: 120,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            overflow: 'hidden',
             bgcolor: '#FAF3E0',
           }}
         >
-          {isSnack ? (
-            <FastfoodIcon sx={{ fontSize: 56, color: '#FF6B6B' }} />
+          {imageSrc ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={imageSrc}
+              alt={item.name}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          ) : isSnack ? (
+            <Box
+              sx={{
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <FastfoodIcon sx={{ fontSize: 56, color: '#FF6B6B' }} />
+            </Box>
           ) : (
-            <LocalCafeIcon sx={{ fontSize: 56, color: '#4ECDC4' }} />
+            <Box
+              sx={{
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <LocalCafeIcon sx={{ fontSize: 56, color: '#4ECDC4' }} />
+            </Box>
           )}
         </Box>
         <CardContent>

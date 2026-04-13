@@ -16,8 +16,13 @@ interface DayOrderListProps {
   date: string | null;
 }
 
+type OrderRow = {
+  id: number;
+  [key: string]: unknown;
+};
+
 export default function DayOrderList({ date }: DayOrderListProps) {
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<OrderRow[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -27,7 +32,7 @@ export default function DayOrderList({ date }: DayOrderListProps) {
       setLoading(true);
       try {
         const data = await Get(`/orders/by-date/${date}`);
-        setOrders(Array.isArray(data) ? data : []);
+        setOrders(Array.isArray(data) ? (data as OrderRow[]) : []);
       } catch (err) {
         console.error('Failed to load orders:', err);
       } finally {
@@ -72,7 +77,7 @@ export default function DayOrderList({ date }: DayOrderListProps) {
       label: key.replace(/_/g, ' ').toUpperCase(),
     }));
 
-    const formatValue = (value: any, key: string, order: any) => {
+    const formatValue = (value: unknown, key: string, order: OrderRow) => {
     // Format timestamps
     if (typeof value === 'string' && value.includes('T')) {
         const date = new Date(value);

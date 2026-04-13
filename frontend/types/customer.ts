@@ -25,6 +25,7 @@ export interface ToppingItem {
   name: string;
   category: string;
   price: number;
+  image: string | null;
   available: boolean;
 }
 

@@ -10,7 +10,7 @@ export const Get = async (url: string) => {
     return response.data;
 };
 
-export const Post = async (url: string, data: any) => {
+export const Post = async (url: string, data?: unknown) => {
     const response = await apiService.post(url, data);
     return response.data;
 };
@@ -21,12 +21,12 @@ export const postFormData = async (url: string, formData: FormData) => {
     return response.data;
 };
 
-export const Put = async (url: string, data: any) => {
+export const Put = async (url: string, data?: unknown) => {
     const response = await apiService.put(url, data);
     return response.data;
 };
 
-export const Patch = async (url: string, data?: any) => {
+export const Patch = async (url: string, data?: unknown) => {
     const response = await apiService.patch(url, data);
     return response.data;
 };
