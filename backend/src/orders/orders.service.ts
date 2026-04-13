@@ -191,10 +191,13 @@ export class OrdersService {
   async calendarSummary() {
     const raw = await this.orderRepo
       .createQueryBuilder('order')
-      .select("DATE(order.created_at)", "date")
-      .addSelect("COUNT(*)", "count")
-      .groupBy("DATE(order.created_at)")
-      .orderBy("DATE(order.created_at)", "DESC")
+      .select(
+        `DATE(order.created_at AT TIME ZONE 'America/Chicago')`,
+        'date'
+      )
+      .addSelect('COUNT(*)', 'count')
+      .groupBy(`DATE(order.created_at AT TIME ZONE 'America/Chicago')`)
+      .orderBy(`DATE(order.created_at AT TIME ZONE 'America/Chicago')`, 'DESC')
       .getRawMany();
 
     return raw.map(row => ({
