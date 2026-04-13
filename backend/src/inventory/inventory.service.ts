@@ -31,4 +31,21 @@ export class InventoryService {
 
     return inventoryItems;
   }
+
+  async quickRestockLowStock(): Promise<Inventory[]> {
+    const inventoryItems = await this.inventoryRepo.find();
+    const lowStockItems = inventoryItems.filter((item) => item.quantity < item.maxStock * 0.2);
+
+    if (lowStockItems.length === 0) {
+      return [];
+    }
+
+    const updatedItems = lowStockItems.map((item) => ({
+      ...item,
+      quantity: item.maxStock,
+      status: 'In Stock',
+    }));
+
+    return this.inventoryRepo.save(updatedItems);
+  }
 }

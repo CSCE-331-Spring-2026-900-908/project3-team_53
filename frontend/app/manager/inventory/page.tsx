@@ -11,7 +11,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
-import { Get } from '@/utils/apiService';
+import { Get, Patch } from '@/utils/apiService';
 
 interface InventoryItem {
   id: number;
@@ -68,19 +68,22 @@ export default function ManagerInventoryPage() {
   };
 
   const closeQuickRestock = () => setIsQuickRestockOpen(false);
-  const confirmQuickRestock = () => {
-    setInventoryItems((items) =>
-      items.map((item) =>
-        item.status.toLowerCase().includes('low')
-          ? {
-              ...item,
-              quantity: item.maxStock ?? item.quantity,
-              status: 'In Stock',
-            }
-          : item,
-      ),
-    );
-    setIsQuickRestockOpen(false);
+  const confirmQuickRestock = async () => {
+    try {
+      const updatedItems: InventoryItem[] = await Patch('/inventory/quick-restock');
+      setInventoryItems((items) =>
+        items.map((item) => {
+          const updated = updatedItems.find((updatedItem) => updatedItem.id === item.id);
+          return updated ? updated : item;
+        }),
+      );
+      setSnackbar({ open: true, message: 'Quick restock completed successfully.' });
+    } catch (error) {
+      console.error('Quick restock failed:', error);
+      setSnackbar({ open: true, message: 'Failed to update inventory. Please try again.' });
+    } finally {
+      setIsQuickRestockOpen(false);
+    }
   };
 
   const handleCloseSnackbar = () => {
@@ -141,7 +144,12 @@ export default function ManagerInventoryPage() {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert onClose={handleCloseSnackbar} severity="error" variant="filled" sx={{ fontWeight: 600 }}>
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.message.toLowerCase().includes('failed') ? 'error' : 'success'}
+          variant="filled"
+          sx={{ fontWeight: 600 }}
+        >
           {snackbar.message}
         </Alert>
       </Snackbar>
