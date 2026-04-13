@@ -1,4 +1,4 @@
-# SCRUM Meeting 3 - Date
+# SCRUM Meeting 6 - Date
 
 **Date:** 
 **Time:** 
