@@ -69,19 +69,19 @@ export default function ManagerDashboard() {
 
         <Card href="/manager/employees">
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
-            Employees
+            Employee Management
           </Typography>
         </Card>
 
         <Card href="/manager/inventory">
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
-            Inventory
+            Inventory Editor
           </Typography>
         </Card>
 
         <Card href="/manager/menu">
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
-            Catalog
+            Menu Editor
           </Typography>
         </Card>
       </Box>
