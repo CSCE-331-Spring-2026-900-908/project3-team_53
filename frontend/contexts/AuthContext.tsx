@@ -17,6 +17,7 @@ interface AuthContextValue {
   token: string | null;
   loading: boolean;
   loginWithGoogle: (idToken: string) => Promise<void>;
+  loginWithPin: (pin: string) => Promise<void>;
   logout: () => void;
   isManager: boolean;
   isEmployee: boolean;
@@ -56,6 +57,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem(USER_KEY, JSON.stringify(userData));
   }, []);
 
+  const loginWithPin = useCallback(async (pin: string) => {
+    const response = await Post('/api/auth/pin', { pin });
+    const { accessToken, user: userData } = response;
+    setToken(accessToken);
+    setUser(userData);
+    localStorage.setItem(TOKEN_KEY, accessToken);
+    localStorage.setItem(USER_KEY, JSON.stringify(userData));
+  }, []);
+
   const logout = useCallback(() => {
     setToken(null);
     setUser(null);
@@ -67,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isEmployee = !!user?.employeeId;
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, loginWithGoogle, logout, isManager, isEmployee }}>
+    <AuthContext.Provider value={{ user, token, loading, loginWithGoogle, loginWithPin, logout, isManager, isEmployee }}>
       {children}
     </AuthContext.Provider>
   );
