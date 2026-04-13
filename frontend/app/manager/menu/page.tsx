@@ -8,6 +8,10 @@ import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
 import DeleteIcon from '@mui/icons-material/Delete';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import Link from 'next/link';
@@ -22,10 +26,18 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { Delete, Get, Patch, Post, postFormData } from '@/utils/apiService';
 import { publicAssetUrl } from '@/utils/publicAssetUrl';
-import type { MenuItem } from '@/types/menuboard';
+import type { MenuItem as CatalogMenuItem } from '@/types/menuboard';
+import type { MenuItem as CustomerMenuItem } from '@/types/customer';
+import IngredientsModal from '@/components/manager/ingredientsModal';
 
 type CatalogKind = 'menu' | 'topping';
-type CatalogItem = MenuItem;
+type CatalogItem = CatalogMenuItem;
+type InventoryItem = { id: number; name: string; quantity: number; status: string };
+type IngredientAssignment = {
+  inventoryId: string;
+  servingsUsed: string;
+  isTopping: boolean;
+};
 type ItemForm = {
   name: string;
   category: string;
@@ -78,6 +90,19 @@ function formFromItem(item: CatalogItem): ItemForm {
   };
 }
 
+function catalogItemToCustomerMenuItem(item: CatalogItem): CustomerMenuItem {
+  return {
+    id: item.id,
+    name: item.name,
+    category: String(item.category ?? ''),
+    price: Number(item.price),
+    image: item.image ?? null,
+    imageFocusX: Number(item.imageFocusX ?? 50),
+    imageFocusY: Number(item.imageFocusY ?? 50),
+    available: item.available,
+  };
+}
+
 const endpointFor = (kind: CatalogKind) =>
   kind === 'menu' ? '/menu-items' : '/topping-items';
 const labelFor = (kind: CatalogKind) => (kind === 'menu' ? 'menu item' : 'topping');
@@ -85,6 +110,11 @@ const pluralLabelFor = (kind: CatalogKind) =>
   kind === 'menu' ? 'menu items' : 'toppings';
 const categoryLabelFor = (kind: CatalogKind) =>
   kind === 'menu' ? 'Category' : 'Category (optional)';
+const emptyIngredientAssignment = (): IngredientAssignment => ({
+  inventoryId: '',
+  servingsUsed: '1',
+  isTopping: false,
+});
 
 export default function ManagerMenuPage() {
   const [tab, setTab] = useState<CatalogKind>('menu');
@@ -92,13 +122,19 @@ export default function ManagerMenuPage() {
   const [toppingItems, setToppingItems] = useState<CatalogItem[]>([]);
   const [menuForms, setMenuForms] = useState<Record<number, ItemForm>>({});
   const [toppingForms, setToppingForms] = useState<Record<number, ItemForm>>({});
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
+  const [ingredientForms, setIngredientForms] = useState<
+    Record<number, IngredientAssignment[]>
+  >({});
   const [newMenuItem, setNewMenuItem] = useState<NewItemForm>(EMPTY_CREATE_FORM);
   const [newToppingItem, setNewToppingItem] = useState<NewItemForm>(EMPTY_CREATE_FORM);
   const [searchQuery, setSearchQuery] = useState('');
+  const [framingItemId, setFramingItemId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [savingKey, setSavingKey] = useState<string | null>(null);
+  const [ingredientsModalItem, setIngredientsModalItem] = useState<CustomerMenuItem | null>(null);
 
   const itemsByKind = useMemo(
     () => ({ menu: menuItems, topping: toppingItems }),
@@ -113,18 +149,54 @@ export default function ManagerMenuPage() {
     setLoading(true);
     setError(null);
     try {
-      const [menuData, toppingData] = await Promise.all([
+      const [menuData, toppingData, inventoryData, itemIngredientsData] = await Promise.all([
         Get('/menu-items?includeUnavailable=true'),
         Get('/topping-items?includeUnavailable=true'),
+        Get('/inventory'),
+        Get('/item-ingredients'),
       ]);
       const normalizedMenu = sanitizeItems(menuData);
       const normalizedToppings = sanitizeItems(toppingData);
       setMenuItems(normalizedMenu);
       setToppingItems(normalizedToppings);
+      setInventoryItems(
+        Array.isArray(inventoryData)
+          ? inventoryData.map((item) => ({
+              id: Number((item as InventoryItem).id),
+              name: String((item as InventoryItem).name ?? ''),
+              quantity: Number((item as InventoryItem).quantity ?? 0),
+              status: String((item as InventoryItem).status ?? ''),
+            }))
+          : [],
+      );
       setMenuForms(Object.fromEntries(normalizedMenu.map((item) => [item.id, formFromItem(item)])));
       setToppingForms(
         Object.fromEntries(normalizedToppings.map((item) => [item.id, formFromItem(item)])),
       );
+      const nextIngredientForms: Record<number, IngredientAssignment[]> = {};
+      if (Array.isArray(itemIngredientsData)) {
+        for (const row of itemIngredientsData as Array<{
+          menuItem?: { id?: number };
+          inventory?: { id?: number };
+          servingsUsed?: number | string;
+          isTopping?: boolean;
+        }>) {
+          const menuItemId = Number(row.menuItem?.id);
+          if (!menuItemId) continue;
+          if (!nextIngredientForms[menuItemId]) nextIngredientForms[menuItemId] = [];
+          nextIngredientForms[menuItemId].push({
+            inventoryId: String(row.inventory?.id ?? ''),
+            servingsUsed: String(row.servingsUsed ?? '1'),
+            isTopping: Boolean(row.isTopping),
+          });
+        }
+      }
+      for (const item of normalizedMenu) {
+        if (!nextIngredientForms[item.id]) {
+          nextIngredientForms[item.id] = [];
+        }
+      }
+      setIngredientForms(nextIngredientForms);
     } catch {
       setError('Could not load menu and topping catalogs.');
     } finally {
@@ -188,6 +260,33 @@ export default function ManagerMenuPage() {
     setCreateFormForKind(kind, { ...current, ...patch });
   };
 
+  const updateIngredientRow = (
+    menuItemId: number,
+    index: number,
+    patch: Partial<IngredientAssignment>,
+  ) => {
+    setIngredientForms((prev) => ({
+      ...prev,
+      [menuItemId]: (prev[menuItemId] ?? []).map((row, rowIndex) =>
+        rowIndex === index ? { ...row, ...patch } : row,
+      ),
+    }));
+  };
+
+  const addIngredientRow = (menuItemId: number) => {
+    setIngredientForms((prev) => ({
+      ...prev,
+      [menuItemId]: [...(prev[menuItemId] ?? []), emptyIngredientAssignment()],
+    }));
+  };
+
+  const removeIngredientRow = (menuItemId: number, index: number) => {
+    setIngredientForms((prev) => ({
+      ...prev,
+      [menuItemId]: (prev[menuItemId] ?? []).filter((_, rowIndex) => rowIndex !== index),
+    }));
+  };
+
   const buildPayload = (
     kind: CatalogKind,
     form: Pick<ItemForm, 'name' | 'category' | 'price' | 'imageFocusX' | 'imageFocusY'>,
@@ -241,6 +340,9 @@ export default function ManagerMenuPage() {
       const normalized = { ...created, category: String(created.category ?? ''), price: Number(created.price) };
       setItemsForKind(kind, [...itemsByKind[kind], normalized]);
       setFormsForKind(kind, { ...formsByKind[kind], [normalized.id]: formFromItem(normalized) });
+      if (kind === 'menu') {
+        setIngredientForms((prev) => ({ ...prev, [normalized.id]: [] }));
+      }
       setCreateFormForKind(kind, EMPTY_CREATE_FORM);
       setStatusMessage(`Created ${labelFor(kind)} "${normalized.name}".`);
     } catch (err) {
@@ -305,10 +407,53 @@ export default function ManagerMenuPage() {
     }
   };
 
+  const saveIngredients = async (menuItemId: number) => {
+    const rows = ingredientForms[menuItemId] ?? [];
+    try {
+      const ingredients = rows.map((row) => {
+        const inventoryId = Number(row.inventoryId);
+        const servingsUsed = Number.parseFloat(row.servingsUsed);
+        if (!inventoryId) {
+          throw new Error('Choose an inventory item for every ingredient row.');
+        }
+        if (Number.isNaN(servingsUsed) || servingsUsed <= 0) {
+          throw new Error('Ingredient servings used must be greater than 0.');
+        }
+        return {
+          inventoryId,
+          servingsUsed,
+          isTopping: row.isTopping,
+        };
+      });
+
+      setStatusMessage(null);
+      setSavingKey(`ingredients-${menuItemId}`);
+      await Patch(`/item-ingredients/menu-item/${menuItemId}`, { ingredients });
+      const item = menuItems.find((entry) => entry.id === menuItemId);
+      setStatusMessage(
+        `Updated ingredients for "${item?.name ?? `menu item #${menuItemId}`}".`,
+      );
+    } catch (err) {
+      setStatusMessage(
+        err instanceof Error ? err.message : 'Could not update ingredients.',
+      );
+    } finally {
+      setSavingKey(null);
+    }
+  };
+
   const statusSeverity: 'success' | 'error' = useMemo(() => {
     if (!statusMessage) return 'success';
     return /could not|failed|required|must/i.test(statusMessage) ? 'error' : 'success';
   }, [statusMessage]);
+
+  const framingItem =
+    framingItemId != null
+      ? menuItems.find((item) => item.id === framingItemId) ?? null
+      : null;
+  const framingForm =
+    framingItemId != null ? menuForms[framingItemId] ?? null : null;
+  const framingImageSrc = framingItem ? publicAssetUrl(framingItem.image) : null;
 
   return (
     <Box
@@ -527,72 +672,6 @@ export default function ManagerMenuPage() {
                               <TextField label="Price" size="small" type="number" inputProps={{ min: 0, step: 0.01 }} value={form.price} onChange={(event) => updateItemForm(tab, item.id, { price: event.target.value })} disabled={isBusy} sx={{ minWidth: { md: 160 }, '& .MuiOutlinedInput-root': { borderRadius: 2.5 } }} />
                             </Stack>
 
-                            {tab === 'menu' && (
-                              <Box
-                                sx={{
-                                  p: 1.5,
-                                  borderRadius: 3,
-                                  bgcolor: '#faf4ea',
-                                  border: '1px solid rgba(90,65,35,0.08)',
-                                }}
-                              >
-                                <Typography sx={{ fontSize: '0.92rem', fontWeight: 800, color: '#5d4938', mb: 1 }}>
-                                  Customer image framing
-                                </Typography>
-                                <Typography sx={{ fontSize: '0.8rem', color: '#7b6852', mb: 1.5 }}>
-                                  Adjust which part of the uploaded photo customers see on the kiosk cards.
-                                </Typography>
-                                <Stack spacing={1.5}>
-                                  <Box>
-                                    <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
-                                      <Typography sx={{ fontSize: '0.78rem', color: '#6f5c48', fontWeight: 700 }}>
-                                        Horizontal focus
-                                      </Typography>
-                                      <Typography sx={{ fontSize: '0.78rem', color: '#6f5c48', fontWeight: 700 }}>
-                                        {Math.round(form.imageFocusX)}%
-                                      </Typography>
-                                    </Stack>
-                                    <Slider
-                                      value={form.imageFocusX}
-                                      min={0}
-                                      max={100}
-                                      step={1}
-                                      disabled={isBusy}
-                                      onChange={(_event, value) =>
-                                        updateItemForm(tab, item.id, {
-                                          imageFocusX: Array.isArray(value) ? value[0] : value,
-                                        })
-                                      }
-                                      sx={{ color: '#c97b63' }}
-                                    />
-                                  </Box>
-                                  <Box>
-                                    <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
-                                      <Typography sx={{ fontSize: '0.78rem', color: '#6f5c48', fontWeight: 700 }}>
-                                        Vertical focus
-                                      </Typography>
-                                      <Typography sx={{ fontSize: '0.78rem', color: '#6f5c48', fontWeight: 700 }}>
-                                        {Math.round(form.imageFocusY)}%
-                                      </Typography>
-                                    </Stack>
-                                    <Slider
-                                      value={form.imageFocusY}
-                                      min={0}
-                                      max={100}
-                                      step={1}
-                                      disabled={isBusy}
-                                      onChange={(_event, value) =>
-                                        updateItemForm(tab, item.id, {
-                                          imageFocusY: Array.isArray(value) ? value[0] : value,
-                                        })
-                                      }
-                                      sx={{ color: '#2f5d50' }}
-                                    />
-                                  </Box>
-                                </Stack>
-                              </Box>
-                            )}
-
                             <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }}>
                               <FormControlLabel
                                 control={<Switch checked={form.available} onChange={(event) => updateItemForm(tab, item.id, { available: event.target.checked })} disabled={isBusy} />}
@@ -603,6 +682,16 @@ export default function ManagerMenuPage() {
                                 <Button variant="contained" onClick={() => void saveItem(tab, item.id)} disabled={isBusy} sx={{ borderRadius: 2.5, px: 2.2, bgcolor: '#c97b63', '&:hover': { bgcolor: '#ba694f' } }}>
                                   {isSaving ? 'Saving...' : 'Save changes'}
                                 </Button>
+                                {tab === 'menu' && (
+                                  <Button
+                                    variant="outlined"
+                                    onClick={() => setIngredientsModalItem(catalogItemToCustomerMenuItem(item))}
+                                    disabled={isBusy}
+                                    sx={{ borderRadius: 2.5, px: 2.2, borderColor: '#2f5d50', color: '#2f5d50' }}
+                                  >
+                                    Ingredients
+                                  </Button>
+                                )}
                                 <Button variant="outlined" color="error" startIcon={<DeleteIcon />} onClick={() => void deleteItem(tab, item.id)} disabled={isBusy} sx={{ borderRadius: 2.5, px: 2.2 }}>
                                   {isDeleting ? 'Deleting...' : 'Delete'}
                                 </Button>
@@ -619,7 +708,6 @@ export default function ManagerMenuPage() {
           </Stack>
 
           <Paper elevation={0} sx={{ width: { xs: '100%', xl: 360 }, position: { xl: 'sticky' }, top: { xl: 24 }, p: 3, borderRadius: 4, border: '1px solid rgba(90,65,35,0.08)', bgcolor: 'linear-gradient(180deg, #fffaf2 0%, #fff3e1 100%)', boxShadow: '0 20px 40px rgba(89, 67, 37, 0.08)' }}>
-            <Typography variant="overline" sx={{ color: '#8b6f47', fontWeight: 800 }}>QUICK ADD</Typography>
             <Typography variant="h5" sx={{ fontWeight: 800, color: '#2f5d50', mb: 1 }}>
               Create {labelFor(tab)}
             </Typography>
@@ -634,6 +722,132 @@ export default function ManagerMenuPage() {
             </Stack>
           </Paper>
         </Stack>
+
+        {ingredientsModalItem && (
+          <IngredientsModal
+            item={ingredientsModalItem}
+            ingredients={ingredientForms[ingredientsModalItem.id] ?? []}
+            inventoryItems={inventoryItems}
+            open
+            onAddRow={() => addIngredientRow(ingredientsModalItem.id)}
+            onClose={() => setIngredientsModalItem(null)}
+            onRemoveRow={(index) => removeIngredientRow(ingredientsModalItem.id, index)}
+            onSave={() => void saveIngredients(ingredientsModalItem.id)}
+            onUpdateRow={(index, patch) =>
+              updateIngredientRow(ingredientsModalItem.id, index, patch)
+            }
+            saving={savingKey === `ingredients-${ingredientsModalItem.id}`}
+          />
+        )}
+
+        <Dialog
+          open={Boolean(framingItem && framingForm)}
+          onClose={() => setFramingItemId(null)}
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogTitle sx={{ fontWeight: 800 }}>
+            Customer image framing
+          </DialogTitle>
+          <DialogContent>
+            {framingItem && framingForm && (
+              <Stack spacing={2} sx={{ pt: 1 }}>
+                <Box>
+                  <Typography sx={{ fontWeight: 700, color: '#2a221b' }}>
+                    {framingItem.name}
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.88rem', color: '#7b6852' }}>
+                    Adjust the crop focus customers see on the kiosk card.
+                  </Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: 240,
+                    borderRadius: 3,
+                    overflow: 'hidden',
+                    bgcolor: '#f6e6cc',
+                    border: '1px solid rgba(90,65,35,0.08)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {framingImageSrc ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={framingImageSrc}
+                      alt={framingItem.name}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        objectPosition: `${framingForm.imageFocusX}% ${framingForm.imageFocusY}%`,
+                      }}
+                    />
+                  ) : (
+                    <Stack alignItems="center" spacing={1}>
+                      <AddPhotoAlternateOutlinedIcon sx={{ fontSize: 42, color: '#b28957' }} />
+                      <Typography sx={{ color: '#8b6f47', fontWeight: 700 }}>
+                        Upload an image first
+                      </Typography>
+                    </Stack>
+                  )}
+                </Box>
+
+                <Box>
+                  <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
+                    <Typography sx={{ fontSize: '0.85rem', color: '#6f5c48', fontWeight: 700 }}>
+                      Horizontal focus
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.85rem', color: '#6f5c48', fontWeight: 700 }}>
+                      {Math.round(framingForm.imageFocusX)}%
+                    </Typography>
+                  </Stack>
+                  <Slider
+                    value={framingForm.imageFocusX}
+                    min={0}
+                    max={100}
+                    step={1}
+                    onChange={(_event, value) =>
+                      updateItemForm('menu', framingItem.id, {
+                        imageFocusX: Array.isArray(value) ? value[0] : value,
+                      })
+                    }
+                    sx={{ color: '#c97b63' }}
+                  />
+                </Box>
+
+                <Box>
+                  <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
+                    <Typography sx={{ fontSize: '0.85rem', color: '#6f5c48', fontWeight: 700 }}>
+                      Vertical focus
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.85rem', color: '#6f5c48', fontWeight: 700 }}>
+                      {Math.round(framingForm.imageFocusY)}%
+                    </Typography>
+                  </Stack>
+                  <Slider
+                    value={framingForm.imageFocusY}
+                    min={0}
+                    max={100}
+                    step={1}
+                    onChange={(_event, value) =>
+                      updateItemForm('menu', framingItem.id, {
+                        imageFocusY: Array.isArray(value) ? value[0] : value,
+                      })
+                    }
+                    sx={{ color: '#2f5d50' }}
+                  />
+                </Box>
+              </Stack>
+            )}
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 2.5 }}>
+            <Button onClick={() => setFramingItemId(null)}>Done</Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </Box>
   );

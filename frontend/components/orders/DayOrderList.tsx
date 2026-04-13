@@ -77,7 +77,7 @@ export default function DayOrderList({ date }: DayOrderListProps) {
       label: key.replace(/_/g, ' ').toUpperCase(),
     }));
 
-    const formatValue = (value: unknown, key: string, order: OrderRow) => {
+    const formatValue = (value: unknown, key: string, order: OrderRow): string => {
     // Format timestamps
     if (typeof value === 'string' && value.includes('T')) {
         const date = new Date(value);
@@ -86,7 +86,7 @@ export default function DayOrderList({ date }: DayOrderListProps) {
 
     // Customer name fallback
     if (key === 'customer_name') {
-    if (value) return value;
+    if (typeof value === 'string' && value.trim() !== '') return value;
 
     // Generate a placeholder
     return `Customer ${order.id}`;
@@ -94,7 +94,7 @@ export default function DayOrderList({ date }: DayOrderListProps) {
 
     // Customer phone fallback
     if (key === 'customer_phone') {
-        return value || 'No phone';
+        return (typeof value === 'string' && value) ? value : 'No phone';
     }
 
     return String(value ?? '');
