@@ -1,14 +1,15 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { RolesGuard } from './guards/roles.guard';
 import { EmployeesModule } from '../employees/employees.module';
 
 @Module({
   imports: [
-    EmployeesModule,
+    forwardRef(() => EmployeesModule),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -21,7 +22,7 @@ import { EmployeesModule } from '../employees/employees.module';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtAuthGuard],
-  exports: [AuthService, JwtModule, JwtAuthGuard],
+  providers: [AuthService, JwtAuthGuard, RolesGuard],
+  exports: [AuthService, JwtModule, JwtAuthGuard, RolesGuard, EmployeesModule],
 })
 export class AuthModule {}
