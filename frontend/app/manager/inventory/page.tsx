@@ -9,6 +9,8 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import { Get } from '@/utils/apiService';
 
 interface InventoryItem {
@@ -25,6 +27,10 @@ export default function ManagerInventoryPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [isQuickRestockOpen, setIsQuickRestockOpen] = useState(false);
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string }>({
+    open: false,
+    message: '',
+  });
 
   const lowStockItems = inventoryItems.filter((item) => item.status.toLowerCase().includes('low'));
   const filteredItems = inventoryItems.filter((item) => {
@@ -53,7 +59,14 @@ export default function ManagerInventoryPage() {
     fetchInventory();
   }, []);
 
-  const openQuickRestock = () => setIsQuickRestockOpen(true);
+  const openQuickRestock = () => {
+    if (lowStockItems.length === 0) {
+      setSnackbar({ open: true, message: 'No low stock items are available for quick restock.' });
+      return;
+    }
+    setIsQuickRestockOpen(true);
+  };
+
   const closeQuickRestock = () => setIsQuickRestockOpen(false);
   const confirmQuickRestock = () => {
     setInventoryItems((items) =>
@@ -68,6 +81,10 @@ export default function ManagerInventoryPage() {
       ),
     );
     setIsQuickRestockOpen(false);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
   return (
@@ -117,6 +134,17 @@ export default function ManagerInventoryPage() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="error" variant="filled" sx={{ fontWeight: 600 }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
 
       <Box sx={{ display: 'grid', gap: 2, maxWidth: 900 }}>
         {loading ? (
