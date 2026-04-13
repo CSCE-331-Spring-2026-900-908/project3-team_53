@@ -5,4 +5,5 @@ export class CreateEmployeeDto {
   shift: string;
   isWorking: boolean;
   wage: number;
+  email?: string;
 }

@@ -25,6 +25,7 @@ interface Employee {
   shift: string;
   isWorking: boolean;
   wage: number;
+  email: string;
 }
 
 const defaultEmployee: Omit<Employee, 'id'> = {
@@ -33,6 +34,7 @@ const defaultEmployee: Omit<Employee, 'id'> = {
   shift: 'morning',
   isWorking: true,
   wage: 0,
+  email: '',
 };
 
 export default function ManagerEmployeesPage() {
@@ -73,6 +75,7 @@ export default function ManagerEmployeesPage() {
       shift: employee.shift,
       isWorking: employee.isWorking,
       wage: employee.wage,
+      email: employee.email,
     });
     setDialogOpen(true);
   };
@@ -103,6 +106,7 @@ export default function ManagerEmployeesPage() {
           shift: formState.shift,
           isWorking: formState.isWorking,
           wage: formState.wage,
+          email: formState.email,
         });
 
         setEmployees((current) =>
@@ -126,6 +130,7 @@ export default function ManagerEmployeesPage() {
         shift: formState.shift,
         isWorking: formState.isWorking,
         wage: formState.wage,
+        email: formState.email,
       });
 
       setEmployees((current) => [...current, newEmployee]);
@@ -193,7 +198,10 @@ export default function ManagerEmployeesPage() {
                   {employee.name}
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#666666', mb: 1 }}>
-                  {employee.role} • {employee.shift}
+                  {employee.role === 'manager' ? 'Manager' : 'Employee'} • {employee.shift}
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#666666', mb: 1 }}>
+                  {employee.email}
                 </Typography>
               </Box>
               <Stack direction="row" spacing={1} alignItems="center">
@@ -224,10 +232,14 @@ export default function ManagerEmployeesPage() {
             />
             <TextField
               label="Role"
+              select
               value={formState.role}
               onChange={(event) => handleFieldChange('role', event.target.value)}
               fullWidth
-            />
+            >
+              <MenuItem value="manager">Manager</MenuItem>
+              <MenuItem value="employee">Employee</MenuItem>
+            </TextField>
             <TextField
               label="Shift"
               select

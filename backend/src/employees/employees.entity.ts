@@ -19,4 +19,7 @@ export class Employee {
 
   @Column('decimal', { precision: 8, scale: 2 })
   wage: number;
+
+  @Column({ nullable: true, unique: true })
+  email: string;
 }

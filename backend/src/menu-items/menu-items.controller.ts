@@ -9,11 +9,15 @@ import {
   Post,
   Query,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { unlink } from 'fs/promises';
 import { join } from 'path';
 import { MenuItemsService } from './menu-items.service';
@@ -42,11 +46,15 @@ export class MenuItemsController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('manager')
   create(@Body() dto: CreateMenuItemDto): Promise<MenuItem> {
     return this.menuItemsService.create(dto);
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('manager')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateMenuItemDto,
@@ -55,6 +63,8 @@ export class MenuItemsController {
   }
 
   @Post(':id/image')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('manager')
   @UseInterceptors(FileInterceptor('image', imageUploadMulterOptions))
   async uploadImage(
     @Param('id', ParseIntPipe) id: number,
@@ -77,11 +87,15 @@ export class MenuItemsController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('manager')
   async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.menuItemsService.remove(id);
   }
 
   @Delete(':id/image')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('manager')
   async deleteImage(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<MenuItem> {

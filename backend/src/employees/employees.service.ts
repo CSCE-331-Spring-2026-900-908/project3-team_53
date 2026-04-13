@@ -29,11 +29,23 @@ export class EmployeesService {
     await this.employeeRepo.delete(id);
   }
 
+  async findOne(id: number): Promise<Employee | null> {
+    return this.employeeRepo.findOneBy({ id });
+  }
+
   async findAll(role?: string): Promise<Employee[]> {
     const where: FindOptionsWhere<Employee> = {};
     if (role) {
       where.role = role;
     }
     return this.employeeRepo.find({ where, order: { name: 'ASC' } });
+  }
+
+  async findByEmail(email: string): Promise<Employee | null> {
+    const normalized = email.trim().toLowerCase();
+    return this.employeeRepo
+      .createQueryBuilder('employee')
+      .where('LOWER(employee.email) = :email', { email: normalized })
+      .getOne();
   }
 }
