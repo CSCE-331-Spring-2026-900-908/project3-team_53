@@ -15,7 +15,7 @@ export class ToppingItem {
   price: number;
 
   @Column({ nullable: true })
-  image: string;
+  image: string | null;
 
   @Column({ default: true })
   available: boolean;

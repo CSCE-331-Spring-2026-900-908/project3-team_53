@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -17,8 +18,9 @@ import { unlink } from 'fs/promises';
 import { join } from 'path';
 import { MenuItemsService } from './menu-items.service';
 import { MenuItem } from './menu-item.entity';
+import { CreateMenuItemDto } from './create-menu-item.dto';
 import { UpdateMenuItemDto } from './update-menu-item.dto';
-import { menuImageMulterOptions } from './menu-image.multer';
+import { imageUploadMulterOptions } from '../upload/image-upload.multer';
 import {
   getUploadDirectory,
   UPLOADS_PUBLIC_PREFIX,
@@ -39,6 +41,11 @@ export class MenuItemsController {
     );
   }
 
+  @Post()
+  create(@Body() dto: CreateMenuItemDto): Promise<MenuItem> {
+    return this.menuItemsService.create(dto);
+  }
+
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -48,7 +55,7 @@ export class MenuItemsController {
   }
 
   @Post(':id/image')
-  @UseInterceptors(FileInterceptor('image', menuImageMulterOptions))
+  @UseInterceptors(FileInterceptor('image', imageUploadMulterOptions))
   async uploadImage(
     @Param('id', ParseIntPipe) id: number,
     @UploadedFile() file: Express.Multer.File | undefined,
@@ -67,5 +74,17 @@ export class MenuItemsController {
       }
       throw err;
     }
+  }
+
+  @Delete(':id')
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.menuItemsService.remove(id);
+  }
+
+  @Delete(':id/image')
+  async deleteImage(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<MenuItem> {
+    return this.menuItemsService.removeImage(id);
   }
 }
