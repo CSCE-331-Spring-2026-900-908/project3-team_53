@@ -26,6 +26,8 @@
     "@nestjs/jwt": "^11.0.2",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/typeorm": "^11.0.0",
+    "@types/multer": "^2.1.0",
+    "multer": "^2.1.1",
     "google-auth-library": "^10.6.2",
     "oauth": "^0.10.2",
     "pg": "^8.20.0",
