@@ -252,6 +252,15 @@ export default function ManagerEmployeesPage() {
               <MenuItem value="Evening">Evening</MenuItem>
             </TextField>
             <TextField
+              label="Email (Google account)"
+              type="email"
+              value={formState.email}
+              onChange={(event) => handleFieldChange('email', event.target.value)}
+              fullWidth
+              placeholder="employee@gmail.com"
+              helperText="Used for Google Sign-In authentication"
+            />
+            <TextField
               label="Wage"
               type="number"
               inputProps={{ min: 0, step: 0.25 }}

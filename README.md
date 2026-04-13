@@ -69,6 +69,9 @@ API Base URL: https://project3-team-53-backend.vercel.app/api
 
    ```env
    NEXT_PUBLIC_API_URL=http://localhost:3001/api
+
+   # Google OAuth client ID (from Google Cloud Console)
+   NEXT_PUBLIC_GOOGLE_CLIENT_ID=<your-google-client-id>
    ```
 
    **`backend/.env`**
@@ -84,9 +87,26 @@ API Base URL: https://project3-team-53-backend.vercel.app/api
    # Local Docker database - no SSL needed
    DB_SYNCHRONIZE=true
    DB_SSL=false
+
+   # Google Sign-In — must match the frontend client ID
+   GOOGLE_CLIENT_ID=<your-google-client-id>
+
+   # Application JWT (set a long random secret in production)
+   JWT_SECRET=<a-strong-random-string>
+   # Token lifetime in seconds (default 604800 = 7 days)
+   JWT_EXPIRES_SEC=604800
    ```
 
    If you omit `backend/.env`, the API listens on port **3001** by default (`main.ts`) and uses the default local PostgreSQL values shown above.
+
+   ### Authentication environment variables
+
+   | Variable | Location | Description |
+   | --- | --- | --- |
+   | `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | `frontend/.env` | Google OAuth 2.0 client ID. Obtain from [Google Cloud Console](https://console.cloud.google.com/) under **APIs & Services > Credentials**. |
+   | `GOOGLE_CLIENT_ID` | `backend/.env` | Same client ID as the frontend — used to verify Google ID tokens server-side. |
+   | `JWT_SECRET` | `backend/.env` | Secret key used to sign and verify application JWTs. Use a long random string in production. |
+   | `JWT_EXPIRES_SEC` | `backend/.env` | Token lifetime in seconds. Defaults to `604800` (7 days). |
 
 3. Install dependencies in both apps:
 
