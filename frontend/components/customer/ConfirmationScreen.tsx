@@ -22,7 +22,10 @@ export default function ConfirmationScreen({
   const { t } = useTranslation();
   const [countdown, setCountdown] = useState(AUTO_RESET_SECONDS);
   const onStartOverRef = useRef(onStartOver);
-  onStartOverRef.current = onStartOver;
+
+  useEffect(() => {
+    onStartOverRef.current = onStartOver;
+  }, [onStartOver]);
 
   useEffect(() => {
     const interval = setInterval(() => {

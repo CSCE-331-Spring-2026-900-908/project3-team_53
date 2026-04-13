@@ -24,20 +24,20 @@ import { TranslationProvider } from '@/contexts/TranslationContext';
 import LanguageSelector from '@/components/customer/LanguageSelector';
 
 const FALLBACK_MENU: MenuItemType[] = [
-  { id: 1, name: 'Classic Milk Tea', category: 'Milk Tea', price: 5.50, image: null, available: true },
-  { id: 2, name: 'Taro Milk Tea', category: 'Milk Tea', price: 6.00, image: null, available: true },
-  { id: 3, name: 'Brown Sugar Milk Tea', category: 'Milk Tea', price: 6.50, image: null, available: true },
-  { id: 4, name: 'Jasmine Milk Tea', category: 'Milk Tea', price: 5.75, image: null, available: true },
-  { id: 5, name: 'Mango Green Tea', category: 'Fruit Tea', price: 5.50, image: null, available: true },
-  { id: 6, name: 'Passion Fruit Tea', category: 'Fruit Tea', price: 5.50, image: null, available: true },
-  { id: 7, name: 'Lychee Tea', category: 'Fruit Tea', price: 5.75, image: null, available: true },
-  { id: 8, name: 'Peach Oolong Tea', category: 'Fruit Tea', price: 5.75, image: null, available: true },
-  { id: 9, name: 'Mango Smoothie', category: 'Smoothies', price: 6.50, image: null, available: true },
-  { id: 10, name: 'Strawberry Smoothie', category: 'Smoothies', price: 6.50, image: null, available: true },
-  { id: 11, name: 'Matcha Smoothie', category: 'Smoothies', price: 7.00, image: null, available: true },
-  { id: 12, name: 'Popcorn Chicken', category: 'Snacks', price: 4.50, image: null, available: true },
-  { id: 13, name: 'Egg Puffs', category: 'Snacks', price: 3.50, image: null, available: true },
-  { id: 14, name: 'Mochi Donuts', category: 'Snacks', price: 4.00, image: null, available: true },
+  { id: 1, name: 'Classic Milk Tea', category: 'Milk Tea', price: 5.50, image: null, imageFocusX: 50, imageFocusY: 50, available: true },
+  { id: 2, name: 'Taro Milk Tea', category: 'Milk Tea', price: 6.00, image: null, imageFocusX: 50, imageFocusY: 50, available: true },
+  { id: 3, name: 'Brown Sugar Milk Tea', category: 'Milk Tea', price: 6.50, image: null, imageFocusX: 50, imageFocusY: 50, available: true },
+  { id: 4, name: 'Jasmine Milk Tea', category: 'Milk Tea', price: 5.75, image: null, imageFocusX: 50, imageFocusY: 50, available: true },
+  { id: 5, name: 'Mango Green Tea', category: 'Fruit Tea', price: 5.50, image: null, imageFocusX: 50, imageFocusY: 50, available: true },
+  { id: 6, name: 'Passion Fruit Tea', category: 'Fruit Tea', price: 5.50, image: null, imageFocusX: 50, imageFocusY: 50, available: true },
+  { id: 7, name: 'Lychee Tea', category: 'Fruit Tea', price: 5.75, image: null, imageFocusX: 50, imageFocusY: 50, available: true },
+  { id: 8, name: 'Peach Oolong Tea', category: 'Fruit Tea', price: 5.75, image: null, imageFocusX: 50, imageFocusY: 50, available: true },
+  { id: 9, name: 'Mango Smoothie', category: 'Smoothies', price: 6.50, image: null, imageFocusX: 50, imageFocusY: 50, available: true },
+  { id: 10, name: 'Strawberry Smoothie', category: 'Smoothies', price: 6.50, image: null, imageFocusX: 50, imageFocusY: 50, available: true },
+  { id: 11, name: 'Matcha Smoothie', category: 'Smoothies', price: 7.00, image: null, imageFocusX: 50, imageFocusY: 50, available: true },
+  { id: 12, name: 'Popcorn Chicken', category: 'Snacks', price: 4.50, image: null, imageFocusX: 50, imageFocusY: 50, available: true },
+  { id: 13, name: 'Egg Puffs', category: 'Snacks', price: 3.50, image: null, imageFocusX: 50, imageFocusY: 50, available: true },
+  { id: 14, name: 'Mochi Donuts', category: 'Snacks', price: 4.00, image: null, imageFocusX: 50, imageFocusY: 50, available: true },
 ];
 
 export default function CustomerKiosk() {
@@ -52,7 +52,13 @@ export default function CustomerKiosk() {
     Get('/menu-items')
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
-          setMenuItems(data);
+          setMenuItems(
+            data.map((item: MenuItemType) => ({
+              ...item,
+              imageFocusX: Number(item.imageFocusX ?? 50),
+              imageFocusY: Number(item.imageFocusY ?? 50),
+            })),
+          );
         }
       })
       .catch(() => {});

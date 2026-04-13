@@ -7,11 +7,11 @@ import { Get } from '@/utils/apiService';
 
 // Optional fallback in case API fails
 const FALLBACK_MENU: MenuItem[] = [
-  { id: 1, name: 'Classic Milk Tea', category: 'Milk Tea', price: 5.5, image: null, available: true },
-  { id: 2, name: 'Taro Milk Tea', category: 'Milk Tea', price: 6, image: null, available: true },
-  { id: 3, name: 'Mango Green Tea', category: 'Fruit Tea', price: 5.5, image: null, available: true },
-  { id: 4, name: 'Strawberry Smoothie', category: 'Smoothies', price: 6.5, image: null, available: true },
-  { id: 5, name: 'Popcorn Chicken', category: 'Snacks', price: 4.5, image: null, available: true },
+  { id: 1, name: 'Classic Milk Tea', category: 'Milk Tea', price: 5.5, image: null, imageFocusX: 50, imageFocusY: 50, available: true },
+  { id: 2, name: 'Taro Milk Tea', category: 'Milk Tea', price: 6, image: null, imageFocusX: 50, imageFocusY: 50, available: true },
+  { id: 3, name: 'Mango Green Tea', category: 'Fruit Tea', price: 5.5, image: null, imageFocusX: 50, imageFocusY: 50, available: true },
+  { id: 4, name: 'Strawberry Smoothie', category: 'Smoothies', price: 6.5, image: null, imageFocusX: 50, imageFocusY: 50, available: true },
+  { id: 5, name: 'Popcorn Chicken', category: 'Snacks', price: 4.5, image: null, imageFocusX: 50, imageFocusY: 50, available: true },
 ];
 
 export default function MenuBoardPage() {
@@ -25,6 +25,8 @@ export default function MenuBoardPage() {
           const sanitized = data.map((item) => ({
             ...item,
             price: Number(item.price), // force numeric
+            imageFocusX: Number(item.imageFocusX ?? 50),
+            imageFocusY: Number(item.imageFocusY ?? 50),
           }));
           setItems(sanitized);
         }

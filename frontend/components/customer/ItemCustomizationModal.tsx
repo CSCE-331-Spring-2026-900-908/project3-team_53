@@ -23,6 +23,7 @@ import {
   IceLevel,
 } from '@/types/customer';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { publicAssetUrl } from '@/utils/publicAssetUrl';
 
 interface ItemCustomizationModalProps {
   item: MenuItem;
@@ -45,6 +46,7 @@ export default function ItemCustomizationModal({
   onAdd,
 }: ItemCustomizationModalProps) {
   const { t } = useTranslation();
+  const headerImageSrc = publicAssetUrl(item.image);
   const [size, setSize] = useState<Size>('Regular');
   const [sugarLevel, setSugarLevel] = useState<SugarLevel>('100%');
   const [iceLevel, setIceLevel] = useState<IceLevel>('Regular');
@@ -91,26 +93,48 @@ export default function ItemCustomizationModal({
       </DialogTitle>
 
       <DialogContent dividers sx={{ borderColor: '#f0e6d3' }}>
-        {/* Item header */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+        {/* Item header — large hero image so the drink is easy to recognize */}
+        <Box sx={{ mb: 3 }}>
           <Box
             sx={{
-              width: 72,
-              height: 72,
+              mx: 'auto',
+              width: '100%',
+              maxWidth: { xs: 260, sm: 300 },
+              aspectRatio: '1',
               borderRadius: 3,
+              overflow: 'hidden',
               bgcolor: '#FAF3E0',
+              border: '1px solid #e8dcc8',
+              boxShadow: '0 6px 20px rgba(45, 52, 54, 0.12)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <LocalCafeIcon sx={{ fontSize: 36, color: '#4ECDC4' }} />
+            {headerImageSrc ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={headerImageSrc}
+                alt={item.name}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  display: 'block',
+                }}
+              />
+            ) : (
+              <LocalCafeIcon sx={{ fontSize: { xs: 96, sm: 112 }, color: '#4ECDC4' }} />
+            )}
           </Box>
-          <Box>
-            <Typography sx={{ fontWeight: 700, fontSize: '1.15rem', color: '#2D3436' }}>
+          <Box sx={{ textAlign: 'center', mt: 2.5 }}>
+            <Typography
+              component="h2"
+              sx={{ fontWeight: 700, fontSize: '1.35rem', color: '#2D3436', lineHeight: 1.3 }}
+            >
               {t(item.name)}
             </Typography>
-            <Typography sx={{ color: '#FF6B6B', fontWeight: 700 }}>
+            <Typography sx={{ color: '#FF6B6B', fontWeight: 700, fontSize: '1.2rem', mt: 0.5 }}>
               ${Number(item.price).toFixed(2)}
             </Typography>
           </Box>

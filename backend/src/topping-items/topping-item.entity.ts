@@ -14,8 +14,8 @@ export class ToppingItem {
   @Column('decimal', { precision: 6, scale: 2 })
   price: number;
 
-  @Column({ nullable: true })
-  image: string;
+  @Column({ type: 'varchar', nullable: true })
+  image: string | null;
 
   @Column({ default: true })
   available: boolean;

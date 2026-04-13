@@ -17,10 +17,9 @@ interface KitchenHeaderProps {
 }
 
 export default function KitchenHeader({ pendingCount, dayStats }: KitchenHeaderProps) {
-  const [now, setNow] = useState<Date | null>(null);
+  const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
-    setNow(new Date());
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
@@ -57,7 +56,7 @@ export default function KitchenHeader({ pendingCount, dayStats }: KitchenHeaderP
         </Typography>
         <Chip
           icon={<AccessTimeIcon sx={{ color: '#ccc !important' }} />}
-          label={now ? now.toLocaleTimeString() : '--:--:--'}
+          label={now.toLocaleTimeString()}
           sx={{
             bgcolor: '#16213e',
             color: '#ccc',

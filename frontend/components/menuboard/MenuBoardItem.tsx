@@ -1,18 +1,20 @@
 'use client';
 import React from "react";
 import { MenuItem } from "@/types/menuboard";
+import { publicAssetUrl } from "@/utils/publicAssetUrl";
 
 interface MenuBoardItemProps {
   item: MenuItem;
 }
 
 export default function MenuBoardItem({ item }: MenuBoardItemProps) {
+  const imgSrc = publicAssetUrl(item.image);
   return (
     <div className="flex flex-col items-center text-center p-4 bg-[#FFF8EE] rounded-lg shadow-lg">
       {/* Show image if it exists */}
-      {item.image && (
+      {imgSrc && (
         <img
-          src={item.image}
+          src={imgSrc}
           alt={item.name}
           className="w-40 h-40 object-cover rounded-md mb-4"
         />
