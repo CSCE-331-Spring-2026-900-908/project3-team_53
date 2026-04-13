@@ -4,6 +4,8 @@ export interface MenuItem {
   category: string;
   price: number;
   image: string | null;
+  imageFocusX: number;
+  imageFocusY: number;
   available: boolean;
 }
 

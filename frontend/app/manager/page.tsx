@@ -60,7 +60,7 @@ export default function ManagerDashboard() {
           },
           gap: 2,
         }}
-      >
+      > 
         <Card href="/manager/orders">
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
             Order History

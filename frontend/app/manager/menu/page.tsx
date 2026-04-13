@@ -13,6 +13,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Link from 'next/link';
 import Paper from '@mui/material/Paper';
 import SearchIcon from '@mui/icons-material/Search';
+import Slider from '@mui/material/Slider';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Tab from '@mui/material/Tab';
@@ -25,10 +26,29 @@ import type { MenuItem } from '@/types/menuboard';
 
 type CatalogKind = 'menu' | 'topping';
 type CatalogItem = MenuItem;
-type ItemForm = { name: string; category: string; price: string; available: boolean };
-type NewItemForm = { name: string; category: string; price: string };
+type ItemForm = {
+  name: string;
+  category: string;
+  price: string;
+  available: boolean;
+  imageFocusX: number;
+  imageFocusY: number;
+};
+type NewItemForm = {
+  name: string;
+  category: string;
+  price: string;
+  imageFocusX: number;
+  imageFocusY: number;
+};
 
-const EMPTY_CREATE_FORM: NewItemForm = { name: '', category: '', price: '' };
+const EMPTY_CREATE_FORM: NewItemForm = {
+  name: '',
+  category: '',
+  price: '',
+  imageFocusX: 50,
+  imageFocusY: 50,
+};
 
 function sanitizeItems(data: unknown): CatalogItem[] {
   if (!Array.isArray(data)) return [];
@@ -40,6 +60,8 @@ function sanitizeItems(data: unknown): CatalogItem[] {
       category: String(record.category ?? ''),
       price: Number(record.price ?? 0),
       image: record.image ?? null,
+      imageFocusX: Number(record.imageFocusX ?? 50),
+      imageFocusY: Number(record.imageFocusY ?? 50),
       available: Boolean(record.available),
     };
   });
@@ -50,6 +72,8 @@ function formFromItem(item: CatalogItem): ItemForm {
     name: item.name,
     category: item.category ?? '',
     price: Number(item.price).toFixed(2),
+    imageFocusX: Number(item.imageFocusX ?? 50),
+    imageFocusY: Number(item.imageFocusY ?? 50),
     available: item.available,
   };
 }
@@ -164,14 +188,27 @@ export default function ManagerMenuPage() {
     setCreateFormForKind(kind, { ...current, ...patch });
   };
 
-  const buildPayload = (kind: CatalogKind, form: Pick<ItemForm, 'name' | 'category' | 'price'>) => {
+  const buildPayload = (
+    kind: CatalogKind,
+    form: Pick<ItemForm, 'name' | 'category' | 'price' | 'imageFocusX' | 'imageFocusY'>,
+  ) => {
     const name = form.name.trim();
     if (!name) throw new Error('Name is required.');
     const category = form.category.trim();
     if (kind === 'menu' && !category) throw new Error('Category is required for menu items.');
     const price = Number.parseFloat(form.price);
     if (Number.isNaN(price) || price < 0) throw new Error('Price must be a non-negative number.');
-    return { name, ...(category ? { category } : {}), price };
+    return {
+      name,
+      ...(category ? { category } : {}),
+      price,
+      ...(kind === 'menu'
+        ? {
+            imageFocusX: Math.round(form.imageFocusX),
+            imageFocusY: Math.round(form.imageFocusY),
+          }
+        : {}),
+    };
   };
 
   const saveItem = async (kind: CatalogKind, id: number) => {
@@ -420,6 +457,7 @@ export default function ManagerMenuPage() {
                     const form = formsByKind[tab][item.id];
                     if (!form) return null;
                     const imageSrc = publicAssetUrl(item.image);
+                    const objectPosition = `${form.imageFocusX}% ${form.imageFocusY}%`;
                     const isSaving = savingKey === `${tab}-save-${item.id}`;
                     const isUploading = savingKey === `${tab}-upload-${item.id}`;
                     const isDeleting = savingKey === `${tab}-delete-${item.id}`;
@@ -433,7 +471,16 @@ export default function ManagerMenuPage() {
                             <Box sx={{ width: '100%', aspectRatio: '1 / 1', borderRadius: 3, overflow: 'hidden', bgcolor: '#f6e6cc', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                               {imageSrc ? (
                                 // eslint-disable-next-line @next/next/no-img-element
-                                <img src={imageSrc} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                <img
+                                  src={imageSrc}
+                                  alt={item.name}
+                                  style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover',
+                                    objectPosition,
+                                  }}
+                                />
                               ) : (
                                 <Stack alignItems="center" spacing={1}>
                                   <AddPhotoAlternateOutlinedIcon sx={{ fontSize: 38, color: '#b28957' }} />
@@ -479,6 +526,72 @@ export default function ManagerMenuPage() {
                               <TextField label={categoryLabelFor(tab)} size="small" fullWidth value={form.category} onChange={(event) => updateItemForm(tab, item.id, { category: event.target.value })} disabled={isBusy} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2.5 } }} />
                               <TextField label="Price" size="small" type="number" inputProps={{ min: 0, step: 0.01 }} value={form.price} onChange={(event) => updateItemForm(tab, item.id, { price: event.target.value })} disabled={isBusy} sx={{ minWidth: { md: 160 }, '& .MuiOutlinedInput-root': { borderRadius: 2.5 } }} />
                             </Stack>
+
+                            {tab === 'menu' && (
+                              <Box
+                                sx={{
+                                  p: 1.5,
+                                  borderRadius: 3,
+                                  bgcolor: '#faf4ea',
+                                  border: '1px solid rgba(90,65,35,0.08)',
+                                }}
+                              >
+                                <Typography sx={{ fontSize: '0.92rem', fontWeight: 800, color: '#5d4938', mb: 1 }}>
+                                  Customer image framing
+                                </Typography>
+                                <Typography sx={{ fontSize: '0.8rem', color: '#7b6852', mb: 1.5 }}>
+                                  Adjust which part of the uploaded photo customers see on the kiosk cards.
+                                </Typography>
+                                <Stack spacing={1.5}>
+                                  <Box>
+                                    <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
+                                      <Typography sx={{ fontSize: '0.78rem', color: '#6f5c48', fontWeight: 700 }}>
+                                        Horizontal focus
+                                      </Typography>
+                                      <Typography sx={{ fontSize: '0.78rem', color: '#6f5c48', fontWeight: 700 }}>
+                                        {Math.round(form.imageFocusX)}%
+                                      </Typography>
+                                    </Stack>
+                                    <Slider
+                                      value={form.imageFocusX}
+                                      min={0}
+                                      max={100}
+                                      step={1}
+                                      disabled={isBusy}
+                                      onChange={(_event, value) =>
+                                        updateItemForm(tab, item.id, {
+                                          imageFocusX: Array.isArray(value) ? value[0] : value,
+                                        })
+                                      }
+                                      sx={{ color: '#c97b63' }}
+                                    />
+                                  </Box>
+                                  <Box>
+                                    <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
+                                      <Typography sx={{ fontSize: '0.78rem', color: '#6f5c48', fontWeight: 700 }}>
+                                        Vertical focus
+                                      </Typography>
+                                      <Typography sx={{ fontSize: '0.78rem', color: '#6f5c48', fontWeight: 700 }}>
+                                        {Math.round(form.imageFocusY)}%
+                                      </Typography>
+                                    </Stack>
+                                    <Slider
+                                      value={form.imageFocusY}
+                                      min={0}
+                                      max={100}
+                                      step={1}
+                                      disabled={isBusy}
+                                      onChange={(_event, value) =>
+                                        updateItemForm(tab, item.id, {
+                                          imageFocusY: Array.isArray(value) ? value[0] : value,
+                                        })
+                                      }
+                                      sx={{ color: '#2f5d50' }}
+                                    />
+                                  </Box>
+                                </Stack>
+                              </Box>
+                            )}
 
                             <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }}>
                               <FormControlLabel

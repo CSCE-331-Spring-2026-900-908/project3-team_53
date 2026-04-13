@@ -18,6 +18,12 @@ export class MenuItem {
   @Column({ type: 'varchar', nullable: true })
   image: string | null;
 
+  @Column('int', { default: 50 })
+  imageFocusX: number;
+
+  @Column('int', { default: 50 })
+  imageFocusY: number;
+
   @Column({ default: true })
   available: boolean;
 

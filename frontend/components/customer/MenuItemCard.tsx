@@ -11,16 +11,27 @@ import FastfoodIcon from '@mui/icons-material/Fastfood';
 import { MenuItem } from '@/types/customer';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { publicAssetUrl } from '@/utils/publicAssetUrl';
+import { imageObjectPosition } from '@/utils/imageFocus';
 
 interface MenuItemCardProps {
   item: MenuItem;
   onSelect: (item: MenuItem) => void;
+  cardWidth?: number;
+  imageHeight?: number;
+  cardMinHeight?: number;
 }
 
-export default function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
+export default function MenuItemCard({
+  item,
+  onSelect,
+  cardWidth = 200,
+  imageHeight = 120,
+  cardMinHeight = 230,
+}: MenuItemCardProps) {
   const { t } = useTranslation();
   const isSnack = item.category === 'Snacks';
   const imageSrc = publicAssetUrl(item.image);
+  const objectPosition = imageObjectPosition(item.imageFocusX, item.imageFocusY);
 
   return (
     <Card
@@ -28,6 +39,7 @@ export default function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
         bgcolor: '#FFF8EE',
         borderRadius: 3,
         border: '1px solid #f0e6d3',
+        minHeight: cardMinHeight,
         transition: 'transform 0.15s, box-shadow 0.15s',
         '&:hover': {
           transform: 'scale(1.03)',
@@ -38,7 +50,7 @@ export default function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
       <CardActionArea onClick={() => onSelect(item)} sx={{ height: '100%' }}>
         <Box
           sx={{
-            height: 120,
+            height: imageHeight,
             overflow: 'hidden',
             bgcolor: '#FAF3E0',
           }}
@@ -48,7 +60,12 @@ export default function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
             <img
               src={imageSrc}
               alt={item.name}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition,
+              }}
             />
           ) : isSnack ? (
             <Box
@@ -74,9 +91,14 @@ export default function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
             </Box>
           )}
         </Box>
-        <CardContent>
+        <CardContent sx={{ minHeight: Math.max(88, cardMinHeight - imageHeight) }}>
           <Typography
-            sx={{ fontWeight: 600, fontSize: '1rem', color: '#2D3436' }}
+            sx={{
+              fontWeight: 600,
+              fontSize: cardWidth >= 240 ? '1.06rem' : '1rem',
+              color: '#2D3436',
+              lineHeight: 1.25,
+            }}
           >
             {t(item.name)}
           </Typography>

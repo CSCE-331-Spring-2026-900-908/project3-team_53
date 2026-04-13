@@ -3,4 +3,6 @@ export class UpdateMenuItemDto {
   category?: string;
   price?: number;
   available?: boolean;
+  imageFocusX?: number;
+  imageFocusY?: number;
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -23,6 +23,7 @@ import ItemCustomizationModal from './ItemCustomizationModal';
 import SnackAddModal from './SnackAddModal';
 import CartSidebar from './CartSidebar';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { publicAssetUrl } from '@/utils/publicAssetUrl';
 
 interface MenuScreenProps {
   menuItems: MenuItemType[];
@@ -67,9 +68,51 @@ export default function MenuScreen({
   const [selectedCategory, setSelectedCategory] = useState(categories[0] || 'Milk Tea');
   const [customizingItem, setCustomizingItem] = useState<MenuItemType | null>(null);
   const [cartOpen, setCartOpen] = useState(false);
+  const [largestImageArea, setLargestImageArea] = useState(0);
 
   const filteredItems = menuItems.filter((i) => i.category === selectedCategory);
   const cartCount = cart.reduce((sum, c) => sum + c.quantity, 0);
+  const hasImagesInView = filteredItems.some((item) => Boolean(item.image));
+
+  useEffect(() => {
+    let cancelled = false;
+    const imageUrls = filteredItems
+      .map((item) => publicAssetUrl(item.image))
+      .filter((value): value is string => Boolean(value));
+
+    if (imageUrls.length === 0) return () => { cancelled = true; };
+
+    Promise.all(
+      imageUrls.map(
+        (url) =>
+          new Promise<number>((resolve) => {
+            const image = new window.Image();
+            image.onload = () => resolve(image.naturalWidth * image.naturalHeight);
+            image.onerror = () => resolve(0);
+            image.src = url;
+          }),
+      ),
+    ).then((areas) => {
+      if (!cancelled) {
+        setLargestImageArea(Math.max(0, ...areas));
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [filteredItems]);
+
+  const cardScale = useMemo(() => {
+    const area = hasImagesInView ? largestImageArea : 0;
+    if (area <= 0) return 1;
+    const normalized = Math.sqrt(area / 120000);
+    return Math.min(1.45, Math.max(1, normalized));
+  }, [hasImagesInView, largestImageArea]);
+
+  const cardWidth = Math.round(200 * cardScale);
+  const imageHeight = Math.round(120 * cardScale);
+  const cardMinHeight = Math.round(230 * cardScale);
 
   return (
     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -138,8 +181,9 @@ export default function MenuScreen({
             <Box
               sx={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                gridTemplateColumns: `repeat(auto-fill, minmax(${cardWidth}px, 1fr))`,
                 gap: 2.5,
+                alignItems: 'stretch',
               }}
             >
               {filteredItems.map((item) => (
@@ -147,6 +191,9 @@ export default function MenuScreen({
                   key={item.id}
                   item={item}
                   onSelect={setCustomizingItem}
+                  cardWidth={cardWidth}
+                  imageHeight={imageHeight}
+                  cardMinHeight={cardMinHeight}
                 />
               ))}
             </Box>

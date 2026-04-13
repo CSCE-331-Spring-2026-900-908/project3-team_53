@@ -15,6 +15,16 @@ import {
   UPLOADS_PUBLIC_PREFIX,
 } from '../upload/upload.paths';
 
+function normalizeFocus(value: number | string | undefined): number {
+  const parsed = Number(value);
+  if (Number.isNaN(parsed)) {
+    throw new BadRequestException(
+      'Image focus must be a number between 0 and 100.',
+    );
+  }
+  return Math.min(100, Math.max(0, Math.round(parsed)));
+}
+
 @Injectable()
 export class MenuItemsService {
   constructor(
@@ -52,7 +62,15 @@ export class MenuItemsService {
     if (Number.isNaN(price) || price < 0) {
       throw new BadRequestException('Price must be a non-negative number.');
     }
-    const item = this.menuItemRepo.create({ name, category, price });
+    const item = this.menuItemRepo.create({
+      name,
+      category,
+      price,
+      imageFocusX:
+        dto.imageFocusX !== undefined ? normalizeFocus(dto.imageFocusX) : 50,
+      imageFocusY:
+        dto.imageFocusY !== undefined ? normalizeFocus(dto.imageFocusY) : 50,
+    });
     return this.menuItemRepo.save(item);
   }
 
@@ -88,6 +106,14 @@ export class MenuItemsService {
 
     if (dto.available !== undefined) {
       item.available = Boolean(dto.available);
+    }
+
+    if (dto.imageFocusX !== undefined) {
+      item.imageFocusX = normalizeFocus(dto.imageFocusX);
+    }
+
+    if (dto.imageFocusY !== undefined) {
+      item.imageFocusY = normalizeFocus(dto.imageFocusY);
     }
 
     return this.menuItemRepo.save(item);

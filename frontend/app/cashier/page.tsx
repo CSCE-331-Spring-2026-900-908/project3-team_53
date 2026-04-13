@@ -18,6 +18,8 @@ type MenuItem = {
   category: string;
   price: number;
   image: string | null;
+  imageFocusX: number;
+  imageFocusY: number;
   available: boolean;
 };
 type ApiMenuItem = {
@@ -26,6 +28,8 @@ type ApiMenuItem = {
   category: string | null;
   price: number | string;
   image: string | null;
+  imageFocusX?: number | string | null;
+  imageFocusY?: number | string | null;
   available: boolean;
 };
 type ApiTopping = {
@@ -105,6 +109,8 @@ export default function CashierPage() {
             category: item.category ?? 'Other',
             price: parseFloat(String(item.price)),
             image: item.image ?? null,
+            imageFocusX: Number(item.imageFocusX ?? 50),
+            imageFocusY: Number(item.imageFocusY ?? 50),
             available: item.available,
           });
         });
@@ -299,8 +305,9 @@ export default function CashierPage() {
         </div>
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', alignContent: 'start' }}>
           {currentItems.map(item => {
-            const imageSrc = publicAssetUrl(item.image);
-            return (
+              const imageSrc = publicAssetUrl(item.image);
+              const objectPosition = `${item.imageFocusX}% ${item.imageFocusY}%`;
+              return (
               <button key={item.id} onClick={() => openModal(item)} style={{
                 backgroundColor: '#16213e', border: '2px solid #0f3460', borderRadius: '12px',
                 padding: '16px', cursor: 'pointer', textAlign: 'left', color: '#fff',
@@ -314,7 +321,12 @@ export default function CashierPage() {
                     <img
                       src={imageSrc}
                       alt={item.name}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        objectPosition,
+                      }}
                     />
                   </div>
                 )}
