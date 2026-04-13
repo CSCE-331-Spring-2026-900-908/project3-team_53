@@ -179,10 +179,11 @@ function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
-  const [mode, setMode] = useState<LoginMode>('choose');
   const [loading, setLoading] = useState(false);
 
   const redirect = searchParams.get('redirect') || '/';
+  const isManagerRedirect = redirect.startsWith('/manager');
+  const [mode, setMode] = useState<LoginMode>(isManagerRedirect ? 'google' : 'choose');
 
   useEffect(() => {
     if (user) {
@@ -260,7 +261,7 @@ function LoginContent() {
           component="h1"
           sx={{ fontWeight: 700, textAlign: 'center', color: '#333' }}
         >
-          Employee Sign In
+          {isManagerRedirect ? 'Manager Sign In' : 'Employee Sign In'}
         </Typography>
 
         {mode === 'choose' && (
@@ -386,17 +387,19 @@ function LoginContent() {
               />
             </Box>
 
-            <Button
-              onClick={() => { setError(null); setMode('choose'); }}
-              sx={{
-                color: '#999',
-                textTransform: 'none',
-                fontSize: '0.9rem',
-                touchAction: 'manipulation',
-              }}
-            >
-              ← Back to sign in options
-            </Button>
+            {!isManagerRedirect && (
+              <Button
+                onClick={() => { setError(null); setMode('choose'); }}
+                sx={{
+                  color: '#999',
+                  textTransform: 'none',
+                  fontSize: '0.9rem',
+                  touchAction: 'manipulation',
+                }}
+              >
+                ← Back to sign in options
+              </Button>
+            )}
           </>
         )}
 

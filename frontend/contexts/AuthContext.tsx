@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Post } from '@/utils/apiService';
 
+export type AuthMethod = 'google' | 'pin';
+
 export interface AuthUser {
   email: string;
   name: string;
@@ -15,6 +17,7 @@ export interface AuthUser {
 interface AuthContextValue {
   user: AuthUser | null;
   token: string | null;
+  authMethod: AuthMethod | null;
   loading: boolean;
   loginWithGoogle: (idToken: string) => Promise<void>;
   loginWithPin: (pin: string) => Promise<void>;
@@ -27,22 +30,27 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 const TOKEN_KEY = 'auth_token';
 const USER_KEY = 'auth_user';
+const METHOD_KEY = 'auth_method';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [authMethod, setAuthMethod] = useState<AuthMethod | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const savedToken = localStorage.getItem(TOKEN_KEY);
     const savedUser = localStorage.getItem(USER_KEY);
+    const savedMethod = localStorage.getItem(METHOD_KEY) as AuthMethod | null;
     if (savedToken && savedUser) {
       try {
         setToken(savedToken);
         setUser(JSON.parse(savedUser));
+        setAuthMethod(savedMethod);
       } catch {
         localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(USER_KEY);
+        localStorage.removeItem(METHOD_KEY);
       }
     }
     setLoading(false);
@@ -53,8 +61,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { accessToken, user: userData } = response;
     setToken(accessToken);
     setUser(userData);
+    setAuthMethod('google');
     localStorage.setItem(TOKEN_KEY, accessToken);
     localStorage.setItem(USER_KEY, JSON.stringify(userData));
+    localStorage.setItem(METHOD_KEY, 'google');
   }, []);
 
   const loginWithPin = useCallback(async (pin: string) => {
@@ -62,22 +72,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { accessToken, user: userData } = response;
     setToken(accessToken);
     setUser(userData);
+    setAuthMethod('pin');
     localStorage.setItem(TOKEN_KEY, accessToken);
     localStorage.setItem(USER_KEY, JSON.stringify(userData));
+    localStorage.setItem(METHOD_KEY, 'pin');
   }, []);
 
   const logout = useCallback(() => {
     setToken(null);
     setUser(null);
+    setAuthMethod(null);
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
+    localStorage.removeItem(METHOD_KEY);
   }, []);
 
   const isManager = user?.role?.toLowerCase() === 'manager';
   const isEmployee = !!user?.employeeId;
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, loginWithGoogle, loginWithPin, logout, isManager, isEmployee }}>
+    <AuthContext.Provider value={{ user, token, authMethod, loading, loginWithGoogle, loginWithPin, logout, isManager, isEmployee }}>
       {children}
     </AuthContext.Provider>
   );
