@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Patch } from '@nestjs/common';
 import { InventoryService } from './inventory.service';
 import { Inventory } from './inventory.entity';
 
@@ -9,5 +9,10 @@ export class InventoryController {
   @Get()
   findAll(): Promise<Inventory[]> {
     return this.inventoryService.findAll();
+  }
+
+  @Patch('quick-restock')
+  quickRestockLowStock(): Promise<Inventory[]> {
+    return this.inventoryService.quickRestockLowStock();
   }
 }
