@@ -26,6 +26,7 @@ interface Employee {
   isWorking: boolean;
   wage: number;
   email: string;
+  pin?: string;
 }
 
 const defaultEmployee: Omit<Employee, 'id'> = {
@@ -35,6 +36,7 @@ const defaultEmployee: Omit<Employee, 'id'> = {
   isWorking: true,
   wage: 0,
   email: '',
+  pin: '',
 };
 
 export default function ManagerEmployeesPage() {
@@ -76,6 +78,7 @@ export default function ManagerEmployeesPage() {
       isWorking: employee.isWorking,
       wage: employee.wage,
       email: employee.email,
+      pin: employee.pin || '',
     });
     setDialogOpen(true);
   };
@@ -107,6 +110,7 @@ export default function ManagerEmployeesPage() {
           isWorking: formState.isWorking,
           wage: formState.wage,
           email: formState.email,
+          pin: formState.pin || null,
         });
 
         setEmployees((current) =>
@@ -131,6 +135,7 @@ export default function ManagerEmployeesPage() {
         isWorking: formState.isWorking,
         wage: formState.wage,
         email: formState.email,
+        pin: formState.pin || null,
       });
 
       setEmployees((current) => [...current, newEmployee]);
@@ -259,6 +264,18 @@ export default function ManagerEmployeesPage() {
               fullWidth
               placeholder="employee@gmail.com"
               helperText="Used for Google Sign-In authentication"
+            />
+            <TextField
+              label="Login PIN"
+              value={formState.pin || ''}
+              onChange={(event) => {
+                const val = event.target.value.replace(/\D/g, '').slice(0, 6);
+                handleFieldChange('pin', val);
+              }}
+              fullWidth
+              placeholder="4-6 digit PIN"
+              helperText="Used for touch-screen PIN login (4-6 digits)"
+              inputProps={{ inputMode: 'numeric', maxLength: 6 }}
             />
             <TextField
               label="Wage"

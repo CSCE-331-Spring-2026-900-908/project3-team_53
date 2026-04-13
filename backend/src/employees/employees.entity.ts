@@ -22,4 +22,7 @@ export class Employee {
 
   @Column({ nullable: true, unique: true })
   email: string;
+
+  @Column({ nullable: true, unique: true })
+  pin: string;
 }

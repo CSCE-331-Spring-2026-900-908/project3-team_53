@@ -6,4 +6,5 @@ export class CreateEmployeeDto {
   isWorking: boolean;
   wage: number;
   email?: string;
+  pin?: string;
 }

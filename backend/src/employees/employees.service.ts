@@ -41,6 +41,10 @@ export class EmployeesService {
     return this.employeeRepo.find({ where, order: { name: 'ASC' } });
   }
 
+  async findByPin(pin: string): Promise<Employee | null> {
+    return this.employeeRepo.findOneBy({ pin });
+  }
+
   async findByEmail(email: string): Promise<Employee | null> {
     const normalized = email.trim().toLowerCase();
     return this.employeeRepo

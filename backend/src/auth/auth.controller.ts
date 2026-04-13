@@ -22,4 +22,16 @@ export class AuthController {
     }
     return this.authService.verifyGoogleAndSignJwt(body.idToken.trim());
   }
+
+  /**
+   * Accepts a numeric PIN and returns an application JWT plus user profile.
+   * Designed for touch-screen employee tap login.
+   */
+  @Post('pin')
+  async pin(@Body() body: { pin: string }) {
+    if (!body?.pin || typeof body.pin !== 'string') {
+      throw new BadRequestException('pin is required');
+    }
+    return this.authService.verifyPinAndSignJwt(body.pin.trim());
+  }
 }

@@ -18,7 +18,7 @@ export default function ManagerLayout({ children }: { children: React.ReactNode 
   };
 
   return (
-    <RequireAuth requiredRole="manager">
+    <RequireAuth requiredRole="manager" requireGoogleAuth>
       <Box
         component="header"
         sx={{
