@@ -32,6 +32,31 @@ export class AuthService {
     this.googleClient = new OAuth2Client(clientId);
   }
 
+  async verifyPinAndSignJwt(pin: string): Promise<AuthGoogleResponse> {
+    const employee = await this.employeesService.findByPin(pin);
+    if (!employee) {
+      throw new UnauthorizedException('Invalid PIN');
+    }
+
+    const accessToken = await this.jwtService.signAsync({
+      sub: `pin-${employee.id}`,
+      email: employee.email ?? '',
+      employeeId: employee.id,
+    });
+
+    return {
+      accessToken,
+      user: {
+        email: employee.email ?? '',
+        name: employee.name,
+        picture: undefined,
+        googleSub: `pin-${employee.id}`,
+        employeeId: employee.id,
+        role: employee.role,
+      },
+    };
+  }
+
   async verifyGoogleAndSignJwt(idToken: string): Promise<AuthGoogleResponse> {
     const audience = this.configService.get<string>('GOOGLE_CLIENT_ID');
     if (!audience) {
