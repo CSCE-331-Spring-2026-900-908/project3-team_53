@@ -1,0 +1,37 @@
+id,name,quantity,supplier,maxStock,quantityPerServing,status
+1,Black Tea Leaves,200,TeaSource Co.,500,2.00,In Stock
+2,Green Tea Leaves,180,TeaSource Co.,500,2.00,In Stock
+3,Oolong Tea Leaves,150,TeaSource Co.,400,2.00,In Stock
+4,Jasmine Tea Leaves,120,TeaSource Co.,400,2.00,In Stock
+5,Whole Milk,300,DairyFresh Inc.,600,3.00,In Stock
+6,Condensed Milk,100,DairyFresh Inc.,300,2.00,In Stock
+7,Brown Sugar Syrup,150,SweetSupply LLC,400,1.50,In Stock
+8,Simple Syrup,250,SweetSupply LLC,500,1.00,In Stock
+9,Taro Powder,100,BobaPowders Ltd.,300,3.00,In Stock
+10,Matcha Powder,80,BobaPowders Ltd.,250,2.50,In Stock
+11,Chocolate Powder,90,BobaPowders Ltd.,250,2.50,In Stock
+12,Mango Puree,120,FruitCraft Co.,350,3.00,In Stock
+13,Passion Fruit Puree,100,FruitCraft Co.,300,3.00,In Stock
+14,Lychee Syrup,90,FruitCraft Co.,300,2.00,In Stock
+15,Peach Syrup,85,FruitCraft Co.,300,2.00,In Stock
+16,Strawberry Puree,110,FruitCraft Co.,350,3.00,In Stock
+17,Watermelon Puree,95,FruitCraft Co.,300,3.00,In Stock
+18,Banana Puree,80,FruitCraft Co.,250,2.50,In Stock
+19,Blueberry Puree,75,FruitCraft Co.,250,2.50,In Stock
+20,Wintermelon Syrup,70,FruitCraft Co.,250,2.00,In Stock
+21,Red Bean Paste,60,FruitCraft Co.,200,2.00,In Stock
+22,Tapioca Pearls,250,BobaToppings Inc.,600,2.00,In Stock
+23,Popping Boba,150,BobaToppings Inc.,400,1.50,In Stock
+24,Aloe Vera Cubes,100,BobaToppings Inc.,300,1.50,In Stock
+25,Cooked Red Bean,80,BobaToppings Inc.,250,1.50,In Stock
+26,Grass Jelly,90,BobaToppings Inc.,300,1.50,In Stock
+27,Lychee Jelly,85,BobaToppings Inc.,300,1.50,In Stock
+28,Chicken Bites,200,SnackSource Ltd.,500,4.00,In Stock
+29,Egg Puff Batter,150,SnackSource Ltd.,400,3.00,In Stock
+30,Mochi Donut Mix,130,SnackSource Ltd.,350,3.00,In Stock
+31,Frying Oil,180,SnackSource Ltd.,400,1.00,In Stock
+32,Cups (16oz),500,PackagePro Co.,2000,1.00,In Stock
+33,Lids,500,PackagePro Co.,2000,1.00,In Stock
+34,Straws,500,PackagePro Co.,2000,1.00,In Stock
+35,Ice,400,ColdChain Supplies,1000,2.00,In Stock
+36,Snack Containers,300,PackagePro Co.,1500,1.00,In Stock
