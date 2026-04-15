@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const loginWithGoogle = useCallback(async (idToken: string) => {
-    const response = await Post('/api/auth/google', { idToken });
+    const response = await Post('/auth/google', { idToken });
     const { accessToken, user: userData } = response;
     setToken(accessToken);
     setUser(userData);
@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const loginWithPin = useCallback(async (pin: string) => {
-    const response = await Post('/api/auth/pin', { pin });
+    const response = await Post('/auth/pin', { pin });
     const { accessToken, user: userData } = response;
     setToken(accessToken);
     setUser(userData);
