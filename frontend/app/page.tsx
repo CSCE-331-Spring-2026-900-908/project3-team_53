@@ -27,10 +27,10 @@ export default function Home() {
         height={200}
         priority
       />
-      <Typography variant="h1" sx={{ color: 'var(--color-text-white)', fontSize: '2rem', fontWeight: 'bold' }}>
+      <Typography variant="h1" sx={{ color: 'var(--color-text-black)', fontSize: '2rem', fontWeight: 'bold' }}>
         Team 53 - Project 3
       </Typography>
-      <Typography variant="h2" sx={{ color: 'var(--color-text-white)', fontSize: '1.5rem', fontWeight: 'bold', mb: 2 }}>
+      <Typography variant="h2" sx={{ color: 'var(--color-text-black)', fontSize: '1.5rem', fontWeight: 'bold', mb: 2 }}>
         Boba Shop Portal
       </Typography>
 
