@@ -124,26 +124,26 @@ export default function MenuScreen({
           justifyContent: 'space-between',
           px: 2,
           py: 1.5,
-          bgcolor: '#2D3436',
+          bgcolor: 'var(--color-kiosk-text)',
         }}
       >
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={onBack}
-          sx={{ color: '#FAF3E0', textTransform: 'none', fontSize: '1rem' }}
+          sx={{ color: 'var(--color-cream)', textTransform: 'none', fontSize: '1rem' }}
         >
           {t('Back')}
         </Button>
 
-        <Typography sx={{ color: '#FAF3E0', fontWeight: 700, fontSize: '1.25rem' }}>
+        <Typography sx={{ color: 'var(--color-cream)', fontWeight: 700, fontSize: '1.25rem' }}>
           {t('Build Your Order')}
         </Typography>
 
-        <IconButton onClick={() => setCartOpen(true)} sx={{ color: '#FAF3E0' }}>
+        <IconButton onClick={() => setCartOpen(true)} sx={{ color: 'var(--color-cream)' }}>
           <Badge
             badgeContent={cartCount}
             sx={{
-              '& .MuiBadge-badge': { bgcolor: '#FF6B6B', color: '#fff' },
+              '& .MuiBadge-badge': { bgcolor: 'var(--color-accent-coral)', color: 'var(--color-text-white)' },
             }}
           >
             <ShoppingCartIcon />
@@ -164,17 +164,17 @@ export default function MenuScreen({
             flex: 1,
             p: 3,
             overflowY: 'auto',
-            bgcolor: '#FAF3E0',
+            bgcolor: 'var(--color-cream)',
           }}
         >
           <Typography
-            sx={{ color: '#2D3436', fontWeight: 700, fontSize: '1.5rem', mb: 2 }}
+            sx={{ color: 'var(--color-kiosk-text)', fontWeight: 700, fontSize: '1.5rem', mb: 2 }}
           >
             {t(selectedCategory)}
           </Typography>
 
           {filteredItems.length === 0 ? (
-            <Typography sx={{ color: '#636E72', mt: 4, textAlign: 'center' }}>
+            <Typography sx={{ color: 'var(--color-kiosk-muted)', mt: 4, textAlign: 'center' }}>
               {t('No items available in this category yet.')}
             </Typography>
           ) : (
@@ -210,27 +210,28 @@ export default function MenuScreen({
             justifyContent: 'space-between',
             px: 3,
             py: 2,
-            bgcolor: '#FFF8EE',
-            borderTop: '2px solid #f0e6d3',
+            bgcolor: 'var(--color-cream-light)',
+            borderTop: '2px solid var(--color-cream-hover)',
           }}
         >
-          <Typography sx={{ color: '#2D3436', fontSize: '1.1rem', fontWeight: 600 }}>
+          <Typography sx={{ color: 'var(--color-kiosk-text)', fontSize: '1.1rem', fontWeight: 600 }}>
             {cartCount} {t(cartCount !== 1 ? 'items' : 'item')} &middot; ${cartTotal.toFixed(2)}
           </Typography>
           <Button
             variant="contained"
             onClick={() => setCartOpen(true)}
             sx={{
-              bgcolor: '#FF6B6B',
-              color: '#fff',
+              bgcolor: 'var(--color-accent-coral)',
+              color: 'var(--color-text-white)',
               fontWeight: 700,
               textTransform: 'none',
               fontSize: '1rem',
               px: 4,
               py: 1,
               borderRadius: 3,
+              border: '2px solid var(--color-accent-coral-hover)',
               boxShadow: '0 3px 10px rgba(255,107,107,0.3)',
-              '&:hover': { bgcolor: '#ee5a5a' },
+              '&:hover': { bgcolor: 'var(--color-accent-coral-hover)' },
             }}
           >
             {t('View Cart')}

@@ -252,11 +252,11 @@ export default function ManagerInventoryPage() {
   };
 
   return (
-    <Box sx={{ minHeight: '80vh', px: 4, py: 6, backgroundColor: '#f7f7f7', color: '#000000' }}>
-      <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2, color: '#000000' }}>
+    <Box sx={{ minHeight: '80vh', px: 4, py: 6, backgroundColor: 'var(--color-surface-alt)', color: 'var(--color-text-black)' }}>
+      <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2, color: 'var(--color-text-black)' }}>
         Inventory Management
       </Typography>
-      <Typography variant="body1" sx={{ color: '#000000', mb: 4, maxWidth: 820 }}>
+      <Typography variant="body1" sx={{ color: 'var(--color-text-black)', mb: 4, maxWidth: 820 }}>
         Track stock levels and update inventory so the shop stays fully stocked.
       </Typography>
 
@@ -278,7 +278,7 @@ export default function ManagerInventoryPage() {
       <Dialog open={isQuickRestockOpen} onClose={closeQuickRestock} aria-labelledby="quick-restock-dialog-title">
         <DialogTitle id="quick-restock-dialog-title">Quick Restock Confirmation</DialogTitle>
         <DialogContent>
-          <Typography variant="body2" sx={{ color: '#333333', mb: 2 }}>
+          <Typography variant="body2" sx={{ color: 'var(--color-text-primary)', mb: 2 }}>
             {lowStockItems.length > 0
               ? `This will fully restock all ${lowStockItems.length} item(s) marked as low stock and update their status to In Stock.`
               : 'No items are currently marked as low stock.'}
@@ -398,11 +398,11 @@ export default function ManagerInventoryPage() {
 
       <Box sx={{ display: 'grid', gap: 2, maxWidth: 900 }}>
         {loading ? (
-          <Typography variant="body1" sx={{ color: '#333333' }}>
+          <Typography variant="body1" sx={{ color: 'var(--color-text-primary)' }}>
             Loading inventory...
           </Typography>
         ) : filteredItems.length === 0 ? (
-          <Typography variant="body1" sx={{ color: '#333333' }}>
+          <Typography variant="body1" sx={{ color: 'var(--color-text-primary)' }}>
             No inventory items found.
           </Typography>
         ) : (
@@ -412,7 +412,7 @@ export default function ManagerInventoryPage() {
               sx={{
                 position: 'relative',
                 p: 3,
-                backgroundColor: '#ffffff',
+                backgroundColor: 'var(--color-surface)',
                 borderRadius: 2,
                 boxShadow: 1,
                 display: 'flex',
@@ -425,22 +425,22 @@ export default function ManagerInventoryPage() {
                   <Typography variant="h6" sx={{ fontWeight: 700 }}>
                     {item.name}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#999999' }}>
+                  <Typography variant="body2" sx={{ color: 'var(--color-text-muted)' }}>
                     (<strong>ID:</strong> {item.id})
                   </Typography>
                 </Box>
-                <Typography variant="body2" sx={{ color: '#666666' }}>
+                <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)' }}>
                   <strong>Quantity:</strong> {item.quantity}
                 </Typography>
                 {item.supplier && (
-                  <Typography variant="body2" sx={{ color: '#666666', mt: 0.5 }}>
+                  <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)', mt: 0.5 }}>
                     <strong>Supplier:</strong> {item.supplier}
                   </Typography>
                 )}
               </Box>
               <Typography
                 variant="body2"
-                sx={{ color: item.status.toLowerCase().includes('low') ? '#d32f2f' : '#2e7d32', mt: 1, mb: 4 }}
+                sx={{ color: item.status.toLowerCase().includes('low') ? 'var(--color-error-dark)' : 'var(--color-active-green-alt)', mt: 1, mb: 4 }}
               >
                 {item.status}
               </Typography>

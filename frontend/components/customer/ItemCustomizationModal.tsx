@@ -73,7 +73,7 @@ export default function ItemCustomizationModal({
       maxWidth="sm"
       fullWidth
       PaperProps={{
-        sx: { bgcolor: '#FFF8EE', borderRadius: 4, maxHeight: '90vh' },
+        sx: { bgcolor: 'var(--color-cream-light)', borderRadius: 4, maxHeight: '90vh' },
       }}
     >
       <DialogTitle
@@ -84,7 +84,7 @@ export default function ItemCustomizationModal({
           pb: 1,
         }}
       >
-        <Typography sx={{ fontWeight: 700, fontSize: '1.3rem', color: '#2D3436' }}>
+        <Typography sx={{ fontWeight: 700, fontSize: '1.3rem', color: 'var(--color-kiosk-text)' }}>
           {t('Customize Your Drink')}
         </Typography>
         <IconButton onClick={onClose} size="small">
@@ -92,7 +92,7 @@ export default function ItemCustomizationModal({
         </IconButton>
       </DialogTitle>
 
-      <DialogContent dividers sx={{ borderColor: '#f0e6d3' }}>
+      <DialogContent dividers sx={{ borderColor: 'var(--color-cream-hover)' }}>
         {/* Item header — large hero image so the drink is easy to recognize */}
         <Box sx={{ mb: 3 }}>
           <Box
@@ -103,8 +103,8 @@ export default function ItemCustomizationModal({
               aspectRatio: '1',
               borderRadius: 3,
               overflow: 'hidden',
-              bgcolor: '#FAF3E0',
-              border: '1px solid #e8dcc8',
+              bgcolor: 'var(--color-cream)',
+              border: '1px solid var(--color-cream-border-dark)',
               boxShadow: '0 6px 20px rgba(45, 52, 54, 0.12)',
               display: 'flex',
               alignItems: 'center',
@@ -124,17 +124,17 @@ export default function ItemCustomizationModal({
                 }}
               />
             ) : (
-              <LocalCafeIcon sx={{ fontSize: { xs: 96, sm: 112 }, color: '#4ECDC4' }} />
+              <LocalCafeIcon sx={{ fontSize: { xs: 96, sm: 112 }, color: 'var(--color-accent-teal)' }} />
             )}
           </Box>
           <Box sx={{ textAlign: 'center', mt: 2.5 }}>
             <Typography
               component="h2"
-              sx={{ fontWeight: 700, fontSize: '1.35rem', color: '#2D3436', lineHeight: 1.3 }}
+              sx={{ fontWeight: 700, fontSize: '1.35rem', color: 'var(--color-kiosk-text)', lineHeight: 1.3 }}
             >
               {t(item.name)}
             </Typography>
-            <Typography sx={{ color: '#FF6B6B', fontWeight: 700, fontSize: '1.2rem', mt: 0.5 }}>
+            <Typography sx={{ color: 'var(--color-accent-coral)', fontWeight: 700, fontSize: '1.2rem', mt: 0.5 }}>
               ${Number(item.price).toFixed(2)}
             </Typography>
           </Box>
@@ -148,11 +148,12 @@ export default function ItemCustomizationModal({
               label={t(s)}
               onClick={() => setSize(s)}
               sx={{
-                bgcolor: size === s ? '#4ECDC4' : '#FAF3E0',
-                color: size === s ? '#fff' : '#636E72',
-                fontWeight: size === s ? 700 : 400,
-                border: size === s ? 'none' : '1px solid #e0d5c0',
-                '&:hover': { bgcolor: size === s ? '#3dbdb5' : '#f0e6d3' },
+                bgcolor: size === s ? 'var(--color-accent-teal)' : 'var(--color-cream-light)',
+                color: size === s ? 'var(--color-text-white)' : 'var(--color-kiosk-text)',
+                fontWeight: size === s ? 700 : 500,
+                border: size === s ? '2px solid transparent' : '2px solid rgba(45, 52, 54, 0.38)',
+                boxShadow: size === s ? '0 2px 8px rgba(78, 205, 196, 0.35)' : 'none',
+                '&:hover': { bgcolor: size === s ? 'var(--color-accent-teal-hover)' : 'var(--color-cream-hover)' },
               }}
             />
           ))}
@@ -166,11 +167,12 @@ export default function ItemCustomizationModal({
               label={t(s)}
               onClick={() => setSugarLevel(s)}
               sx={{
-                bgcolor: sugarLevel === s ? '#4ECDC4' : '#FAF3E0',
-                color: sugarLevel === s ? '#fff' : '#636E72',
-                fontWeight: sugarLevel === s ? 700 : 400,
-                border: sugarLevel === s ? 'none' : '1px solid #e0d5c0',
-                '&:hover': { bgcolor: sugarLevel === s ? '#3dbdb5' : '#f0e6d3' },
+                bgcolor: sugarLevel === s ? 'var(--color-accent-teal)' : 'var(--color-cream-light)',
+                color: sugarLevel === s ? 'var(--color-text-white)' : 'var(--color-kiosk-text)',
+                fontWeight: sugarLevel === s ? 700 : 500,
+                border: sugarLevel === s ? '2px solid transparent' : '2px solid rgba(45, 52, 54, 0.38)',
+                boxShadow: sugarLevel === s ? '0 2px 8px rgba(78, 205, 196, 0.35)' : 'none',
+                '&:hover': { bgcolor: sugarLevel === s ? 'var(--color-accent-teal-hover)' : 'var(--color-cream-hover)' },
               }}
             />
           ))}
@@ -184,11 +186,12 @@ export default function ItemCustomizationModal({
               label={t(i)}
               onClick={() => setIceLevel(i)}
               sx={{
-                bgcolor: iceLevel === i ? '#4ECDC4' : '#FAF3E0',
-                color: iceLevel === i ? '#fff' : '#636E72',
-                fontWeight: iceLevel === i ? 700 : 400,
-                border: iceLevel === i ? 'none' : '1px solid #e0d5c0',
-                '&:hover': { bgcolor: iceLevel === i ? '#3dbdb5' : '#f0e6d3' },
+                bgcolor: iceLevel === i ? 'var(--color-accent-teal)' : 'var(--color-cream-light)',
+                color: iceLevel === i ? 'var(--color-text-white)' : 'var(--color-kiosk-text)',
+                fontWeight: iceLevel === i ? 700 : 500,
+                border: iceLevel === i ? '2px solid transparent' : '2px solid rgba(45, 52, 54, 0.38)',
+                boxShadow: iceLevel === i ? '0 2px 8px rgba(78, 205, 196, 0.35)' : 'none',
+                '&:hover': { bgcolor: iceLevel === i ? 'var(--color-accent-teal-hover)' : 'var(--color-cream-hover)' },
               }}
             />
           ))}
@@ -203,12 +206,13 @@ export default function ItemCustomizationModal({
                 label={`${t(topping.name)} +$${Number(topping.price).toFixed(2)}`}
                 onClick={() => toggleTopping(topping.name)}
                 sx={{
-                  bgcolor: selectedToppings.includes(topping.name) ? '#FF6B6B' : '#FAF3E0',
-                  color: selectedToppings.includes(topping.name) ? '#fff' : '#636E72',
-                  fontWeight: selectedToppings.includes(topping.name) ? 700 : 400,
-                  border: selectedToppings.includes(topping.name) ? 'none' : '1px solid #e0d5c0',
+                  bgcolor: selectedToppings.includes(topping.name) ? 'var(--color-accent-coral)' : 'var(--color-cream-light)',
+                  color: selectedToppings.includes(topping.name) ? 'var(--color-text-white)' : 'var(--color-kiosk-text)',
+                  fontWeight: selectedToppings.includes(topping.name) ? 700 : 500,
+                  border: selectedToppings.includes(topping.name) ? '2px solid transparent' : '2px solid rgba(45, 52, 54, 0.38)',
+                  boxShadow: selectedToppings.includes(topping.name) ? '0 2px 8px rgba(255, 107, 107, 0.35)' : 'none',
                   '&:hover': {
-                    bgcolor: selectedToppings.includes(topping.name) ? '#ee5a5a' : '#f0e6d3',
+                    bgcolor: selectedToppings.includes(topping.name) ? 'var(--color-accent-coral-hover)' : 'var(--color-cream-hover)',
                   },
                 }}
               />
@@ -220,7 +224,7 @@ export default function ItemCustomizationModal({
       <DialogActions sx={{ px: 3, py: 2 }}>
         <Button
           onClick={onClose}
-          sx={{ color: '#636E72', textTransform: 'none', fontSize: '1rem' }}
+          sx={{ color: 'var(--color-kiosk-muted)', textTransform: 'none', fontSize: '1rem' }}
         >
           {t('Cancel')}
         </Button>
@@ -228,15 +232,16 @@ export default function ItemCustomizationModal({
           variant="contained"
           onClick={handleAdd}
           sx={{
-            bgcolor: '#FF6B6B',
-            color: '#fff',
+            bgcolor: 'var(--color-accent-coral)',
+            color: 'var(--color-text-white)',
             fontWeight: 700,
             textTransform: 'none',
             fontSize: '1rem',
             px: 4,
             borderRadius: 3,
+            border: '2px solid var(--color-accent-coral-hover)',
             boxShadow: '0 3px 10px rgba(255,107,107,0.3)',
-            '&:hover': { bgcolor: '#ee5a5a' },
+            '&:hover': { bgcolor: 'var(--color-accent-coral-hover)' },
           }}
         >
           {t('Add to Order')}
@@ -256,7 +261,7 @@ function OptionSection({
   return (
     <Box sx={{ mb: 3 }}>
       <Typography
-        sx={{ fontWeight: 600, fontSize: '0.95rem', color: '#2D3436', mb: 1 }}
+        sx={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--color-kiosk-text)', mb: 1 }}
       >
         {title}
       </Typography>

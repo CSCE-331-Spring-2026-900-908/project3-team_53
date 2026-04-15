@@ -160,11 +160,11 @@ export default function ManagerEmployeesPage() {
   };
 
   return (
-    <Box sx={{ minHeight: '80vh', px: 4, py: 6, backgroundColor: '#f7f7f7', color: '#000000' }}>
-      <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2, color: '#000000' }}>
+    <Box sx={{ minHeight: '80vh', px: 4, py: 6, backgroundColor: 'var(--color-surface-alt)', color: 'var(--color-text-black)' }}>
+      <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2, color: 'var(--color-text-black)' }}>
         Employee Management
       </Typography>
-      <Typography variant="body1" sx={{ color: '#000000', mb: 4, maxWidth: 820 }}>
+      <Typography variant="body1" sx={{ color: 'var(--color-text-black)', mb: 4, maxWidth: 820 }}>
         View your team, update roles, and manage employee availability.
       </Typography>
 
@@ -177,11 +177,11 @@ export default function ManagerEmployeesPage() {
 
       <Box sx={{ display: 'grid', gap: 2, maxWidth: 900 }}>
         {loading ? (
-          <Typography variant="body1" sx={{ color: '#333333' }}>
+          <Typography variant="body1" sx={{ color: 'var(--color-text-primary)' }}>
             Loading employees...
           </Typography>
         ) : employees.length === 0 ? (
-          <Typography variant="body1" sx={{ color: '#333333' }}>
+          <Typography variant="body1" sx={{ color: 'var(--color-text-primary)' }}>
             No employees found.
           </Typography>
         ) : (
@@ -190,7 +190,7 @@ export default function ManagerEmployeesPage() {
               key={employee.id}
               sx={{
                 p: 3,
-                backgroundColor: '#ffffff',
+                backgroundColor: 'var(--color-surface)',
                 borderRadius: 2,
                 boxShadow: 1,
                 display: 'flex',
@@ -202,15 +202,15 @@ export default function ManagerEmployeesPage() {
                 <Typography variant="h6" sx={{ fontWeight: 700 }}>
                   {employee.name}
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#666666', mb: 1 }}>
+                <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)', mb: 1 }}>
                   {employee.role === 'manager' ? 'Manager' : 'Employee'} • {employee.shift}
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#666666', mb: 1 }}>
+                <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)', mb: 1 }}>
                   {employee.email}
                 </Typography>
               </Box>
               <Stack direction="row" spacing={1} alignItems="center">
-                <Typography variant="body2" sx={{ color: employee.isWorking ? '#117a00' : '#a00' }}>
+                <Typography variant="body2" sx={{ color: employee.isWorking ? 'var(--color-active-green)' : 'var(--color-error-text)' }}>
                   {employee.isWorking ? 'Active' : 'Inactive'}
                 </Typography>
                 <IconButton aria-label="Edit employee" onClick={() => openEditDialog(employee)}>

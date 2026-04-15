@@ -34,7 +34,7 @@ export default function CheckoutScreen({
         height: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        bgcolor: '#FAF3E0',
+        bgcolor: 'var(--color-cream)',
       }}
     >
       {/* Top bar */}
@@ -44,13 +44,13 @@ export default function CheckoutScreen({
           alignItems: 'center',
           px: 2,
           py: 1.5,
-          bgcolor: '#2D3436',
+          bgcolor: 'var(--color-kiosk-text)',
         }}
       >
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={onBack}
-          sx={{ color: '#FAF3E0', textTransform: 'none', fontSize: '1rem' }}
+          sx={{ color: 'var(--color-cream)', textTransform: 'none', fontSize: '1rem' }}
         >
           {t('Back to Menu')}
         </Button>
@@ -69,15 +69,15 @@ export default function CheckoutScreen({
       >
         <Box sx={{ width: '100%', maxWidth: 500 }}>
           <Typography
-            sx={{ color: '#2D3436', fontWeight: 700, fontSize: '1.75rem', mb: 1 }}
+            sx={{ color: 'var(--color-kiosk-text)', fontWeight: 700, fontSize: '1.75rem', mb: 1 }}
           >
             {t('Order Summary')}
           </Typography>
           <Box
             sx={{
               display: 'inline-block',
-              bgcolor: '#4ECDC4',
-              color: '#fff',
+              bgcolor: 'var(--color-accent-teal)',
+              color: 'var(--color-text-white)',
               px: 2,
               py: 0.5,
               borderRadius: 2,
@@ -105,44 +105,44 @@ export default function CheckoutScreen({
                   justifyContent: 'space-between',
                   alignItems: 'flex-start',
                   py: 1.5,
-                  borderBottom: '1px solid #f0e6d3',
+                  borderBottom: '1px solid var(--color-cream-hover)',
                 }}
               >
                 <Box>
-                  <Typography sx={{ color: '#2D3436', fontWeight: 600 }}>
+                  <Typography sx={{ color: 'var(--color-kiosk-text)', fontWeight: 600 }}>
                     {item.quantity}x {t(item.menuItem.name)}
                   </Typography>
                   {customizations.length > 0 && (
-                    <Typography sx={{ color: '#636E72', fontSize: '0.8rem', mt: 0.25 }}>
+                    <Typography sx={{ color: 'var(--color-kiosk-muted)', fontSize: '0.8rem', mt: 0.25 }}>
                       {customizations.map((c) => t(c as string)).join(' · ')}
                     </Typography>
                   )}
                 </Box>
-                <Typography sx={{ color: '#FF6B6B', fontWeight: 600 }}>
+                <Typography sx={{ color: 'var(--color-accent-coral)', fontWeight: 600 }}>
                   ${(Number(item.menuItem.price) * item.quantity).toFixed(2)}
                 </Typography>
               </Box>
             );
           })}
 
-          <Divider sx={{ borderColor: '#e0d5c0', my: 2 }} />
+          <Divider sx={{ borderColor: 'var(--color-cream-border)', my: 2 }} />
 
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-            <Typography sx={{ color: '#636E72' }}>{t('Subtotal')}</Typography>
-            <Typography sx={{ color: '#2D3436' }}>${cartTotal.toFixed(2)}</Typography>
+            <Typography sx={{ color: 'var(--color-kiosk-muted)' }}>{t('Subtotal')}</Typography>
+            <Typography sx={{ color: 'var(--color-kiosk-text)' }}>${cartTotal.toFixed(2)}</Typography>
           </Box>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-            <Typography sx={{ color: '#636E72' }}>{t('Tax')} (8.25%)</Typography>
-            <Typography sx={{ color: '#2D3436' }}>${tax.toFixed(2)}</Typography>
+            <Typography sx={{ color: 'var(--color-kiosk-muted)' }}>{t('Tax')} (8.25%)</Typography>
+            <Typography sx={{ color: 'var(--color-kiosk-text)' }}>${tax.toFixed(2)}</Typography>
           </Box>
 
-          <Divider sx={{ borderColor: '#e0d5c0', my: 2 }} />
+          <Divider sx={{ borderColor: 'var(--color-cream-border)', my: 2 }} />
 
           <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Typography sx={{ color: '#2D3436', fontWeight: 700, fontSize: '1.25rem' }}>
+            <Typography sx={{ color: 'var(--color-kiosk-text)', fontWeight: 700, fontSize: '1.25rem' }}>
               {t('Total')}
             </Typography>
-            <Typography sx={{ color: '#FF6B6B', fontWeight: 700, fontSize: '1.25rem' }}>
+            <Typography sx={{ color: 'var(--color-accent-coral)', fontWeight: 700, fontSize: '1.25rem' }}>
               ${grandTotal.toFixed(2)}
             </Typography>
           </Box>
@@ -154,8 +154,8 @@ export default function CheckoutScreen({
         sx={{
           px: 3,
           py: 3,
-          bgcolor: '#FFF8EE',
-          borderTop: '2px solid #f0e6d3',
+          bgcolor: 'var(--color-cream-light)',
+          borderTop: '2px solid var(--color-cream-hover)',
           display: 'flex',
           justifyContent: 'center',
         }}
@@ -164,8 +164,8 @@ export default function CheckoutScreen({
           variant="contained"
           onClick={onContinueToPayment}
           sx={{
-            bgcolor: '#FF6B6B',
-            color: '#fff',
+            bgcolor: 'var(--color-accent-coral)',
+            color: 'var(--color-text-white)',
             fontWeight: 700,
             textTransform: 'none',
             fontSize: '1.25rem',
@@ -173,8 +173,9 @@ export default function CheckoutScreen({
             py: 2,
             borderRadius: 4,
             minWidth: 300,
+            border: '2px solid var(--color-accent-coral-hover)',
             boxShadow: '0 4px 14px rgba(255,107,107,0.4)',
-            '&:hover': { bgcolor: '#ee5a5a', boxShadow: '0 6px 20px rgba(255,107,107,0.5)' },
+            '&:hover': { bgcolor: 'var(--color-accent-coral-hover)', boxShadow: '0 6px 20px rgba(255,107,107,0.5)' },
           }}
         >
           {t('Continue to Payment')}

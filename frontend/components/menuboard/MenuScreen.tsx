@@ -14,7 +14,7 @@ export default function MenuScreen({ items }: MenuScreenProps) {
   const categories = Array.from(new Set((items ?? []).map((i) => i.category)));
 
   return (
-    <div className="w-full p-8 bg-[#FAF3E0] text-[#2D3436]">
+    <div className="w-full p-8 bg-[var(--color-cream)] text-[var(--color-kiosk-text)]">
       {categories.map((category) => (
         <div key={category} className="mb-8">
           <h2 className="text-3xl font-bold mb-4">{category}</h2>
@@ -26,7 +26,7 @@ export default function MenuScreen({ items }: MenuScreenProps) {
                 return (
                 <div
                   key={item.id}
-                  className="p-4 bg-[#FFF8EE] rounded shadow flex items-center gap-4"
+                  className="p-4 bg-[var(--color-cream-light)] rounded shadow flex items-center gap-4"
                 >
                   {imgSrc && (
                     <img
@@ -37,7 +37,7 @@ export default function MenuScreen({ items }: MenuScreenProps) {
                   )}
                   <div>
                     <h3 className="text-xl font-semibold">{item.name}</h3>
-                    <p className="text-lg text-[#FF6B6B]">${Number(item.price).toFixed(2)}</p>
+                    <p className="text-lg text-[var(--color-accent-coral)]">${Number(item.price).toFixed(2)}</p>
                     {!item.available && (
                       <p className="text-red-400">Unavailable</p>
                     )}

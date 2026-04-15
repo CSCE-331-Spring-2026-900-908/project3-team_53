@@ -27,10 +27,10 @@ export default function KitchenHeader({ pendingCount, dayStats }: KitchenHeaderP
   const longestTier = getTimeTier(dayStats.longestWaitSeconds);
 
   const tierColors: Record<string, string> = {
-    green: '#4caf50',
-    yellow: '#fbc02d',
-    orange: '#ff9800',
-    red: '#f44336',
+    green: 'var(--color-status-green-border)',
+    yellow: 'var(--color-status-yellow-border)',
+    orange: 'var(--color-status-orange-border)',
+    red: 'var(--color-status-red-border)',
   };
 
   return (
@@ -41,8 +41,8 @@ export default function KitchenHeader({ pendingCount, dayStats }: KitchenHeaderP
         justifyContent: 'space-between',
         px: 3,
         py: 1.5,
-        bgcolor: '#1a1a2e',
-        borderBottom: '2px solid #16213e',
+        bgcolor: 'var(--color-dark-bg)',
+        borderBottom: '2px solid var(--color-dark-surface)',
         flexWrap: 'wrap',
         gap: 1,
       }}
@@ -50,16 +50,16 @@ export default function KitchenHeader({ pendingCount, dayStats }: KitchenHeaderP
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Typography
           variant="h5"
-          sx={{ color: '#fff', fontWeight: 700, letterSpacing: 0.5 }}
+          sx={{ color: 'var(--color-text-white)', fontWeight: 700, letterSpacing: 0.5 }}
         >
           Kitchen Display
         </Typography>
         <Chip
-          icon={<AccessTimeIcon sx={{ color: '#ccc !important' }} />}
+          icon={<AccessTimeIcon sx={{ color: 'var(--color-border) !important' }} />}
           label={now.toLocaleTimeString()}
           sx={{
-            bgcolor: '#16213e',
-            color: '#ccc',
+            bgcolor: 'var(--color-dark-surface)',
+            color: 'var(--color-border)',
             fontWeight: 600,
             fontSize: '0.85rem',
           }}
@@ -71,19 +71,19 @@ export default function KitchenHeader({ pendingCount, dayStats }: KitchenHeaderP
           icon={<PendingActionsIcon sx={{ fontSize: 20 }} />}
           label="Pending"
           value={String(pendingCount)}
-          color="#64b5f6"
+          color="var(--color-stat-blue)"
         />
         <StatBox
           icon={<CheckCircleOutlineIcon sx={{ fontSize: 20 }} />}
           label="Completed Today"
           value={String(dayStats.completedOrders)}
-          color="#66bb6a"
+          color="var(--color-stat-green)"
         />
         <StatBox
           icon={<TimerIcon sx={{ fontSize: 20 }} />}
           label="Avg Wait (Today)"
           value={dayStats.totalOrders > 0 ? formatElapsed(dayStats.avgWaitSeconds) : '--'}
-          color="#ce93d8"
+          color="var(--color-stat-purple)"
         />
         <StatBox
           icon={<WarningAmberIcon sx={{ fontSize: 20 }} />}
@@ -122,7 +122,7 @@ function StatBox({
       <Box sx={{ color, display: 'flex', alignItems: 'center' }}>{icon}</Box>
       <Box>
         <Typography
-          sx={{ color: '#999', fontSize: '0.65rem', lineHeight: 1, textTransform: 'uppercase', letterSpacing: 0.5 }}
+          sx={{ color: 'var(--color-text-muted)', fontSize: '0.65rem', lineHeight: 1, textTransform: 'uppercase', letterSpacing: 0.5 }}
         >
           {label}
         </Typography>

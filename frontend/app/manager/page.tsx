@@ -14,10 +14,10 @@ import Link from 'next/link';
 import { Get } from '@/utils/apiService';
 
 const cards = [
-  { href: '/manager/orders', label: 'Order History', description: 'View and track all past orders', icon: ReceiptLongIcon, color: '#5c6bc0' },
-  { href: '/manager/employees', label: 'Employees', description: 'Manage staff and roles', icon: PeopleAltIcon, color: '#26a69a' },
-  { href: '/manager/inventory', label: 'Inventory', description: 'Track stock and supplies', icon: InventoryIcon, color: '#ef5350' },
-  { href: '/manager/menu', label: 'Menu Editor', description: 'Update drinks and pricing', icon: RestaurantMenuIcon, color: '#ffa726' },
+  { href: '/manager/orders', label: 'Order History', description: 'View and track all past orders', icon: ReceiptLongIcon, color: 'var(--color-manager-orders)' },
+  { href: '/manager/employees', label: 'Employees', description: 'Manage staff and roles', icon: PeopleAltIcon, color: 'var(--color-manager-employees)' },
+  { href: '/manager/inventory', label: 'Inventory', description: 'Track stock and supplies', icon: InventoryIcon, color: 'var(--color-manager-inventory)' },
+  { href: '/manager/menu', label: 'Menu Editor', description: 'Update drinks and pricing', icon: RestaurantMenuIcon, color: 'var(--color-manager-menu)' },
 ];
 
 export default function ManagerDashboard() {
@@ -48,18 +48,18 @@ export default function ManagerDashboard() {
         flexDirection: 'column',
         gap: 4,
         alignItems: 'center',
-        backgroundColor: '#FAF3E0',
+        backgroundColor: 'var(--color-cream)',
       }}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5 }}>
         <Image src="/project_3_logo.png" alt="Boba Shop logo" width={220} height={88} priority />
-        <Typography variant="h3" component="h1" sx={{ fontWeight: 700, color: '#333' }}>
+        <Typography variant="h3" component="h1" sx={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>
           Manager Dashboard
         </Typography>
         <Chip
           label={employeeCount === null ? 'Loading...' : `${employeeCount} employees registered`}
           variant="outlined"
-          sx={{ borderColor: '#ccc', color: '#666', fontWeight: 500 }}
+          sx={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)', fontWeight: 500 }}
         />
       </Box>
 
@@ -85,8 +85,8 @@ export default function ManagerDashboard() {
                 gap: 2.5,
                 p: 3,
                 borderRadius: 3,
-                backgroundColor: '#f5f0dc',
-                border: '1px solid #e8e0c8',
+                backgroundColor: 'var(--color-cream-dark)',
+                border: '1px solid var(--color-cream-darker)',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
                 '&:hover': {
@@ -108,13 +108,13 @@ export default function ManagerDashboard() {
                   flexShrink: 0,
                 }}
               >
-                <card.icon sx={{ fontSize: 28, color: '#fff' }} />
+                <card.icon sx={{ fontSize: 28, color: 'var(--color-text-white)' }} />
               </Box>
               <Box>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: '#333', lineHeight: 1.3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.3 }}>
                   {card.label}
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#888', mt: 0.25 }}>
+                <Typography variant="body2" sx={{ color: 'var(--color-warm-brown-disabled)', mt: 0.25 }}>
                   {card.description}
                 </Typography>
               </Box>

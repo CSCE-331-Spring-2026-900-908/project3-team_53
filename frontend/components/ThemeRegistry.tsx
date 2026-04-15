@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { useServerInsertedHTML } from 'next/navigation';
 import createCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '@/lib/theme';
 
 export default function ThemeRegistry({ children }: { children: React.ReactNode }) {
   const [{ cache, flush }] = useState(() => {
@@ -42,5 +44,9 @@ export default function ThemeRegistry({ children }: { children: React.ReactNode 
     );
   });
 
-  return <CacheProvider value={cache}>{children}</CacheProvider>;
+  return (
+    <CacheProvider value={cache}>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+    </CacheProvider>
+  );
 }

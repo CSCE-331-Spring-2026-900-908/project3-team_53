@@ -26,6 +26,15 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { MenuItem } from '@/types/customer';
 import { useTranslation } from '@/contexts/TranslationContext';
 
+const editorFieldSx = {
+  '& .MuiOutlinedInput-root': {
+    bgcolor: 'var(--color-editor-field-bg)',
+    '& fieldset': { borderColor: 'var(--color-editor-field-outline)' },
+    '&:hover fieldset': { borderColor: 'var(--color-editor-field-outline-hover)' },
+    '&.Mui-focused fieldset': { borderColor: 'var(--color-editor-contained-teal)', borderWidth: 2 },
+  },
+} as const;
+
 type InventoryItem = {
   id: number;
   name: string;
@@ -69,10 +78,10 @@ export default function IngredientsModal({
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle>{`${t('Ingredients for')} ${item.name}`}</DialogTitle>
-      <DialogContent dividers sx={{ borderColor: '#f0e6d3' }}>
+      <DialogContent dividers sx={{ borderColor: 'var(--color-cream-hover)' }}>
         <Stack spacing={2}>
           <Box>
-            <Typography sx={{ color: '#6f5c48' }}>
+            <Typography sx={{ color: 'var(--color-editor-brown-dim)' }}>
               Choose the inventory ingredients this item uses, set how many servings it consumes,
               and mark which rows count as toppings.
             </Typography>
@@ -84,7 +93,7 @@ export default function IngredientsModal({
 
           <TableContainer
             component={Paper}
-            sx={{ border: '1px solid #e0d5c0', borderRadius: 2 }}
+            sx={{ border: '1px solid var(--color-cream-border)', borderRadius: 2 }}
           >
           <Table>
             <TableHead>
@@ -98,7 +107,7 @@ export default function IngredientsModal({
               {ingredients.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={4}>
-                    <Typography sx={{ color: '#7b6852' }}>
+                    <Typography sx={{ color: 'var(--color-editor-brown-light)' }}>
                       No ingredients assigned yet. Add a row to start building this recipe.
                     </Typography>
                   </TableCell>
@@ -116,7 +125,13 @@ export default function IngredientsModal({
                         }
                         displayEmpty
                         disabled={saving}
-                        sx={{ borderRadius: 2 }}
+                        sx={{
+                          borderRadius: 2,
+                          '& .MuiOutlinedInput-root': {
+                            ...editorFieldSx['& .MuiOutlinedInput-root'],
+                            '&:hover:not(.Mui-disabled)': { bgcolor: 'var(--color-cream-input-hover)' },
+                          },
+                        }}
                       >
                         <MuiMenuItem value="">
                           <em>Select inventory item</em>
@@ -139,7 +154,7 @@ export default function IngredientsModal({
                           onUpdateRow(index, { servingsUsed: event.target.value })
                         }
                         disabled={saving}
-                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                        sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, ...editorFieldSx['& .MuiOutlinedInput-root'] } }}
                       />
                     </TableCell>
                     <TableCell align="right" sx={{ width: 88 }}>
@@ -163,7 +178,19 @@ export default function IngredientsModal({
             startIcon={<AddIcon />}
             variant="outlined"
             disabled={saving}
-            sx={{ alignSelf: 'flex-start', borderRadius: 999 }}
+            sx={{
+              alignSelf: 'flex-start',
+              borderRadius: 999,
+              borderWidth: 2,
+              borderColor: 'var(--color-editor-outlined-teal-border)',
+              color: 'var(--color-editor-outlined-teal-fg)',
+              bgcolor: 'var(--color-editor-outlined-button-bg)',
+              fontWeight: 700,
+              '&:hover': {
+                bgcolor: 'var(--color-editor-outlined-button-hover)',
+                borderColor: 'var(--color-editor-contained-teal-hover)',
+              },
+            }}
           >
             Add ingredient row
           </Button>
@@ -174,11 +201,31 @@ export default function IngredientsModal({
           onClick={onSave}
           variant="contained"
           disabled={saving}
-          sx={{ borderRadius: 999, bgcolor: '#2f5d50', '&:hover': { bgcolor: '#284c42' } }}
+          sx={{
+            borderRadius: 999,
+            color: 'var(--color-text-white)',
+            bgcolor: 'var(--color-editor-contained-teal)',
+            boxShadow: '0 2px 8px rgba(15, 118, 110, 0.35)',
+            '&:hover': { bgcolor: 'var(--color-editor-contained-teal-hover)' },
+          }}
         >
           {saving ? 'Saving...' : 'Save ingredients'}
         </Button>
-        <Button onClick={onClose}>{t('Close')}</Button>
+        <Button
+          variant="outlined"
+          onClick={onClose}
+          sx={{
+            borderRadius: 999,
+            borderWidth: 2,
+            borderColor: 'var(--color-editor-field-outline)',
+            color: 'var(--color-editor-brown-text)',
+            bgcolor: 'var(--color-editor-outlined-button-bg)',
+            fontWeight: 700,
+            '&:hover': { bgcolor: 'var(--color-editor-outlined-button-hover)', borderColor: 'var(--color-editor-field-outline-hover)' },
+          }}
+        >
+          {t('Close')}
+        </Button>
       </DialogActions>
     </Dialog>
   );

@@ -67,17 +67,18 @@ export default function LanguageSelector() {
             variant="contained"
             onClick={() => setLanguage('en')}
             sx={{
-              bgcolor: '#FF6B6B',
-              color: '#fff',
+              bgcolor: 'var(--color-accent-coral)',
+              color: 'var(--color-text-white)',
               fontWeight: 700,
               textTransform: 'none',
               fontSize: '0.75rem',
               px: 1.5,
               py: 0.75,
               borderRadius: '8px 0 0 8px',
+              border: '2px solid var(--color-accent-coral-hover)',
               boxShadow: '-2px 2px 8px rgba(0,0,0,0.15)',
               minWidth: 0,
-              '&:hover': { bgcolor: '#ee5a5a' },
+              '&:hover': { bgcolor: 'var(--color-accent-coral-hover)' },
             }}
           >
             English
@@ -89,14 +90,15 @@ export default function LanguageSelector() {
           onClick={handleOpen}
           disabled={isTranslating}
           sx={{
-            bgcolor: isEnglish ? '#2D3436' : '#4ECDC4',
-            color: '#fff',
+            bgcolor: isEnglish ? 'var(--color-kiosk-text)' : 'var(--color-accent-teal)',
+            color: 'var(--color-text-white)',
             fontWeight: 700,
             textTransform: 'none',
             fontSize: '0.75rem',
             px: 1.5,
             py: 1.5,
             borderRadius: '8px 0 0 8px',
+            border: isEnglish ? '2px solid var(--color-accent-teal-dark)' : '2px solid var(--color-accent-teal-hover)',
             boxShadow: '-2px 2px 8px rgba(0,0,0,0.15)',
             minWidth: 0,
             display: 'flex',
@@ -104,16 +106,17 @@ export default function LanguageSelector() {
             alignItems: 'center',
             gap: 0.5,
             '&:hover': {
-              bgcolor: isEnglish ? '#3a4144' : '#3dbdb5',
+              bgcolor: isEnglish ? 'var(--color-accent-teal-dark)' : 'var(--color-accent-teal-hover)',
             },
             '&.Mui-disabled': {
-              bgcolor: '#636E72',
-              color: '#fff',
+              bgcolor: 'var(--color-kiosk-muted)',
+              color: 'var(--color-text-white)',
+              border: '2px solid var(--color-kiosk-text)',
             },
           }}
         >
           {isTranslating ? (
-            <CircularProgress size={18} sx={{ color: '#fff' }} />
+            <CircularProgress size={18} sx={{ color: 'var(--color-text-white)' }} />
           ) : (
             <LanguageIcon sx={{ fontSize: 20 }} />
           )}
@@ -127,7 +130,7 @@ export default function LanguageSelector() {
         maxWidth="xs"
         fullWidth
         PaperProps={{
-          sx: { bgcolor: '#FFF8EE', borderRadius: 4, maxHeight: '80vh' },
+          sx: { bgcolor: 'var(--color-cream-light)', borderRadius: 4, maxHeight: '80vh' },
         }}
       >
         <DialogTitle
@@ -138,7 +141,7 @@ export default function LanguageSelector() {
             pb: 1,
           }}
         >
-          <Typography sx={{ fontWeight: 700, fontSize: '1.3rem', color: '#2D3436' }}>
+          <Typography sx={{ fontWeight: 700, fontSize: '1.3rem', color: 'var(--color-kiosk-text)' }}>
             Select Language
           </Typography>
           <IconButton onClick={() => setOpen(false)} size="small">
@@ -146,7 +149,7 @@ export default function LanguageSelector() {
           </IconButton>
         </DialogTitle>
 
-        <DialogContent dividers sx={{ borderColor: '#f0e6d3', p: 0 }}>
+        <DialogContent dividers sx={{ borderColor: 'var(--color-cream-hover)', p: 0 }}>
           <Box sx={{ px: 3, pt: 2, pb: 1 }}>
             <TextField
               placeholder="Search languages..."
@@ -157,11 +160,11 @@ export default function LanguageSelector() {
               variant="outlined"
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  bgcolor: '#FAF3E0',
+                  bgcolor: 'var(--color-cream)',
                   borderRadius: 2,
-                  '& fieldset': { borderColor: '#e0d5c0' },
-                  '&:hover fieldset': { borderColor: '#4ECDC4' },
-                  '&.Mui-focused fieldset': { borderColor: '#4ECDC4' },
+                  '& fieldset': { borderColor: 'var(--color-cream-border)' },
+                  '&:hover fieldset': { borderColor: 'var(--color-accent-teal)' },
+                  '&.Mui-focused fieldset': { borderColor: 'var(--color-accent-teal)' },
                 },
               }}
             />
@@ -169,7 +172,7 @@ export default function LanguageSelector() {
 
           {availableLanguages.length === 0 ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-              <CircularProgress size={32} sx={{ color: '#4ECDC4' }} />
+              <CircularProgress size={32} sx={{ color: 'var(--color-accent-teal)' }} />
             </Box>
           ) : (
             <Box sx={{ maxHeight: 400, overflowY: 'auto', px: 1, py: 1 }}>
@@ -182,14 +185,14 @@ export default function LanguageSelector() {
                     justifyContent: 'flex-start',
                     px: 3,
                     py: 1.5,
-                    color: language === lang.code ? '#fff' : '#2D3436',
-                    bgcolor: language === lang.code ? '#4ECDC4' : 'transparent',
+                    color: language === lang.code ? 'var(--color-text-white)' : 'var(--color-kiosk-text)',
+                    bgcolor: language === lang.code ? 'var(--color-accent-teal)' : 'transparent',
                     borderRadius: 2,
                     textTransform: 'none',
                     fontSize: '1rem',
                     fontWeight: language === lang.code ? 700 : 400,
                     '&:hover': {
-                      bgcolor: language === lang.code ? '#3dbdb5' : 'rgba(78,205,196,0.1)',
+                      bgcolor: language === lang.code ? 'var(--color-accent-teal-hover)' : 'rgba(78,205,196,0.1)',
                     },
                   }}
                 >
@@ -198,7 +201,7 @@ export default function LanguageSelector() {
                     <Typography
                       component="span"
                       sx={{
-                        color: language === lang.code ? 'rgba(255,255,255,0.7)' : '#636E72',
+                        color: language === lang.code ? 'rgba(255,255,255,0.7)' : 'var(--color-kiosk-muted)',
                         fontSize: '0.85rem',
                       }}
                     >
@@ -208,7 +211,7 @@ export default function LanguageSelector() {
                 </Button>
               ))}
               {filtered.length === 0 && (
-                <Typography sx={{ color: '#636E72', textAlign: 'center', py: 3 }}>
+                <Typography sx={{ color: 'var(--color-kiosk-muted)', textAlign: 'center', py: 3 }}>
                   No languages found
                 </Typography>
               )}

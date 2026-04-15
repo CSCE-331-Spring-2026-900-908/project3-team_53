@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <Box
       sx={{
-        backgroundColor: '#8f8f8f',
+        backgroundColor: 'var(--color-page-bg)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -27,10 +27,10 @@ export default function Home() {
         height={200}
         priority
       />
-      <Typography variant="h1" sx={{ color: '#ffffff', fontSize: '2rem', fontWeight: 'bold' }}>
+      <Typography variant="h1" sx={{ color: 'var(--color-text-black)', fontSize: '2rem', fontWeight: 'bold' }}>
         Team 53 - Project 3
       </Typography>
-      <Typography variant="h2" sx={{ color: '#ffffff', fontSize: '1.5rem', fontWeight: 'bold', mb: 2 }}>
+      <Typography variant="h2" sx={{ color: 'var(--color-text-black)', fontSize: '1.5rem', fontWeight: 'bold', mb: 2 }}>
         Boba Shop Portal
       </Typography>
 
@@ -45,27 +45,27 @@ export default function Home() {
         }}
       >
         <Card href="/manager">
-          <Typography variant="h3" sx={{ color: '#000000', fontSize: '1.5rem', fontWeight: 'bold', textAlign: 'center' }}>
+          <Typography variant="h3" sx={{ color: 'var(--color-text-black)', fontSize: '1.5rem', fontWeight: 'bold', textAlign: 'center' }}>
             Manager Interface
           </Typography>
         </Card>
         <Card href="/cashier">
-          <Typography variant="h3" sx={{ color: '#000000', fontSize: '1.5rem', fontWeight: 'bold', textAlign: 'center' }}>
+          <Typography variant="h3" sx={{ color: 'var(--color-text-black)', fontSize: '1.5rem', fontWeight: 'bold', textAlign: 'center' }}>
             Cashier Interface
           </Typography>
         </Card>
         <Card href="/customer">
-          <Typography variant="h3" sx={{ color: '#000000', fontSize: '1.5rem', fontWeight: 'bold', textAlign: 'center' }}>
+          <Typography variant="h3" sx={{ color: 'var(--color-text-black)', fontSize: '1.5rem', fontWeight: 'bold', textAlign: 'center' }}>
             Customer Interface
           </Typography>
         </Card>
         <Card href="/menu">
-          <Typography variant="h3" sx={{ color: '#000000', fontSize: '1.5rem', fontWeight: 'bold', textAlign: 'center' }}>
+          <Typography variant="h3" sx={{ color: 'var(--color-text-black)', fontSize: '1.5rem', fontWeight: 'bold', textAlign: 'center' }}>
             Menu Board Interface
           </Typography>
         </Card>
         <Card href="/kitchen" className="col-span-2 justify-self-center">
-          <Typography variant="h3" sx={{ color: '#000000', fontSize: '1.5rem', fontWeight: 'bold', textAlign: 'center' }}>
+          <Typography variant="h3" sx={{ color: 'var(--color-text-black)', fontSize: '1.5rem', fontWeight: 'bold', textAlign: 'center' }}>
             Kitchen Interface
           </Typography>
         </Card>
