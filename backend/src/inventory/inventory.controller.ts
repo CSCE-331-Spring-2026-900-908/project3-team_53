@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, UseGuards } from '@nestjs/common';
 import { InventoryService } from './inventory.service';
 import { Inventory } from './inventory.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -19,5 +19,34 @@ export class InventoryController {
   @Patch('quick-restock')
   quickRestockLowStock(): Promise<Inventory[]> {
     return this.inventoryService.quickRestockLowStock();
+  }
+
+  @Patch(':id')
+  updateInventory(
+    @Param('id') id: string,
+    @Body() payload: { id?: number; name?: string; supplier?: string },
+  ): Promise<Inventory> {
+    return this.inventoryService.updateInventory(Number(id), payload);
+  }
+
+  @Delete(':id')
+  deleteInventory(@Param('id') id: string): Promise<void> {
+    return this.inventoryService.deleteInventory(Number(id));
+  }
+
+  @Patch('swap-ids')
+  swapInventoryIds(
+    @Body()
+    payload: {
+      sourceId: number;
+      targetId: number;
+      name?: string;
+      supplier?: string;
+    },
+  ): Promise<Inventory[]> {
+    return this.inventoryService.swapInventoryIds(payload.sourceId, payload.targetId, {
+      name: payload.name,
+      supplier: payload.supplier,
+    });
   }
 }
