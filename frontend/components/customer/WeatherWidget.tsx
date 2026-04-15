@@ -57,8 +57,8 @@ export default function WeatherWidget() {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <CircularProgress size={16} sx={{ color: '#636E72' }} />
-        <Typography sx={{ color: '#636E72', fontSize: '0.85rem' }}>
+        <CircularProgress size={16} sx={{ color: 'var(--color-kiosk-muted)' }} />
+        <Typography sx={{ color: 'var(--color-kiosk-muted)', fontSize: '0.85rem' }}>
           Loading weather...
         </Typography>
       </Box>
@@ -73,23 +73,23 @@ export default function WeatherWidget() {
         display: 'flex',
         alignItems: 'center',
         gap: 1,
-        bgcolor: '#2D3436',
+        bgcolor: 'var(--color-kiosk-text)',
         borderRadius: 3,
         px: 2,
         py: 1,
         boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
       }}
     >
-      <ThermostatIcon sx={{ color: '#FF6B6B', fontSize: 22 }} />
+      <ThermostatIcon sx={{ color: 'var(--color-accent-coral)', fontSize: 22 }} />
       <Typography
-        sx={{ color: '#FFFFFF', fontWeight: 700, fontSize: '0.95rem' }}
+        sx={{ color: 'var(--color-text-white)', fontWeight: 700, fontSize: '0.95rem' }}
       >
         {weather.temperature}{weather.unit}
       </Typography>
-      <Typography sx={{ color: '#DFE6E9', fontSize: '0.85rem' }}>
+      <Typography sx={{ color: 'var(--color-kiosk-border-light)', fontSize: '0.85rem' }}>
         {weather.description}
       </Typography>
-      <Typography sx={{ color: '#B2BEC3', fontSize: '0.75rem', ml: 0.5 }}>
+      <Typography sx={{ color: 'var(--color-kiosk-lighter-gray)', fontSize: '0.75rem', ml: 0.5 }}>
         College Station, TX
       </Typography>
     </Box>

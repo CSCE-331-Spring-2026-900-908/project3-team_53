@@ -16,7 +16,7 @@ export default function OrderCard({ order, onComplete }: OrderProps) {
   return (
     <div
       style={{
-        border: "2px solid #ccc",
+        border: "2px solid var(--color-border)",
         borderRadius: "10px",
         padding: "15px",
         marginBottom: "15px",

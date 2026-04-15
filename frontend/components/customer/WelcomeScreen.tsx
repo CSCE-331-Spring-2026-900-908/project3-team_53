@@ -26,7 +26,7 @@ export default function WelcomeScreen({ onSelectOrderType }: WelcomeScreenProps)
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        bgcolor: '#FAF3E0',
+        bgcolor: 'var(--color-cream)',
         gap: 3,
         px: 4,
         position: 'relative',
@@ -47,7 +47,7 @@ export default function WelcomeScreen({ onSelectOrderType }: WelcomeScreenProps)
       <Typography
         variant="h3"
         sx={{
-          color: '#2D3436',
+          color: 'var(--color-kiosk-text)',
           fontWeight: 700,
           textAlign: 'center',
           mt: 2,
@@ -58,7 +58,7 @@ export default function WelcomeScreen({ onSelectOrderType }: WelcomeScreenProps)
 
       <Typography
         sx={{
-          color: '#636E72',
+          color: 'var(--color-kiosk-muted)',
           fontSize: '1.25rem',
           textAlign: 'center',
         }}
@@ -72,8 +72,8 @@ export default function WelcomeScreen({ onSelectOrderType }: WelcomeScreenProps)
           onClick={() => onSelectOrderType('dine_in')}
           startIcon={<RestaurantIcon sx={{ fontSize: 28 }} />}
           sx={{
-            bgcolor: '#FF6B6B',
-            color: '#fff',
+            bgcolor: 'var(--color-accent-coral)',
+            color: 'var(--color-text-white)',
             fontSize: '1.4rem',
             fontWeight: 700,
             px: 5,
@@ -81,8 +81,9 @@ export default function WelcomeScreen({ onSelectOrderType }: WelcomeScreenProps)
             borderRadius: 4,
             textTransform: 'none',
             minWidth: 220,
+            border: '3px solid var(--color-accent-coral-hover)',
             boxShadow: '0 4px 14px rgba(255,107,107,0.4)',
-            '&:hover': { bgcolor: '#ee5a5a', boxShadow: '0 6px 20px rgba(255,107,107,0.5)' },
+            '&:hover': { bgcolor: 'var(--color-accent-coral-hover)', boxShadow: '0 6px 20px rgba(255,107,107,0.5)' },
           }}
         >
           {t('Dine In')}
@@ -92,8 +93,8 @@ export default function WelcomeScreen({ onSelectOrderType }: WelcomeScreenProps)
           onClick={() => onSelectOrderType('carry_out')}
           startIcon={<ShoppingBagIcon sx={{ fontSize: 28 }} />}
           sx={{
-            bgcolor: '#4ECDC4',
-            color: '#fff',
+            bgcolor: 'var(--color-accent-teal)',
+            color: 'var(--color-text-white)',
             fontSize: '1.4rem',
             fontWeight: 700,
             px: 5,
@@ -101,8 +102,9 @@ export default function WelcomeScreen({ onSelectOrderType }: WelcomeScreenProps)
             borderRadius: 4,
             textTransform: 'none',
             minWidth: 220,
+            border: '3px solid var(--color-accent-teal-hover)',
             boxShadow: '0 4px 14px rgba(78,205,196,0.4)',
-            '&:hover': { bgcolor: '#3dbdb5', boxShadow: '0 6px 20px rgba(78,205,196,0.5)' },
+            '&:hover': { bgcolor: 'var(--color-accent-teal-hover)', boxShadow: '0 6px 20px rgba(78,205,196,0.5)' },
           }}
         >
           {t('Carry Out')}
@@ -110,7 +112,7 @@ export default function WelcomeScreen({ onSelectOrderType }: WelcomeScreenProps)
       </Box>
 
       <Typography
-        sx={{ color: '#b2bec3', fontSize: '0.95rem', mt: 6 }}
+        sx={{ color: 'var(--color-kiosk-light-gray)', fontSize: '0.95rem', mt: 6 }}
       >
         {t('Tap to begin your order')}
       </Typography>

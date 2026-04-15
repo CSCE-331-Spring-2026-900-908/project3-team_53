@@ -10,7 +10,7 @@ interface MenuBoardItemProps {
 export default function MenuBoardItem({ item }: MenuBoardItemProps) {
   const imgSrc = publicAssetUrl(item.image);
   return (
-    <div className="flex flex-col items-center text-center p-4 bg-[#FFF8EE] rounded-lg shadow-lg">
+    <div className="flex flex-col items-center text-center p-4 bg-[var(--color-cream-light)] rounded-lg shadow-lg">
       {/* Show image if it exists */}
       {imgSrc && (
         <img
@@ -20,9 +20,9 @@ export default function MenuBoardItem({ item }: MenuBoardItemProps) {
         />
       )}
 
-      <h3 className="text-2xl font-semibold text-[#2D3436]">{item.name}</h3>
+      <h3 className="text-2xl font-semibold text-[var(--color-kiosk-text)]">{item.name}</h3>
 
-      <p className="text-xl mt-2 text-[#FF6B6B]">${Number(item.price).toFixed(2)}</p>
+      <p className="text-xl mt-2 text-[var(--color-accent-coral)]">${Number(item.price).toFixed(2)}</p>
 
       {/* Show unavailable message if the item is not available */}
       {!item.available && (

@@ -46,7 +46,7 @@ export default function CartSidebar({
       PaperProps={{
         sx: {
           width: 380,
-          bgcolor: '#2D3436',
+          bgcolor: 'var(--color-kiosk-text)',
           display: 'flex',
           flexDirection: 'column',
         },
@@ -57,29 +57,30 @@ export default function CartSidebar({
         sx={{
           px: 3,
           py: 2,
-          borderBottom: '2px solid #3a4144',
+          borderBottom: '2px solid var(--color-accent-teal-dark)',
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Typography sx={{ color: '#FAF3E0', fontWeight: 700, fontSize: '1.25rem' }}>
+          <Typography sx={{ color: 'var(--color-cream)', fontWeight: 700, fontSize: '1.25rem' }}>
             {t('Your Order')}
           </Typography>
-          <IconButton onClick={onClose} sx={{ color: '#FAF3E0' }}>
+          <IconButton onClick={onClose} sx={{ color: 'var(--color-cream)' }}>
             <CloseIcon />
           </IconButton>
         </Box>
         <Chip
-          icon={<SwapHorizIcon sx={{ color: '#fff !important', fontSize: 18 }} />}
+          icon={<SwapHorizIcon sx={{ color: 'var(--color-text-white) !important', fontSize: 18 }} />}
           label={orderType === 'dine_in' ? t('Dine In') : t('Carry Out')}
           onClick={onToggleOrderType}
           sx={{
             mt: 1,
-            bgcolor: '#4ECDC4',
-            color: '#fff',
+            bgcolor: 'var(--color-accent-teal)',
+            color: 'var(--color-text-white)',
             fontWeight: 600,
             fontSize: '0.85rem',
             cursor: 'pointer',
-            '&:hover': { bgcolor: '#3dbdb5' },
+            border: '2px solid var(--color-accent-teal-hover)',
+            '&:hover': { bgcolor: 'var(--color-accent-teal-hover)' },
           }}
         />
       </Box>
@@ -87,7 +88,7 @@ export default function CartSidebar({
       {/* Cart items */}
       <Box sx={{ flex: 1, overflowY: 'auto', px: 3 }}>
         {cart.length === 0 ? (
-          <Typography sx={{ color: '#636E72', textAlign: 'center', mt: 6 }}>
+          <Typography sx={{ color: 'var(--color-kiosk-muted)', textAlign: 'center', mt: 6 }}>
             {t('Your cart is empty')}
           </Typography>
         ) : (
@@ -108,7 +109,7 @@ export default function CartSidebar({
           sx={{
             px: 3,
             py: 2,
-            borderTop: '2px solid #3a4144',
+            borderTop: '2px solid var(--color-accent-teal-dark)',
           }}
         >
           <Box
@@ -118,10 +119,10 @@ export default function CartSidebar({
               mb: 2,
             }}
           >
-            <Typography sx={{ color: '#FAF3E0', fontWeight: 700, fontSize: '1.15rem' }}>
+            <Typography sx={{ color: 'var(--color-cream)', fontWeight: 700, fontSize: '1.15rem' }}>
               {t('Total')}
             </Typography>
-            <Typography sx={{ color: '#FF6B6B', fontWeight: 700, fontSize: '1.15rem' }}>
+            <Typography sx={{ color: 'var(--color-accent-coral)', fontWeight: 700, fontSize: '1.15rem' }}>
               ${cartTotal.toFixed(2)}
             </Typography>
           </Box>
@@ -130,15 +131,16 @@ export default function CartSidebar({
             fullWidth
             onClick={onCheckout}
             sx={{
-              bgcolor: '#FF6B6B',
-              color: '#fff',
+              bgcolor: 'var(--color-accent-coral)',
+              color: 'var(--color-text-white)',
               fontWeight: 700,
               textTransform: 'none',
               fontSize: '1.1rem',
               py: 1.5,
               borderRadius: 3,
+              border: '2px solid var(--color-accent-coral-hover)',
               boxShadow: '0 3px 10px rgba(255,107,107,0.3)',
-              '&:hover': { bgcolor: '#ee5a5a' },
+              '&:hover': { bgcolor: 'var(--color-accent-coral-hover)' },
             }}
           >
             {t('Checkout')}

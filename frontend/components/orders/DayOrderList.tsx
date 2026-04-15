@@ -114,7 +114,7 @@ export default function DayOrderList({ date }: DayOrderListProps) {
               {columns.map((col) => (
                 <TableCell
                   key={col.key}
-                  sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}
+                  sx={{ fontWeight: 'bold', backgroundColor: 'var(--color-order-row-bg)' }}
                 >
                   {col.label}
                 </TableCell>

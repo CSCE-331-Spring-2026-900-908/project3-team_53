@@ -36,9 +36,9 @@ export default function MenuItemCard({
   return (
     <Card
       sx={{
-        bgcolor: '#FFF8EE',
+        bgcolor: 'var(--color-cream-light)',
         borderRadius: 3,
-        border: '1px solid #f0e6d3',
+        border: '1px solid var(--color-cream-hover)',
         minHeight: cardMinHeight,
         transition: 'transform 0.15s, box-shadow 0.15s',
         '&:hover': {
@@ -52,7 +52,7 @@ export default function MenuItemCard({
           sx={{
             height: imageHeight,
             overflow: 'hidden',
-            bgcolor: '#FAF3E0',
+            bgcolor: 'var(--color-cream)',
           }}
         >
           {imageSrc ? (
@@ -76,7 +76,7 @@ export default function MenuItemCard({
                 justifyContent: 'center',
               }}
             >
-              <FastfoodIcon sx={{ fontSize: 56, color: '#FF6B6B' }} />
+              <FastfoodIcon sx={{ fontSize: 56, color: 'var(--color-accent-coral)' }} />
             </Box>
           ) : (
             <Box
@@ -87,7 +87,7 @@ export default function MenuItemCard({
                 justifyContent: 'center',
               }}
             >
-              <LocalCafeIcon sx={{ fontSize: 56, color: '#4ECDC4' }} />
+              <LocalCafeIcon sx={{ fontSize: 56, color: 'var(--color-accent-teal)' }} />
             </Box>
           )}
         </Box>
@@ -96,7 +96,7 @@ export default function MenuItemCard({
             sx={{
               fontWeight: 600,
               fontSize: cardWidth >= 240 ? '1.06rem' : '1rem',
-              color: '#2D3436',
+              color: 'var(--color-kiosk-text)',
               lineHeight: 1.25,
             }}
           >
@@ -104,7 +104,7 @@ export default function MenuItemCard({
           </Typography>
           <Typography
             sx={{
-              color: '#FF6B6B',
+              color: 'var(--color-accent-coral)',
               fontSize: '0.95rem',
               fontWeight: 700,
               mt: 0.5,

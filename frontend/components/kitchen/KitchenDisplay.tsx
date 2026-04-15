@@ -65,13 +65,13 @@ export default function KitchenDisplay() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#0f0f23', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'var(--color-dark-loading-bg)', display: 'flex', flexDirection: 'column' }}>
       <KitchenHeader pendingCount={orders.length} dayStats={dayStats} />
 
       <Box sx={{ flex: 1, p: 2.5, overflow: 'auto' }}>
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
-            <Typography sx={{ color: '#666', fontSize: '1.1rem' }}>
+            <Typography sx={{ color: 'var(--color-dark-text-muted)', fontSize: '1.1rem' }}>
               Loading orders...
             </Typography>
           </Box>
@@ -86,11 +86,11 @@ export default function KitchenDisplay() {
               gap: 2,
             }}
           >
-            <RestaurantMenuIcon sx={{ fontSize: 80, color: '#333' }} />
-            <Typography sx={{ color: '#555', fontSize: '1.3rem', fontWeight: 600 }}>
+            <RestaurantMenuIcon sx={{ fontSize: 80, color: 'var(--color-dark-border)' }} />
+            <Typography sx={{ color: 'var(--color-dark-text-subtle)', fontSize: '1.3rem', fontWeight: 600 }}>
               No pending orders
             </Typography>
-            <Typography sx={{ color: '#444', fontSize: '0.9rem' }}>
+            <Typography sx={{ color: 'var(--color-dark-text-dim)', fontSize: '0.9rem' }}>
               New orders will appear here automatically
             </Typography>
           </Box>
