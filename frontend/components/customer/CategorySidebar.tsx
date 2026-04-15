@@ -39,7 +39,7 @@ export default function CategorySidebar({
             justifyContent: 'flex-start',
             px: 3,
             py: 2,
-            color: selected === cat ? 'var(--color-kiosk-text)' : 'var(--color-cream)',
+            color: selected === cat ? 'var(--color-text-white)' : 'var(--color-cream)',
             bgcolor: selected === cat ? 'var(--color-accent-teal)' : 'transparent',
             borderRadius: 0,
             borderLeft: selected === cat ? '4px solid var(--color-accent-coral)' : '4px solid transparent',

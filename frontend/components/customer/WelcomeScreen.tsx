@@ -81,6 +81,7 @@ export default function WelcomeScreen({ onSelectOrderType }: WelcomeScreenProps)
             borderRadius: 4,
             textTransform: 'none',
             minWidth: 220,
+            border: '3px solid var(--color-accent-coral-hover)',
             boxShadow: '0 4px 14px rgba(255,107,107,0.4)',
             '&:hover': { bgcolor: 'var(--color-accent-coral-hover)', boxShadow: '0 6px 20px rgba(255,107,107,0.5)' },
           }}
@@ -101,6 +102,7 @@ export default function WelcomeScreen({ onSelectOrderType }: WelcomeScreenProps)
             borderRadius: 4,
             textTransform: 'none',
             minWidth: 220,
+            border: '3px solid var(--color-accent-teal-hover)',
             boxShadow: '0 4px 14px rgba(78,205,196,0.4)',
             '&:hover': { bgcolor: 'var(--color-accent-teal-hover)', boxShadow: '0 6px 20px rgba(78,205,196,0.5)' },
           }}

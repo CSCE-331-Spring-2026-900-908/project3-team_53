@@ -75,6 +75,7 @@ export default function LanguageSelector() {
               px: 1.5,
               py: 0.75,
               borderRadius: '8px 0 0 8px',
+              border: '2px solid var(--color-accent-coral-hover)',
               boxShadow: '-2px 2px 8px rgba(0,0,0,0.15)',
               minWidth: 0,
               '&:hover': { bgcolor: 'var(--color-accent-coral-hover)' },
@@ -97,6 +98,7 @@ export default function LanguageSelector() {
             px: 1.5,
             py: 1.5,
             borderRadius: '8px 0 0 8px',
+            border: isEnglish ? '2px solid var(--color-accent-teal-dark)' : '2px solid var(--color-accent-teal-hover)',
             boxShadow: '-2px 2px 8px rgba(0,0,0,0.15)',
             minWidth: 0,
             display: 'flex',
@@ -109,6 +111,7 @@ export default function LanguageSelector() {
             '&.Mui-disabled': {
               bgcolor: 'var(--color-kiosk-muted)',
               color: 'var(--color-text-white)',
+              border: '2px solid var(--color-kiosk-text)',
             },
           }}
         >

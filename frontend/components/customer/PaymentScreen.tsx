@@ -214,6 +214,7 @@ export default function PaymentScreen({
                   py: 2,
                   borderRadius: 4,
                   minWidth: 300,
+                  border: '2px solid var(--color-accent-teal-hover)',
                   boxShadow: '0 4px 14px rgba(78,205,196,0.4)',
                   '&:hover': { bgcolor: 'var(--color-accent-teal-hover)', boxShadow: '0 6px 20px rgba(78,205,196,0.5)' },
                 }}
@@ -255,6 +256,7 @@ export default function PaymentScreen({
                   py: 3,
                   borderRadius: 4,
                   textTransform: 'none',
+                  border: '2px solid var(--color-accent-teal-hover)',
                   boxShadow: '0 4px 14px rgba(78,205,196,0.4)',
                   '&:hover': { bgcolor: 'var(--color-accent-teal-hover)', boxShadow: '0 6px 20px rgba(78,205,196,0.5)' },
                 }}
@@ -274,6 +276,7 @@ export default function PaymentScreen({
                   py: 3,
                   borderRadius: 4,
                   textTransform: 'none',
+                  border: '2px solid var(--color-accent-coral-hover)',
                   boxShadow: '0 4px 14px rgba(255,107,107,0.4)',
                   '&:hover': { bgcolor: 'var(--color-accent-coral-hover)', boxShadow: '0 6px 20px rgba(255,107,107,0.5)' },
                 }}
@@ -293,6 +296,7 @@ export default function PaymentScreen({
                   py: 3,
                   borderRadius: 4,
                   textTransform: 'none',
+                  border: '2px solid var(--color-accent-purple-hover)',
                   boxShadow: '0 4px 14px rgba(108,92,231,0.4)',
                   '&:hover': { bgcolor: 'var(--color-accent-purple-hover)', boxShadow: '0 6px 20px rgba(108,92,231,0.5)' },
                 }}
@@ -376,8 +380,8 @@ export default function PaymentScreen({
                 disabled={!cashSufficient}
                 onClick={handleCashConfirm}
                 sx={{
-                  bgcolor: cashSufficient ? 'var(--color-accent-teal)' : 'var(--color-border)',
-                  color: 'var(--color-text-white)',
+                  bgcolor: cashSufficient ? 'var(--color-accent-teal)' : 'var(--color-cream-hover)',
+                  color: cashSufficient ? 'var(--color-text-white)' : 'var(--color-kiosk-muted)',
                   fontWeight: 700,
                   textTransform: 'none',
                   fontSize: '1.25rem',
@@ -385,11 +389,16 @@ export default function PaymentScreen({
                   py: 2,
                   borderRadius: 4,
                   minWidth: 300,
+                  border: cashSufficient ? '2px solid var(--color-accent-teal-hover)' : '2px solid var(--color-cream-border-dark)',
                   boxShadow: cashSufficient ? '0 4px 14px rgba(78,205,196,0.4)' : 'none',
                   '&:hover': cashSufficient
                     ? { bgcolor: 'var(--color-accent-teal-hover)', boxShadow: '0 6px 20px rgba(78,205,196,0.5)' }
                     : {},
-                  '&.Mui-disabled': { bgcolor: 'var(--color-border)', color: 'var(--color-text-white)' },
+                  '&.Mui-disabled': {
+                    bgcolor: 'var(--color-cream-hover)',
+                    color: 'var(--color-kiosk-muted)',
+                    border: '2px solid var(--color-cream-border)',
+                  },
                 }}
               >
                 {t('Confirm Cash Payment')}

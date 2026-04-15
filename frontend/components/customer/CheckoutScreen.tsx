@@ -173,6 +173,7 @@ export default function CheckoutScreen({
             py: 2,
             borderRadius: 4,
             minWidth: 300,
+            border: '2px solid var(--color-accent-coral-hover)',
             boxShadow: '0 4px 14px rgba(255,107,107,0.4)',
             '&:hover': { bgcolor: 'var(--color-accent-coral-hover)', boxShadow: '0 6px 20px rgba(255,107,107,0.5)' },
           }}

@@ -133,6 +133,7 @@ export default function SnackAddModal({
             fontSize: '1rem',
             px: 4,
             borderRadius: 3,
+            border: '2px solid var(--color-accent-coral-hover)',
             boxShadow: '0 3px 10px rgba(255,107,107,0.3)',
             '&:hover': { bgcolor: 'var(--color-accent-coral-hover)' },
           }}

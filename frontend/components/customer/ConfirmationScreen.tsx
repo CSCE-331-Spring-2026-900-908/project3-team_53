@@ -129,6 +129,7 @@ export default function ConfirmationScreen({
           py: 1.5,
           borderRadius: 4,
           mt: 3,
+          border: '2px solid var(--color-accent-coral-hover)',
           boxShadow: '0 4px 14px rgba(255,107,107,0.4)',
           '&:hover': { bgcolor: 'var(--color-accent-coral-hover)', boxShadow: '0 6px 20px rgba(255,107,107,0.5)' },
         }}

@@ -30,6 +30,16 @@ import type { MenuItem as CatalogMenuItem } from '@/types/menuboard';
 import type { MenuItem as CustomerMenuItem } from '@/types/customer';
 import IngredientsModal from '@/components/manager/ingredientsModal';
 
+/** Stronger borders + fill so fields read clearly on white cards (see theme `--color-editor-field-*`). */
+const editorFieldSx = {
+  '& .MuiOutlinedInput-root': {
+    bgcolor: 'var(--color-editor-field-bg)',
+    '& fieldset': { borderColor: 'var(--color-editor-field-outline)' },
+    '&:hover fieldset': { borderColor: 'var(--color-editor-field-outline-hover)' },
+    '&.Mui-focused fieldset': { borderColor: 'var(--color-editor-contained-teal)', borderWidth: 2 },
+  },
+} as const;
+
 type CatalogKind = 'menu' | 'topping';
 type CatalogItem = CatalogMenuItem;
 type InventoryItem = { id: number; name: string; quantity: number; status: string };
@@ -476,8 +486,10 @@ export default function ManagerMenuPage() {
             p: { xs: 2.5, md: 4 },
             mb: 3,
             borderRadius: 4,
-            color: 'var(--color-editor-cream-light)',
+            color: 'var(--color-kiosk-text)',
             background: 'var(--color-page-bg)',
+            border: '1px solid var(--color-cream-border-dark)',
+            boxShadow: '0 4px 18px rgba(45, 52, 54, 0.08)',
           }}
         >
           <Stack direction={{ xs: 'column', lg: 'row' }} spacing={3} justifyContent="space-between">
@@ -492,12 +504,36 @@ export default function ManagerMenuPage() {
                 ['Available', summary.available],
                 ['With Images', summary.withImages],
                 ['Categories', summary.categories],
-              ].map(([label, value]) => (
-                <Paper key={String(label)} elevation={0} sx={{ px: 2, py: 1.5, minWidth: 120, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.16)', color: 'var(--color-editor-cream-light)' }}>
-                  <Typography sx={{ fontSize: '0.72rem', fontWeight: 800, opacity: 0.84 }}>{label}</Typography>
-                  <Typography sx={{ fontSize: '1.7rem', lineHeight: 1.1, fontWeight: 800 }}>{value}</Typography>
-                </Paper>
-              ))}
+              ].map(([label, value], idx) => {
+                const accents = [
+                  'var(--color-accent-teal)',
+                  'var(--color-accent-coral)',
+                  'var(--color-accent-purple)',
+                  'var(--color-kiosk-muted)',
+                ];
+                return (
+                  <Paper
+                    key={String(label)}
+                    elevation={0}
+                    sx={{
+                      px: 2,
+                      py: 1.5,
+                      minWidth: 120,
+                      borderRadius: 3,
+                      bgcolor: 'var(--color-cream-light)',
+                      color: 'var(--color-kiosk-text)',
+                      border: '1px solid var(--color-cream-border-dark)',
+                      borderLeft: `5px solid ${accents[idx % accents.length]}`,
+                      boxShadow: '0 2px 8px rgba(45, 52, 54, 0.06)',
+                    }}
+                  >
+                    <Typography sx={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--color-kiosk-muted)', textTransform: 'uppercase', letterSpacing: 0.4 }}>
+                      {label}
+                    </Typography>
+                    <Typography sx={{ fontSize: '1.7rem', lineHeight: 1.1, fontWeight: 800 }}>{value}</Typography>
+                  </Paper>
+                );
+              })}
             </Stack>
           </Stack>
         </Paper>
@@ -510,15 +546,15 @@ export default function ManagerMenuPage() {
 
         <Stack direction={{ xs: 'column', xl: 'row' }} spacing={3} alignItems="flex-start">
           <Stack spacing={3} sx={{ flex: 1, minWidth: 0 }}>
-            <Paper elevation={0} sx={{ borderRadius: 4, overflow: 'hidden', border: '1px solid rgba(90,65,35,0.08)' }}>
+            <Paper elevation={0} sx={{ borderRadius: 4, overflow: 'hidden', border: '1px solid var(--color-cream-border-dark)', bgcolor: 'var(--color-editor-field-bg)', boxShadow: '0 2px 10px rgba(45, 52, 54, 0.06)' }}>
               <Tabs
                 value={tab}
                 onChange={(_event, nextValue: CatalogKind) => setTab(nextValue)}
                 variant="fullWidth"
                 sx={{
                   '& .MuiTabs-indicator': { height: 4, bgcolor: 'var(--color-editor-terracotta)' },
-                  '& .MuiTab-root': { minHeight: 66, fontWeight: 800, color: 'var(--color-editor-brown-muted)' },
-                  '& .Mui-selected': { color: 'var(--color-editor-green) !important' },
+                  '& .MuiTab-root': { minHeight: 66, fontWeight: 800, color: 'var(--color-kiosk-muted)' },
+                  '& .Mui-selected': { color: 'var(--color-editor-contained-teal) !important' },
                 }}
               >
                 <Tab value="menu" label="Menu Items" />
@@ -529,7 +565,7 @@ export default function ManagerMenuPage() {
             <Paper elevation={0} sx={{ p: 2.5, borderRadius: 4, border: '1px solid rgba(90,65,35,0.08)', bgcolor: 'var(--color-editor-surface)' }}>
               <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }}>
                 <Box>
-                  <Typography variant="h5" sx={{ fontWeight: 800, color: 'var(--color-editor-green)' }}>
+                  <Typography variant="h5" sx={{ fontWeight: 800, color: 'var(--color-editor-contained-teal)' }}>
                     Browse {pluralLabelFor(tab)}
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'var(--color-editor-brown-light)', mt: 0.5 }}>
@@ -541,7 +577,13 @@ export default function ManagerMenuPage() {
                   placeholder={`Search ${pluralLabelFor(tab)}`}
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
-                  sx={{ minWidth: { xs: '100%', md: 320 }, '& .MuiOutlinedInput-root': { borderRadius: 3, bgcolor: 'var(--color-surface)' } }}
+                  sx={{
+                    minWidth: { xs: '100%', md: 320 },
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 3,
+                      ...editorFieldSx['& .MuiOutlinedInput-root'],
+                    },
+                  }}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -552,8 +594,8 @@ export default function ManagerMenuPage() {
                 />
               </Stack>
               <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 2 }}>
-                <Chip label={`${summary.available} available`} sx={{ bgcolor: 'var(--color-editor-chip-avail-bg)', color: 'var(--color-editor-green)', fontWeight: 700 }} />
-                <Chip label={`${summary.hidden} hidden`} sx={{ bgcolor: 'var(--color-editor-chip-hidden-bg)', color: 'var(--color-editor-chip-hidden-text)', fontWeight: 700 }} />
+                <Chip label={`${summary.available} available`} sx={{ bgcolor: 'var(--color-editor-chip-avail-bg)', color: 'var(--color-editor-chip-avail-fg)', fontWeight: 700 }} />
+                <Chip label={`${summary.hidden} hidden`} sx={{ bgcolor: 'var(--color-editor-chip-hidden-bg)', color: 'var(--color-editor-chip-hidden-fg)', fontWeight: 700 }} />
                 <Chip label={`${filteredItems.length} shown`} sx={{ bgcolor: 'var(--color-editor-chip-shown-bg)', color: 'var(--color-editor-chip-shown-text)', fontWeight: 700 }} />
               </Stack>
             </Paper>
@@ -570,7 +612,17 @@ export default function ManagerMenuPage() {
             {!loading && error && (
               <Paper sx={{ p: 3, borderRadius: 4 }}>
                 <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
-                <Button variant="outlined" onClick={() => void loadCatalog()}>Retry</Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => void loadCatalog()}
+                  sx={{
+                    borderRadius: 2,
+                    bgcolor: 'var(--color-editor-outlined-button-bg)',
+                    '&:hover': { bgcolor: 'var(--color-editor-outlined-button-hover)' },
+                  }}
+                >
+                  Retry
+                </Button>
               </Paper>
             )}
 
@@ -589,12 +641,12 @@ export default function ManagerMenuPage() {
               <Paper key={category} elevation={0} sx={{ p: 2.5, borderRadius: 4, border: '1px solid rgba(90,65,35,0.08)', bgcolor: 'var(--color-editor-surface-card)' }}>
                 <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }} spacing={1} sx={{ mb: 2.5 }}>
                   <Box>
-                    <Typography variant="h5" sx={{ fontWeight: 800, color: 'var(--color-editor-green)' }}>{category}</Typography>
+                    <Typography variant="h5" sx={{ fontWeight: 800, color: 'var(--color-editor-contained-teal)' }}>{category}</Typography>
                     <Typography variant="body2" sx={{ color: 'var(--color-editor-brown-light)' }}>
                       {items.length} {items.length === 1 ? 'item' : 'items'} in this section
                     </Typography>
                   </Box>
-                  <Chip label={category === 'Uncategorized' ? 'Needs category review' : 'Organized'} sx={{ bgcolor: category === 'Uncategorized' ? 'var(--color-editor-chip-uncat-bg)' : 'var(--color-editor-chip-avail-bg)', color: category === 'Uncategorized' ? 'var(--color-editor-chip-uncat-text)' : 'var(--color-editor-green)', fontWeight: 700 }} />
+                  <Chip label={category === 'Uncategorized' ? 'Needs category review' : 'Organized'} sx={{ bgcolor: category === 'Uncategorized' ? 'var(--color-editor-chip-uncat-bg)' : 'var(--color-editor-chip-avail-bg)', color: category === 'Uncategorized' ? 'var(--color-editor-chip-uncat-text)' : 'var(--color-editor-chip-avail-fg)', fontWeight: 700 }} />
                 </Stack>
 
                 <Stack spacing={2}>
@@ -634,10 +686,10 @@ export default function ManagerMenuPage() {
                                   </Typography>
                                 </Stack>
                               )}
-                              <Chip label={form.available ? 'Visible' : 'Hidden'} size="small" sx={{ position: 'absolute', top: 10, left: 10, bgcolor: form.available ? 'var(--color-editor-chip-avail-bg)' : 'var(--color-editor-chip-hidden-bg)', color: form.available ? 'var(--color-editor-green)' : 'var(--color-editor-chip-hidden-text)', fontWeight: 800 }} />
+                              <Chip label={form.available ? 'Visible' : 'Hidden'} size="small" sx={{ position: 'absolute', top: 10, left: 10, bgcolor: form.available ? 'var(--color-editor-chip-avail-bg)' : 'var(--color-editor-chip-hidden-bg)', color: form.available ? 'var(--color-editor-chip-avail-fg)' : 'var(--color-editor-chip-hidden-fg)', fontWeight: 800 }} />
                             </Box>
                             <Stack spacing={1} sx={{ mt: 1.25 }}>
-                              <Button fullWidth size="small" variant="contained" component="label" disabled={isBusy} sx={{ borderRadius: 2.5, bgcolor: 'var(--color-editor-green)', '&:hover': { bgcolor: 'var(--color-editor-green-dark)' } }}>
+                              <Button fullWidth size="small" variant="contained" component="label" disabled={isBusy} sx={{ borderRadius: 2.5, color: 'var(--color-text-white)', bgcolor: 'var(--color-editor-contained-teal)', boxShadow: '0 2px 8px rgba(15, 118, 110, 0.35)', '&:hover': { bgcolor: 'var(--color-editor-contained-teal-hover)' } }}>
                                 {isUploading ? 'Uploading...' : 'Upload new image'}
                                 <input
                                   type="file"
@@ -663,13 +715,13 @@ export default function ManagerMenuPage() {
                                 <Typography variant="h6" sx={{ fontWeight: 800, color: 'var(--color-editor-brown-text)' }}>{item.name}</Typography>
                                 <Typography variant="body2" sx={{ color: 'var(--color-editor-brown-light)' }}>ID #{item.id}</Typography>
                               </Box>
-                              <Chip label={`$${Number(item.price).toFixed(2)}`} sx={{ bgcolor: 'var(--color-editor-chip-price-bg)', color: 'var(--color-editor-chip-hidden-text)', fontWeight: 800 }} />
+                              <Chip label={`$${Number(item.price).toFixed(2)}`} sx={{ bgcolor: 'var(--color-editor-chip-price-bg)', color: 'var(--color-editor-chip-price-text)', fontWeight: 800 }} />
                             </Stack>
 
                             <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5}>
-                              <TextField label="Name" size="small" fullWidth value={form.name} onChange={(event) => updateItemForm(tab, item.id, { name: event.target.value })} disabled={isBusy} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2.5 } }} />
-                              <TextField label={categoryLabelFor(tab)} size="small" fullWidth value={form.category} onChange={(event) => updateItemForm(tab, item.id, { category: event.target.value })} disabled={isBusy} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2.5 } }} />
-                              <TextField label="Price" size="small" type="number" inputProps={{ min: 0, step: 0.01 }} value={form.price} onChange={(event) => updateItemForm(tab, item.id, { price: event.target.value })} disabled={isBusy} sx={{ minWidth: { md: 160 }, '& .MuiOutlinedInput-root': { borderRadius: 2.5 } }} />
+                              <TextField label="Name" size="small" fullWidth value={form.name} onChange={(event) => updateItemForm(tab, item.id, { name: event.target.value })} disabled={isBusy} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2.5, ...editorFieldSx['& .MuiOutlinedInput-root'] } }} />
+                              <TextField label={categoryLabelFor(tab)} size="small" fullWidth value={form.category} onChange={(event) => updateItemForm(tab, item.id, { category: event.target.value })} disabled={isBusy} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2.5, ...editorFieldSx['& .MuiOutlinedInput-root'] } }} />
+                              <TextField label="Price" size="small" type="number" inputProps={{ min: 0, step: 0.01 }} value={form.price} onChange={(event) => updateItemForm(tab, item.id, { price: event.target.value })} disabled={isBusy} sx={{ minWidth: { md: 160 }, '& .MuiOutlinedInput-root': { borderRadius: 2.5, ...editorFieldSx['& .MuiOutlinedInput-root'] } }} />
                             </Stack>
 
                             <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }}>
@@ -679,7 +731,7 @@ export default function ManagerMenuPage() {
                                 sx={{ m: 0, px: 1.2, py: 0.6, borderRadius: 999, bgcolor: form.available ? 'var(--color-editor-toggle-avail-bg)' : 'var(--color-editor-toggle-hidden-bg)' }}
                               />
                               <Stack direction="row" spacing={1.25} flexWrap="wrap" useFlexGap>
-                                <Button variant="contained" onClick={() => void saveItem(tab, item.id)} disabled={isBusy} sx={{ borderRadius: 2.5, px: 2.2, bgcolor: 'var(--color-editor-terracotta)', '&:hover': { bgcolor: 'var(--color-editor-terracotta-dark)' } }}>
+                                <Button variant="contained" onClick={() => void saveItem(tab, item.id)} disabled={isBusy} sx={{ borderRadius: 2.5, px: 2.2, color: 'var(--color-text-white)', bgcolor: 'var(--color-editor-contained-coral)', boxShadow: '0 2px 8px rgba(198, 40, 40, 0.35)', '&:hover': { bgcolor: 'var(--color-editor-contained-coral-hover)' } }}>
                                   {isSaving ? 'Saving...' : 'Save changes'}
                                 </Button>
                                 {tab === 'menu' && (
@@ -687,12 +739,44 @@ export default function ManagerMenuPage() {
                                     variant="outlined"
                                     onClick={() => setIngredientsModalItem(catalogItemToCustomerMenuItem(item))}
                                     disabled={isBusy}
-                                    sx={{ borderRadius: 2.5, px: 2.2, borderColor: 'var(--color-editor-green)', color: 'var(--color-editor-green)' }}
+                                    sx={{
+                                      borderRadius: 2.5,
+                                      px: 2.2,
+                                      borderWidth: 2,
+                                      borderColor: 'var(--color-editor-outlined-teal-border)',
+                                      color: 'var(--color-editor-outlined-teal-fg)',
+                                      bgcolor: 'var(--color-editor-outlined-button-bg)',
+                                      fontWeight: 700,
+                                      '&:hover': {
+                                        bgcolor: 'var(--color-editor-outlined-button-hover)',
+                                        borderWidth: 2,
+                                        borderColor: 'var(--color-editor-contained-teal-hover)',
+                                        color: 'var(--color-editor-outlined-teal-fg)',
+                                      },
+                                    }}
                                   >
                                     Ingredients
                                   </Button>
                                 )}
-                                <Button variant="outlined" color="error" startIcon={<DeleteIcon />} onClick={() => void deleteItem(tab, item.id)} disabled={isBusy} sx={{ borderRadius: 2.5, px: 2.2 }}>
+                                <Button
+                                  variant="outlined"
+                                  startIcon={<DeleteIcon />}
+                                  onClick={() => void deleteItem(tab, item.id)}
+                                  disabled={isBusy}
+                                  sx={{
+                                    borderRadius: 2.5,
+                                    px: 2.2,
+                                    borderWidth: 2,
+                                    borderColor: 'var(--color-editor-contained-coral)',
+                                    color: 'var(--color-editor-chip-hidden-fg)',
+                                    bgcolor: 'var(--color-editor-delete-fill)',
+                                    fontWeight: 700,
+                                    '&:hover': {
+                                      bgcolor: 'var(--color-editor-delete-fill-hover)',
+                                      borderColor: 'var(--color-editor-contained-coral-hover)',
+                                    },
+                                  }}
+                                >
                                   {isDeleting ? 'Deleting...' : 'Delete'}
                                 </Button>
                               </Stack>
@@ -707,16 +791,28 @@ export default function ManagerMenuPage() {
             ))}
           </Stack>
 
-          <Paper elevation={0} sx={{ width: { xs: '100%', xl: 360 }, position: { xl: 'sticky' }, top: { xl: 24 }, p: 3, borderRadius: 4, border: '1px solid rgba(90,65,35,0.08)', bgcolor: 'linear-gradient(180deg, var(--color-editor-surface) 0%, var(--color-editor-gradient-create-end) 100%)', boxShadow: '0 20px 40px rgba(89, 67, 37, 0.08)' }}>
-            <Typography variant="h5" sx={{ fontWeight: 800, color: 'var(--color-editor-green)', mb: 1 }}>
+          <Paper
+            elevation={0}
+            sx={{
+              width: { xs: '100%', xl: 360 },
+              position: { xl: 'sticky' },
+              top: { xl: 24 },
+              p: 3,
+              borderRadius: 4,
+              border: '1px solid rgba(90,65,35,0.08)',
+              background: 'linear-gradient(180deg, var(--color-editor-surface) 0%, var(--color-editor-gradient-create-end) 100%)',
+              boxShadow: '0 20px 40px rgba(89, 67, 37, 0.08)',
+            }}
+          >
+            <Typography variant="h5" sx={{ fontWeight: 800, color: 'var(--color-editor-contained-teal)', mb: 1 }}>
               Create {labelFor(tab)}
             </Typography>
 
             <Stack spacing={1.5}>
-              <TextField label="Name" fullWidth value={createFormByKind.name} onChange={(event) => updateCreateForm(tab, { name: event.target.value })} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2.5 } }} />
-              <TextField label={categoryLabelFor(tab)} fullWidth value={createFormByKind.category} onChange={(event) => updateCreateForm(tab, { category: event.target.value })} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2.5 } }} />
-              <TextField label="Price" type="number" inputProps={{ min: 0, step: 0.01 }} value={createFormByKind.price} onChange={(event) => updateCreateForm(tab, { price: event.target.value })} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2.5 } }} />
-              <Button variant="contained" onClick={() => void createItem(tab)} disabled={savingKey === `${tab}-create`} sx={{ mt: 1, py: 1.3, borderRadius: 2.8, fontWeight: 800, bgcolor: 'var(--color-editor-green)', '&:hover': { bgcolor: 'var(--color-editor-green-dark)' } }}>
+              <TextField label="Name" fullWidth value={createFormByKind.name} onChange={(event) => updateCreateForm(tab, { name: event.target.value })} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2.5, ...editorFieldSx['& .MuiOutlinedInput-root'] } }} />
+              <TextField label={categoryLabelFor(tab)} fullWidth value={createFormByKind.category} onChange={(event) => updateCreateForm(tab, { category: event.target.value })} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2.5, ...editorFieldSx['& .MuiOutlinedInput-root'] } }} />
+              <TextField label="Price" type="number" inputProps={{ min: 0, step: 0.01 }} value={createFormByKind.price} onChange={(event) => updateCreateForm(tab, { price: event.target.value })} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2.5, ...editorFieldSx['& .MuiOutlinedInput-root'] } }} />
+              <Button variant="contained" onClick={() => void createItem(tab)} disabled={savingKey === `${tab}-create`} sx={{ mt: 1, py: 1.3, borderRadius: 2.8, fontWeight: 800, color: 'var(--color-text-white)', bgcolor: 'var(--color-editor-contained-teal)', boxShadow: '0 4px 14px rgba(15, 118, 110, 0.4)', '&:hover': { bgcolor: 'var(--color-editor-contained-teal-hover)' } }}>
                 {savingKey === `${tab}-create` ? 'Creating...' : `Create ${labelFor(tab)}`}
               </Button>
             </Stack>
@@ -815,7 +911,7 @@ export default function ManagerMenuPage() {
                         imageFocusX: Array.isArray(value) ? value[0] : value,
                       })
                     }
-                    sx={{ color: 'var(--color-editor-terracotta)' }}
+                    sx={{ color: 'var(--color-editor-contained-coral)' }}
                   />
                 </Box>
 
@@ -838,14 +934,25 @@ export default function ManagerMenuPage() {
                         imageFocusY: Array.isArray(value) ? value[0] : value,
                       })
                     }
-                    sx={{ color: 'var(--color-editor-green)' }}
+                    sx={{ color: 'var(--color-editor-contained-teal)' }}
                   />
                 </Box>
               </Stack>
             )}
           </DialogContent>
           <DialogActions sx={{ px: 3, pb: 2.5 }}>
-            <Button onClick={() => setFramingItemId(null)}>Done</Button>
+            <Button
+              variant="outlined"
+              onClick={() => setFramingItemId(null)}
+              sx={{
+                borderRadius: 2,
+                borderWidth: 2,
+                bgcolor: 'var(--color-editor-outlined-button-bg)',
+                '&:hover': { bgcolor: 'var(--color-editor-outlined-button-hover)' },
+              }}
+            >
+              Done
+            </Button>
           </DialogActions>
         </Dialog>
       </Box>

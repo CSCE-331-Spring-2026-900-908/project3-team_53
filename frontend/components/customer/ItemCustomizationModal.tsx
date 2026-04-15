@@ -148,10 +148,11 @@ export default function ItemCustomizationModal({
               label={t(s)}
               onClick={() => setSize(s)}
               sx={{
-                bgcolor: size === s ? 'var(--color-accent-teal)' : 'var(--color-cream)',
-                color: size === s ? 'var(--color-text-white)' : 'var(--color-kiosk-muted)',
-                fontWeight: size === s ? 700 : 400,
-                border: size === s ? 'none' : '1px solid var(--color-cream-border)',
+                bgcolor: size === s ? 'var(--color-accent-teal)' : 'var(--color-cream-light)',
+                color: size === s ? 'var(--color-text-white)' : 'var(--color-kiosk-text)',
+                fontWeight: size === s ? 700 : 500,
+                border: size === s ? '2px solid transparent' : '2px solid rgba(45, 52, 54, 0.38)',
+                boxShadow: size === s ? '0 2px 8px rgba(78, 205, 196, 0.35)' : 'none',
                 '&:hover': { bgcolor: size === s ? 'var(--color-accent-teal-hover)' : 'var(--color-cream-hover)' },
               }}
             />
@@ -166,10 +167,11 @@ export default function ItemCustomizationModal({
               label={t(s)}
               onClick={() => setSugarLevel(s)}
               sx={{
-                bgcolor: sugarLevel === s ? 'var(--color-accent-teal)' : 'var(--color-cream)',
-                color: sugarLevel === s ? 'var(--color-text-white)' : 'var(--color-kiosk-muted)',
-                fontWeight: sugarLevel === s ? 700 : 400,
-                border: sugarLevel === s ? 'none' : '1px solid var(--color-cream-border)',
+                bgcolor: sugarLevel === s ? 'var(--color-accent-teal)' : 'var(--color-cream-light)',
+                color: sugarLevel === s ? 'var(--color-text-white)' : 'var(--color-kiosk-text)',
+                fontWeight: sugarLevel === s ? 700 : 500,
+                border: sugarLevel === s ? '2px solid transparent' : '2px solid rgba(45, 52, 54, 0.38)',
+                boxShadow: sugarLevel === s ? '0 2px 8px rgba(78, 205, 196, 0.35)' : 'none',
                 '&:hover': { bgcolor: sugarLevel === s ? 'var(--color-accent-teal-hover)' : 'var(--color-cream-hover)' },
               }}
             />
@@ -184,10 +186,11 @@ export default function ItemCustomizationModal({
               label={t(i)}
               onClick={() => setIceLevel(i)}
               sx={{
-                bgcolor: iceLevel === i ? 'var(--color-accent-teal)' : 'var(--color-cream)',
-                color: iceLevel === i ? 'var(--color-text-white)' : 'var(--color-kiosk-muted)',
-                fontWeight: iceLevel === i ? 700 : 400,
-                border: iceLevel === i ? 'none' : '1px solid var(--color-cream-border)',
+                bgcolor: iceLevel === i ? 'var(--color-accent-teal)' : 'var(--color-cream-light)',
+                color: iceLevel === i ? 'var(--color-text-white)' : 'var(--color-kiosk-text)',
+                fontWeight: iceLevel === i ? 700 : 500,
+                border: iceLevel === i ? '2px solid transparent' : '2px solid rgba(45, 52, 54, 0.38)',
+                boxShadow: iceLevel === i ? '0 2px 8px rgba(78, 205, 196, 0.35)' : 'none',
                 '&:hover': { bgcolor: iceLevel === i ? 'var(--color-accent-teal-hover)' : 'var(--color-cream-hover)' },
               }}
             />
@@ -203,10 +206,11 @@ export default function ItemCustomizationModal({
                 label={`${t(topping.name)} +$${Number(topping.price).toFixed(2)}`}
                 onClick={() => toggleTopping(topping.name)}
                 sx={{
-                  bgcolor: selectedToppings.includes(topping.name) ? 'var(--color-accent-coral)' : 'var(--color-cream)',
-                  color: selectedToppings.includes(topping.name) ? 'var(--color-text-white)' : 'var(--color-kiosk-muted)',
-                  fontWeight: selectedToppings.includes(topping.name) ? 700 : 400,
-                  border: selectedToppings.includes(topping.name) ? 'none' : '1px solid var(--color-cream-border)',
+                  bgcolor: selectedToppings.includes(topping.name) ? 'var(--color-accent-coral)' : 'var(--color-cream-light)',
+                  color: selectedToppings.includes(topping.name) ? 'var(--color-text-white)' : 'var(--color-kiosk-text)',
+                  fontWeight: selectedToppings.includes(topping.name) ? 700 : 500,
+                  border: selectedToppings.includes(topping.name) ? '2px solid transparent' : '2px solid rgba(45, 52, 54, 0.38)',
+                  boxShadow: selectedToppings.includes(topping.name) ? '0 2px 8px rgba(255, 107, 107, 0.35)' : 'none',
                   '&:hover': {
                     bgcolor: selectedToppings.includes(topping.name) ? 'var(--color-accent-coral-hover)' : 'var(--color-cream-hover)',
                   },
@@ -235,6 +239,7 @@ export default function ItemCustomizationModal({
             fontSize: '1rem',
             px: 4,
             borderRadius: 3,
+            border: '2px solid var(--color-accent-coral-hover)',
             boxShadow: '0 3px 10px rgba(255,107,107,0.3)',
             '&:hover': { bgcolor: 'var(--color-accent-coral-hover)' },
           }}
