@@ -108,7 +108,9 @@ export class OrdersService {
     avgWaitSeconds: number;
     longestWaitSeconds: number;
   }> {
-    const startOfDay = new Date();
+    const startOfDay = new Date(
+      new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' })
+    );
     startOfDay.setHours(0, 0, 0, 0);
 
     const orders = await this.orderRepo.find({
@@ -175,16 +177,19 @@ export class OrdersService {
   }
 
   async findByDate(date: string): Promise<Order[]> {
-    const start = new Date(`${date}T00:00:00`);
-    const end = new Date(`${date}T23:59:59.999`);
-
-    return this.orderRepo.find({
-      where: {
-        created_at: Between(start, end),
-      },
-      relations: ['items', 'items.menuItem'],
-      order: { created_at: 'ASC' },
-    });
+    return this.orderRepo
+      .createQueryBuilder('order')
+      .where(
+        `order.created_at AT TIME ZONE 'America/Chicago' BETWEEN :start AND :end`,
+        {
+          start: `${date} 00:00:00`,
+          end: `${date} 23:59:59.999`,
+        }
+      )
+      .leftJoinAndSelect('order.items', 'items')
+      .leftJoinAndSelect('items.menuItem', 'menuItem')
+      .orderBy('order.created_at', 'ASC')
+      .getMany();
   }
 
 
