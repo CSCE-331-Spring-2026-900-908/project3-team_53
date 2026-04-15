@@ -69,11 +69,11 @@ function PinPad({ onSubmit, error, setError }: {
     fontSize: '1.75rem',
     fontWeight: 700,
     borderRadius: 3,
-    backgroundColor: '#fff',
-    color: '#333',
-    border: '2px solid #e0d9c4',
-    '&:hover': { backgroundColor: '#f5f0e0', borderColor: '#c9b98a' },
-    '&:active': { backgroundColor: '#e8dfc5', transform: 'scale(0.95)' },
+    backgroundColor: 'var(--color-surface)',
+    color: 'var(--color-text-primary)',
+    border: '2px solid var(--color-divider)',
+    '&:hover': { backgroundColor: 'var(--color-cream-input-hover)', borderColor: 'var(--color-warm-brown-border)' },
+    '&:active': { backgroundColor: 'var(--color-cream-input-active)', transform: 'scale(0.95)' },
     transition: 'all 0.1s ease',
     touchAction: 'manipulation',
   };
@@ -100,8 +100,8 @@ function PinPad({ onSubmit, error, setError }: {
               width: 18,
               height: 18,
               borderRadius: '50%',
-              backgroundColor: i < pin.length ? '#5a4a3a' : 'transparent',
-              border: '2px solid #5a4a3a',
+              backgroundColor: i < pin.length ? 'var(--color-warm-brown)' : 'transparent',
+              border: '2px solid var(--color-warm-brown)',
               transition: 'background-color 0.15s ease',
             }}
           />
@@ -128,7 +128,7 @@ function PinPad({ onSubmit, error, setError }: {
         {/* Bottom row: Clear, 0, Backspace */}
         <Box sx={{ display: 'flex', gap: 1.5, justifyContent: 'center' }}>
           <Button
-            sx={{ ...buttonSx, fontSize: '0.85rem', color: '#999' }}
+            sx={{ ...buttonSx, fontSize: '0.85rem', color: 'var(--color-text-muted)' }}
             onClick={handleClear}
           >
             Clear
@@ -140,7 +140,7 @@ function PinPad({ onSubmit, error, setError }: {
             sx={{ ...buttonSx, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             onClick={handleBackspace}
           >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z" />
               <line x1="18" y1="9" x2="12" y2="15" />
               <line x1="12" y1="9" x2="18" y2="15" />
@@ -161,9 +161,9 @@ function PinPad({ onSubmit, error, setError }: {
           fontSize: '1.1rem',
           fontWeight: 700,
           borderRadius: 3,
-          backgroundColor: '#5a4a3a',
-          '&:hover': { backgroundColor: '#4a3a2a' },
-          '&:disabled': { backgroundColor: '#ccc', color: '#888' },
+          backgroundColor: 'var(--color-warm-brown)',
+          '&:hover': { backgroundColor: 'var(--color-warm-brown-dark)' },
+          '&:disabled': { backgroundColor: 'var(--color-border)', color: 'var(--color-warm-brown-disabled)' },
           touchAction: 'manipulation',
           mt: 1,
         }}
@@ -229,7 +229,7 @@ function LoginContent() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(145deg, #8f8f8f 0%, #6b6b6b 100%)',
+        background: 'linear-gradient(145deg, var(--color-page-bg) 0%, var(--color-page-bg-dark) 100%)',
         px: 2,
       }}
     >
@@ -243,7 +243,7 @@ function LoginContent() {
           px: 5,
           py: 4,
           borderRadius: 4,
-          backgroundColor: '#FAF3E0',
+          backgroundColor: 'var(--color-cream)',
           maxWidth: 440,
           width: '100%',
         }}
@@ -259,7 +259,7 @@ function LoginContent() {
         <Typography
           variant="h4"
           component="h1"
-          sx={{ fontWeight: 700, textAlign: 'center', color: '#333' }}
+          sx={{ fontWeight: 700, textAlign: 'center', color: 'var(--color-text-primary)' }}
         >
           {isManagerRedirect ? 'Manager Sign In' : 'Employee Sign In'}
         </Typography>
@@ -268,12 +268,12 @@ function LoginContent() {
           <>
             <Typography
               variant="body2"
-              sx={{ color: '#777', textAlign: 'center', lineHeight: 1.6 }}
+              sx={{ color: 'var(--color-warm-brown-muted)', textAlign: 'center', lineHeight: 1.6 }}
             >
               Choose how you&apos;d like to sign in.
             </Typography>
 
-            <Divider sx={{ width: '100%', borderColor: '#e0d9c4' }} />
+            <Divider sx={{ width: '100%', borderColor: 'var(--color-divider)' }} />
 
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
               <Button
@@ -281,8 +281,8 @@ function LoginContent() {
                 onClick={() => { setError(null); setMode('pin'); }}
                 sx={{
                   ...modeButtonSx,
-                  backgroundColor: '#5a4a3a',
-                  '&:hover': { backgroundColor: '#4a3a2a' },
+                  backgroundColor: 'var(--color-warm-brown)',
+                  '&:hover': { backgroundColor: 'var(--color-warm-brown-dark)' },
                 }}
               >
                 🔢&nbsp;&nbsp;Sign In with PIN
@@ -292,9 +292,9 @@ function LoginContent() {
                 onClick={() => { setError(null); setMode('google'); }}
                 sx={{
                   ...modeButtonSx,
-                  borderColor: '#c9b98a',
-                  color: '#5a4a3a',
-                  '&:hover': { backgroundColor: '#f5f0e0', borderColor: '#a89868' },
+                  borderColor: 'var(--color-warm-brown-border)',
+                  color: 'var(--color-warm-brown)',
+                  '&:hover': { backgroundColor: 'var(--color-cream-input-hover)', borderColor: 'var(--color-warm-brown-border-hover)' },
                 }}
               >
                 <svg width="20" height="20" viewBox="0 0 48 48" style={{ marginRight: 12 }}>
@@ -313,12 +313,12 @@ function LoginContent() {
           <>
             <Typography
               variant="body2"
-              sx={{ color: '#777', textAlign: 'center', lineHeight: 1.6 }}
+              sx={{ color: 'var(--color-warm-brown-muted)', textAlign: 'center', lineHeight: 1.6 }}
             >
               Enter your employee PIN.
             </Typography>
 
-            <Divider sx={{ width: '100%', borderColor: '#e0d9c4' }} />
+            <Divider sx={{ width: '100%', borderColor: 'var(--color-divider)' }} />
 
             {loading ? (
               <CircularProgress sx={{ my: 4 }} />
@@ -329,7 +329,7 @@ function LoginContent() {
             <Button
               onClick={() => { setError(null); setMode('choose'); }}
               sx={{
-                color: '#999',
+                color: 'var(--color-text-muted)',
                 textTransform: 'none',
                 fontSize: '0.9rem',
                 touchAction: 'manipulation',
@@ -344,12 +344,12 @@ function LoginContent() {
           <>
             <Typography
               variant="body2"
-              sx={{ color: '#777', textAlign: 'center', lineHeight: 1.6 }}
+              sx={{ color: 'var(--color-warm-brown-muted)', textAlign: 'center', lineHeight: 1.6 }}
             >
               Sign in with your Google account.
             </Typography>
 
-            <Divider sx={{ width: '100%', borderColor: '#e0d9c4' }} />
+            <Divider sx={{ width: '100%', borderColor: 'var(--color-divider)' }} />
 
             {error && (
               <Alert severity="error" sx={{ width: '100%', borderRadius: 2 }}>
@@ -391,19 +391,19 @@ function LoginContent() {
               <Button
                 onClick={() => { setError(null); setMode('choose'); }}
                 sx={{
-                  color: '#999',
-                  textTransform: 'none',
-                  fontSize: '0.9rem',
-                  touchAction: 'manipulation',
-                }}
-              >
-                ← Back to sign in options
-              </Button>
+                color: 'var(--color-text-muted)',
+                textTransform: 'none',
+                fontSize: '0.9rem',
+                touchAction: 'manipulation',
+              }}
+            >
+              ← Back to sign in options
+            </Button>
             )}
           </>
         )}
 
-        <Typography variant="caption" sx={{ color: '#aaa', textAlign: 'center' }}>
+        <Typography variant="caption" sx={{ color: 'var(--color-text-light)', textAlign: 'center' }}>
           Only authorized employees can sign in.
         </Typography>
       </Paper>

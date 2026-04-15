@@ -27,7 +27,7 @@ export default function CustomizationInfo() {
   }, []);
 
   return (
-    <div className="text-[#2D3436] mt-12">
+    <div className="text-[var(--color-kiosk-text)] mt-12">
       <h2 className="text-3xl font-bold mb-4">Drink Options</h2>
 
       <div className="grid grid-cols-2 gap-6 text-xl">

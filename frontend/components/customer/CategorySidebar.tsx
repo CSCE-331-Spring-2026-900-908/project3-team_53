@@ -23,7 +23,7 @@ export default function CategorySidebar({
       sx={{
         width: 200,
         minWidth: 200,
-        bgcolor: '#2D3436',
+        bgcolor: 'var(--color-kiosk-text)',
         display: 'flex',
         flexDirection: 'column',
         py: 2,
@@ -39,15 +39,15 @@ export default function CategorySidebar({
             justifyContent: 'flex-start',
             px: 3,
             py: 2,
-            color: selected === cat ? '#2D3436' : '#FAF3E0',
-            bgcolor: selected === cat ? '#4ECDC4' : 'transparent',
+            color: selected === cat ? 'var(--color-kiosk-text)' : 'var(--color-cream)',
+            bgcolor: selected === cat ? 'var(--color-accent-teal)' : 'transparent',
             borderRadius: 0,
-            borderLeft: selected === cat ? '4px solid #FF6B6B' : '4px solid transparent',
+            borderLeft: selected === cat ? '4px solid var(--color-accent-coral)' : '4px solid transparent',
             textTransform: 'none',
             fontSize: '1rem',
             fontWeight: selected === cat ? 700 : 400,
             '&:hover': {
-              bgcolor: selected === cat ? '#3dbdb5' : 'rgba(78,205,196,0.15)',
+              bgcolor: selected === cat ? 'var(--color-accent-teal-hover)' : 'rgba(78,205,196,0.15)',
             },
           }}
         >

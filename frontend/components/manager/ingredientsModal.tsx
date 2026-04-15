@@ -69,10 +69,10 @@ export default function IngredientsModal({
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle>{`${t('Ingredients for')} ${item.name}`}</DialogTitle>
-      <DialogContent dividers sx={{ borderColor: '#f0e6d3' }}>
+      <DialogContent dividers sx={{ borderColor: 'var(--color-cream-hover)' }}>
         <Stack spacing={2}>
           <Box>
-            <Typography sx={{ color: '#6f5c48' }}>
+            <Typography sx={{ color: 'var(--color-editor-brown-dim)' }}>
               Choose the inventory ingredients this item uses, set how many servings it consumes,
               and mark which rows count as toppings.
             </Typography>
@@ -84,7 +84,7 @@ export default function IngredientsModal({
 
           <TableContainer
             component={Paper}
-            sx={{ border: '1px solid #e0d5c0', borderRadius: 2 }}
+            sx={{ border: '1px solid var(--color-cream-border)', borderRadius: 2 }}
           >
           <Table>
             <TableHead>
@@ -98,7 +98,7 @@ export default function IngredientsModal({
               {ingredients.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={4}>
-                    <Typography sx={{ color: '#7b6852' }}>
+                    <Typography sx={{ color: 'var(--color-editor-brown-light)' }}>
                       No ingredients assigned yet. Add a row to start building this recipe.
                     </Typography>
                   </TableCell>
@@ -174,7 +174,7 @@ export default function IngredientsModal({
           onClick={onSave}
           variant="contained"
           disabled={saving}
-          sx={{ borderRadius: 999, bgcolor: '#2f5d50', '&:hover': { bgcolor: '#284c42' } }}
+          sx={{ borderRadius: 999, bgcolor: 'var(--color-editor-green)', '&:hover': { bgcolor: 'var(--color-editor-green-dark)' } }}
         >
           {saving ? 'Saving...' : 'Save ingredients'}
         </Button>

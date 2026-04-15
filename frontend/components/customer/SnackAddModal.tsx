@@ -44,7 +44,7 @@ export default function SnackAddModal({
       maxWidth="xs"
       fullWidth
       PaperProps={{
-        sx: { bgcolor: '#FFF8EE', borderRadius: 4 },
+        sx: { bgcolor: 'var(--color-cream-light)', borderRadius: 4 },
       }}
     >
       <DialogTitle
@@ -55,7 +55,7 @@ export default function SnackAddModal({
           pb: 1,
         }}
       >
-        <Typography sx={{ fontWeight: 700, fontSize: '1.3rem', color: '#2D3436' }}>
+        <Typography sx={{ fontWeight: 700, fontSize: '1.3rem', color: 'var(--color-kiosk-text)' }}>
           {t('Add to Order')}
         </Typography>
         <IconButton onClick={onClose} size="small">
@@ -63,26 +63,26 @@ export default function SnackAddModal({
         </IconButton>
       </DialogTitle>
 
-      <DialogContent dividers sx={{ borderColor: '#f0e6d3' }}>
+      <DialogContent dividers sx={{ borderColor: 'var(--color-cream-hover)' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
           <Box
             sx={{
               width: 72,
               height: 72,
               borderRadius: 3,
-              bgcolor: '#FAF3E0',
+              bgcolor: 'var(--color-cream)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <FastfoodIcon sx={{ fontSize: 36, color: '#FF6B6B' }} />
+            <FastfoodIcon sx={{ fontSize: 36, color: 'var(--color-accent-coral)' }} />
           </Box>
           <Box>
-            <Typography sx={{ fontWeight: 700, fontSize: '1.15rem', color: '#2D3436' }}>
+            <Typography sx={{ fontWeight: 700, fontSize: '1.15rem', color: 'var(--color-kiosk-text)' }}>
               {t(item.name)}
             </Typography>
-            <Typography sx={{ color: '#FF6B6B', fontWeight: 700 }}>
+            <Typography sx={{ color: 'var(--color-accent-coral)', fontWeight: 700 }}>
               ${Number(item.price).toFixed(2)}
             </Typography>
           </Box>
@@ -92,22 +92,22 @@ export default function SnackAddModal({
           <IconButton
             onClick={() => setQuantity((q) => Math.max(1, q - 1))}
             sx={{
-              bgcolor: '#FAF3E0',
-              border: '1px solid #e0d5c0',
-              '&:hover': { bgcolor: '#f0e6d3' },
+              bgcolor: 'var(--color-cream)',
+              border: '1px solid var(--color-cream-border)',
+              '&:hover': { bgcolor: 'var(--color-cream-hover)' },
             }}
           >
             <RemoveIcon />
           </IconButton>
-          <Typography sx={{ fontWeight: 700, fontSize: '1.5rem', color: '#2D3436', minWidth: 40, textAlign: 'center' }}>
+          <Typography sx={{ fontWeight: 700, fontSize: '1.5rem', color: 'var(--color-kiosk-text)', minWidth: 40, textAlign: 'center' }}>
             {quantity}
           </Typography>
           <IconButton
             onClick={() => setQuantity((q) => q + 1)}
             sx={{
-              bgcolor: '#FAF3E0',
-              border: '1px solid #e0d5c0',
-              '&:hover': { bgcolor: '#f0e6d3' },
+              bgcolor: 'var(--color-cream)',
+              border: '1px solid var(--color-cream-border)',
+              '&:hover': { bgcolor: 'var(--color-cream-hover)' },
             }}
           >
             <AddIcon />
@@ -118,7 +118,7 @@ export default function SnackAddModal({
       <DialogActions sx={{ px: 3, py: 2 }}>
         <Button
           onClick={onClose}
-          sx={{ color: '#636E72', textTransform: 'none', fontSize: '1rem' }}
+          sx={{ color: 'var(--color-kiosk-muted)', textTransform: 'none', fontSize: '1rem' }}
         >
           {t('Cancel')}
         </Button>
@@ -126,15 +126,15 @@ export default function SnackAddModal({
           variant="contained"
           onClick={handleAdd}
           sx={{
-            bgcolor: '#FF6B6B',
-            color: '#fff',
+            bgcolor: 'var(--color-accent-coral)',
+            color: 'var(--color-text-white)',
             fontWeight: 700,
             textTransform: 'none',
             fontSize: '1rem',
             px: 4,
             borderRadius: 3,
             boxShadow: '0 3px 10px rgba(255,107,107,0.3)',
-            '&:hover': { bgcolor: '#ee5a5a' },
+            '&:hover': { bgcolor: 'var(--color-accent-coral-hover)' },
           }}
         >
           {t('Add')} {quantity} {t('to Order')} &middot; ${(Number(item.price) * quantity).toFixed(2)}

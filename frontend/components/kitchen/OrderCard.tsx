@@ -23,10 +23,10 @@ interface OrderCardProps {
 }
 
 const TIER_STYLES: Record<TimeTier, { bg: string; border: string; accent: string }> = {
-  green:  { bg: '#e8f5e9', border: '#4caf50', accent: '#2e7d32' },
-  yellow: { bg: '#fff8e1', border: '#fbc02d', accent: '#f9a825' },
-  orange: { bg: '#fff3e0', border: '#ff9800', accent: '#e65100' },
-  red:    { bg: '#ffebee', border: '#f44336', accent: '#c62828' },
+  green:  { bg: 'var(--color-status-green-bg)', border: 'var(--color-status-green-border)', accent: 'var(--color-status-green-accent)' },
+  yellow: { bg: 'var(--color-status-yellow-bg)', border: 'var(--color-status-yellow-border)', accent: 'var(--color-status-yellow-accent)' },
+  orange: { bg: 'var(--color-status-orange-bg)', border: 'var(--color-status-orange-border)', accent: 'var(--color-status-orange-accent)' },
+  red:    { bg: 'var(--color-status-red-bg)', border: 'var(--color-status-red-border)', accent: 'var(--color-status-red-accent)' },
 };
 
 export default function OrderCard({ order, onComplete }: OrderCardProps) {
@@ -86,7 +86,7 @@ export default function OrderCard({ order, onComplete }: OrderCardProps) {
         {/* Header row */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography sx={{ fontWeight: 800, fontSize: '1.25rem', color: '#1a1a2e' }}>
+            <Typography sx={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--color-dark-bg)' }}>
               #{order.id}
             </Typography>
             <Chip
@@ -97,8 +97,8 @@ export default function OrderCard({ order, onComplete }: OrderCardProps) {
               }
               label={isDineIn ? 'Dine In' : 'Carry Out'}
               sx={{
-                bgcolor: isDineIn ? '#e3f2fd' : '#fce4ec',
-                color: isDineIn ? '#1565c0' : '#c62828',
+                bgcolor: isDineIn ? 'var(--color-tag-dinein-bg)' : 'var(--color-tag-takeout-bg)',
+                color: isDineIn ? 'var(--color-tag-dinein-text)' : 'var(--color-tag-takeout-text)',
                 fontWeight: 600,
                 fontSize: '0.7rem',
                 height: 24,
@@ -121,7 +121,7 @@ export default function OrderCard({ order, onComplete }: OrderCardProps) {
         </Box>
 
         {/* Item count badge */}
-        <Typography sx={{ fontSize: '0.75rem', color: '#666', mb: 1 }}>
+        <Typography sx={{ fontSize: '0.75rem', color: 'var(--color-dark-text-muted)', mb: 1 }}>
           {totalItems} item{totalItems !== 1 ? 's' : ''} &middot; ${Number(order.total).toFixed(2)}
         </Typography>
 
@@ -140,7 +140,7 @@ export default function OrderCard({ order, onComplete }: OrderCardProps) {
             mt: 1.5,
             textAlign: 'center',
             fontSize: '0.65rem',
-            color: '#999',
+            color: 'var(--color-text-muted)',
             fontStyle: 'italic',
           }}
         >
@@ -164,13 +164,13 @@ function ItemRow({ item }: { item: KitchenOrderItem }) {
           sx={{
             fontWeight: 700,
             fontSize: '0.85rem',
-            color: '#1a1a2e',
+            color: 'var(--color-dark-bg)',
             minWidth: 20,
           }}
         >
           {item.quantity}x
         </Typography>
-        <Typography sx={{ fontWeight: 600, fontSize: '0.85rem', color: '#1a1a2e' }}>
+        <Typography sx={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--color-dark-bg)' }}>
           {item.menuItem.name}
         </Typography>
       </Box>
@@ -185,8 +185,8 @@ function ItemRow({ item }: { item: KitchenOrderItem }) {
               sx={{
                 height: 20,
                 fontSize: '0.65rem',
-                bgcolor: '#e8eaf6',
-                color: '#3949ab',
+                bgcolor: 'var(--color-tag-category-bg)',
+                color: 'var(--color-tag-category-text)',
                 fontWeight: 500,
               }}
             />
@@ -199,8 +199,8 @@ function ItemRow({ item }: { item: KitchenOrderItem }) {
               sx={{
                 height: 20,
                 fontSize: '0.65rem',
-                bgcolor: '#f3e5f5',
-                color: '#7b1fa2',
+                bgcolor: 'var(--color-tag-topping-bg)',
+                color: 'var(--color-tag-topping-text)',
                 fontWeight: 500,
               }}
             />

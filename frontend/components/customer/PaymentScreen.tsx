@@ -63,12 +63,12 @@ export default function PaymentScreen({
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          bgcolor: '#FAF3E0',
+          bgcolor: 'var(--color-cream)',
           gap: 3,
         }}
       >
-        <CircularProgress size={64} sx={{ color: '#4ECDC4' }} />
-        <Typography sx={{ color: '#2D3436', fontWeight: 700, fontSize: '1.5rem' }}>
+        <CircularProgress size={64} sx={{ color: 'var(--color-accent-teal)' }} />
+        <Typography sx={{ color: 'var(--color-kiosk-text)', fontWeight: 700, fontSize: '1.5rem' }}>
           {t('Processing Payment...')}
         </Typography>
       </Box>
@@ -81,7 +81,7 @@ export default function PaymentScreen({
         height: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        bgcolor: '#FAF3E0',
+        bgcolor: 'var(--color-cream)',
       }}
     >
       {/* Top bar */}
@@ -91,7 +91,7 @@ export default function PaymentScreen({
           alignItems: 'center',
           px: 2,
           py: 1.5,
-          bgcolor: '#2D3436',
+          bgcolor: 'var(--color-kiosk-text)',
         }}
       >
         <Button
@@ -103,7 +103,7 @@ export default function PaymentScreen({
                 ? () => setPaymentStep('info')
                 : onBack
           }
-          sx={{ color: '#FAF3E0', textTransform: 'none', fontSize: '1rem' }}
+          sx={{ color: 'var(--color-cream)', textTransform: 'none', fontSize: '1rem' }}
         >
           {paymentStep === 'cash'
             ? t('Back to Payment Methods')
@@ -128,7 +128,7 @@ export default function PaymentScreen({
         {/* Total display */}
         <Box
           sx={{
-            bgcolor: '#2D3436',
+            bgcolor: 'var(--color-kiosk-text)',
             borderRadius: 4,
             px: 6,
             py: 3,
@@ -136,10 +136,10 @@ export default function PaymentScreen({
             textAlign: 'center',
           }}
         >
-          <Typography sx={{ color: '#B2BEC3', fontSize: '1rem', mb: 0.5 }}>
+          <Typography sx={{ color: 'var(--color-kiosk-lighter-gray)', fontSize: '1rem', mb: 0.5 }}>
             {t('Amount Due')}
           </Typography>
-          <Typography sx={{ color: '#FFFFFF', fontWeight: 700, fontSize: '3rem', lineHeight: 1 }}>
+          <Typography sx={{ color: 'var(--color-text-white)', fontWeight: 700, fontSize: '3rem', lineHeight: 1 }}>
             ${grandTotal.toFixed(2)}
           </Typography>
         </Box>
@@ -147,15 +147,15 @@ export default function PaymentScreen({
         {paymentStep === 'info' && (
           <Box sx={{ width: '100%', maxWidth: 500 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 3 }}>
-              <PersonIcon sx={{ color: '#2D3436', fontSize: 28 }} />
+              <PersonIcon sx={{ color: 'var(--color-kiosk-text)', fontSize: 28 }} />
               <Typography
-                sx={{ color: '#2D3436', fontWeight: 700, fontSize: '1.5rem', textAlign: 'center' }}
+                sx={{ color: 'var(--color-kiosk-text)', fontWeight: 700, fontSize: '1.5rem', textAlign: 'center' }}
               >
                 {t('Customer Information')}
               </Typography>
             </Box>
 
-            <Typography sx={{ color: '#636E72', textAlign: 'center', mb: 3, fontSize: '0.95rem' }}>
+            <Typography sx={{ color: 'var(--color-kiosk-muted)', textAlign: 'center', mb: 3, fontSize: '0.95rem' }}>
               {t('Optional -- leave blank to skip')}
             </Typography>
 
@@ -169,14 +169,14 @@ export default function PaymentScreen({
                 variant="outlined"
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    bgcolor: '#FFF8EE',
+                    bgcolor: 'var(--color-cream-light)',
                     borderRadius: 3,
                     fontSize: '1.1rem',
-                    '& fieldset': { borderColor: '#e0d5c0' },
-                    '&:hover fieldset': { borderColor: '#4ECDC4' },
-                    '&.Mui-focused fieldset': { borderColor: '#4ECDC4' },
+                    '& fieldset': { borderColor: 'var(--color-cream-border)' },
+                    '&:hover fieldset': { borderColor: 'var(--color-accent-teal)' },
+                    '&.Mui-focused fieldset': { borderColor: 'var(--color-accent-teal)' },
                   },
-                  '& .MuiInputLabel-root.Mui-focused': { color: '#4ECDC4' },
+                  '& .MuiInputLabel-root.Mui-focused': { color: 'var(--color-accent-teal)' },
                 }}
               />
               <TextField
@@ -188,14 +188,14 @@ export default function PaymentScreen({
                 variant="outlined"
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    bgcolor: '#FFF8EE',
+                    bgcolor: 'var(--color-cream-light)',
                     borderRadius: 3,
                     fontSize: '1.1rem',
-                    '& fieldset': { borderColor: '#e0d5c0' },
-                    '&:hover fieldset': { borderColor: '#4ECDC4' },
-                    '&.Mui-focused fieldset': { borderColor: '#4ECDC4' },
+                    '& fieldset': { borderColor: 'var(--color-cream-border)' },
+                    '&:hover fieldset': { borderColor: 'var(--color-accent-teal)' },
+                    '&.Mui-focused fieldset': { borderColor: 'var(--color-accent-teal)' },
                   },
-                  '& .MuiInputLabel-root.Mui-focused': { color: '#4ECDC4' },
+                  '& .MuiInputLabel-root.Mui-focused': { color: 'var(--color-accent-teal)' },
                 }}
               />
             </Box>
@@ -205,8 +205,8 @@ export default function PaymentScreen({
                 variant="contained"
                 onClick={() => setPaymentStep('select')}
                 sx={{
-                  bgcolor: '#4ECDC4',
-                  color: '#fff',
+                  bgcolor: 'var(--color-accent-teal)',
+                  color: 'var(--color-text-white)',
                   fontWeight: 700,
                   textTransform: 'none',
                   fontSize: '1.25rem',
@@ -215,7 +215,7 @@ export default function PaymentScreen({
                   borderRadius: 4,
                   minWidth: 300,
                   boxShadow: '0 4px 14px rgba(78,205,196,0.4)',
-                  '&:hover': { bgcolor: '#3dbdb5', boxShadow: '0 6px 20px rgba(78,205,196,0.5)' },
+                  '&:hover': { bgcolor: 'var(--color-accent-teal-hover)', boxShadow: '0 6px 20px rgba(78,205,196,0.5)' },
                 }}
               >
                 {t('Continue to Payment')}
@@ -226,7 +226,7 @@ export default function PaymentScreen({
                   setCustomerPhone('');
                   setPaymentStep('select');
                 }}
-                sx={{ color: '#636E72', textTransform: 'none', fontSize: '1rem' }}
+                sx={{ color: 'var(--color-kiosk-muted)', textTransform: 'none', fontSize: '1rem' }}
               >
                 {t('Skip')}
               </Button>
@@ -237,7 +237,7 @@ export default function PaymentScreen({
         {paymentStep === 'select' && (
           <Box sx={{ width: '100%', maxWidth: 500 }}>
             <Typography
-              sx={{ color: '#2D3436', fontWeight: 700, fontSize: '1.5rem', mb: 3, textAlign: 'center' }}
+              sx={{ color: 'var(--color-kiosk-text)', fontWeight: 700, fontSize: '1.5rem', mb: 3, textAlign: 'center' }}
             >
               {t('Select Payment Method')}
             </Typography>
@@ -248,15 +248,15 @@ export default function PaymentScreen({
                 startIcon={<CreditCardIcon sx={{ fontSize: 28 }} />}
                 onClick={() => handleCardOrDiningDollars('credit_card')}
                 sx={{
-                  bgcolor: '#4ECDC4',
-                  color: '#fff',
+                  bgcolor: 'var(--color-accent-teal)',
+                  color: 'var(--color-text-white)',
                   fontSize: '1.25rem',
                   fontWeight: 700,
                   py: 3,
                   borderRadius: 4,
                   textTransform: 'none',
                   boxShadow: '0 4px 14px rgba(78,205,196,0.4)',
-                  '&:hover': { bgcolor: '#3dbdb5', boxShadow: '0 6px 20px rgba(78,205,196,0.5)' },
+                  '&:hover': { bgcolor: 'var(--color-accent-teal-hover)', boxShadow: '0 6px 20px rgba(78,205,196,0.5)' },
                 }}
               >
                 {t('Credit / Debit Card')}
@@ -267,15 +267,15 @@ export default function PaymentScreen({
                 startIcon={<AttachMoneyIcon sx={{ fontSize: 28 }} />}
                 onClick={() => setPaymentStep('cash')}
                 sx={{
-                  bgcolor: '#FF6B6B',
-                  color: '#fff',
+                  bgcolor: 'var(--color-accent-coral)',
+                  color: 'var(--color-text-white)',
                   fontSize: '1.25rem',
                   fontWeight: 700,
                   py: 3,
                   borderRadius: 4,
                   textTransform: 'none',
                   boxShadow: '0 4px 14px rgba(255,107,107,0.4)',
-                  '&:hover': { bgcolor: '#ee5a5a', boxShadow: '0 6px 20px rgba(255,107,107,0.5)' },
+                  '&:hover': { bgcolor: 'var(--color-accent-coral-hover)', boxShadow: '0 6px 20px rgba(255,107,107,0.5)' },
                 }}
               >
                 {t('Cash')}
@@ -286,15 +286,15 @@ export default function PaymentScreen({
                 startIcon={<SchoolIcon sx={{ fontSize: 28 }} />}
                 onClick={() => handleCardOrDiningDollars('dining_dollars')}
                 sx={{
-                  bgcolor: '#6C5CE7',
-                  color: '#fff',
+                  bgcolor: 'var(--color-accent-purple)',
+                  color: 'var(--color-text-white)',
                   fontSize: '1.25rem',
                   fontWeight: 700,
                   py: 3,
                   borderRadius: 4,
                   textTransform: 'none',
                   boxShadow: '0 4px 14px rgba(108,92,231,0.4)',
-                  '&:hover': { bgcolor: '#5a4bd6', boxShadow: '0 6px 20px rgba(108,92,231,0.5)' },
+                  '&:hover': { bgcolor: 'var(--color-accent-purple-hover)', boxShadow: '0 6px 20px rgba(108,92,231,0.5)' },
                 }}
               >
                 {t('Dining Dollars')}
@@ -306,7 +306,7 @@ export default function PaymentScreen({
         {paymentStep === 'cash' && (
           <Box sx={{ width: '100%', maxWidth: 500 }}>
             <Typography
-              sx={{ color: '#2D3436', fontWeight: 700, fontSize: '1.5rem', mb: 3, textAlign: 'center' }}
+              sx={{ color: 'var(--color-kiosk-text)', fontWeight: 700, fontSize: '1.5rem', mb: 3, textAlign: 'center' }}
             >
               {t('Cash Payment')}
             </Typography>
@@ -327,15 +327,15 @@ export default function PaymentScreen({
               sx={{
                 mb: 3,
                 '& .MuiOutlinedInput-root': {
-                  bgcolor: '#FFF8EE',
+                  bgcolor: 'var(--color-cream-light)',
                   borderRadius: 3,
                   fontSize: '2rem',
                   fontWeight: 700,
-                  '& fieldset': { borderColor: '#e0d5c0', borderWidth: 2 },
-                  '&:hover fieldset': { borderColor: '#4ECDC4' },
-                  '&.Mui-focused fieldset': { borderColor: '#4ECDC4' },
+                  '& fieldset': { borderColor: 'var(--color-cream-border)', borderWidth: 2 },
+                  '&:hover fieldset': { borderColor: 'var(--color-accent-teal)' },
+                  '&.Mui-focused fieldset': { borderColor: 'var(--color-accent-teal)' },
                 },
-                '& .MuiInputLabel-root.Mui-focused': { color: '#4ECDC4' },
+                '& .MuiInputLabel-root.Mui-focused': { color: 'var(--color-accent-teal)' },
               }}
             />
 
@@ -344,7 +344,7 @@ export default function PaymentScreen({
               <Box
                 sx={{
                   bgcolor: cashSufficient ? 'rgba(78,205,196,0.12)' : 'rgba(255,107,107,0.12)',
-                  border: `2px solid ${cashSufficient ? '#4ECDC4' : '#FF6B6B'}`,
+                  border: `2px solid ${cashSufficient ? 'var(--color-accent-teal)' : 'var(--color-accent-coral)'}`,
                   borderRadius: 3,
                   px: 4,
                   py: 2,
@@ -354,15 +354,15 @@ export default function PaymentScreen({
               >
                 {cashSufficient ? (
                   <>
-                    <Typography sx={{ color: '#636E72', fontSize: '0.9rem' }}>
+                    <Typography sx={{ color: 'var(--color-kiosk-muted)', fontSize: '0.9rem' }}>
                       {t('Change Due')}
                     </Typography>
-                    <Typography sx={{ color: '#4ECDC4', fontWeight: 700, fontSize: '2rem' }}>
+                    <Typography sx={{ color: 'var(--color-accent-teal)', fontWeight: 700, fontSize: '2rem' }}>
                       ${changeDue.toFixed(2)}
                     </Typography>
                   </>
                 ) : (
-                  <Typography sx={{ color: '#FF6B6B', fontWeight: 700, fontSize: '1.1rem' }}>
+                  <Typography sx={{ color: 'var(--color-accent-coral)', fontWeight: 700, fontSize: '1.1rem' }}>
                     {t('Insufficient funds. Please add')} ${(grandTotal - cashTendered).toFixed(2)} {t('more.')}
                   </Typography>
                 )}
@@ -376,8 +376,8 @@ export default function PaymentScreen({
                 disabled={!cashSufficient}
                 onClick={handleCashConfirm}
                 sx={{
-                  bgcolor: cashSufficient ? '#4ECDC4' : '#ccc',
-                  color: '#fff',
+                  bgcolor: cashSufficient ? 'var(--color-accent-teal)' : 'var(--color-border)',
+                  color: 'var(--color-text-white)',
                   fontWeight: 700,
                   textTransform: 'none',
                   fontSize: '1.25rem',
@@ -387,9 +387,9 @@ export default function PaymentScreen({
                   minWidth: 300,
                   boxShadow: cashSufficient ? '0 4px 14px rgba(78,205,196,0.4)' : 'none',
                   '&:hover': cashSufficient
-                    ? { bgcolor: '#3dbdb5', boxShadow: '0 6px 20px rgba(78,205,196,0.5)' }
+                    ? { bgcolor: 'var(--color-accent-teal-hover)', boxShadow: '0 6px 20px rgba(78,205,196,0.5)' }
                     : {},
-                  '&.Mui-disabled': { bgcolor: '#ccc', color: '#fff' },
+                  '&.Mui-disabled': { bgcolor: 'var(--color-border)', color: 'var(--color-text-white)' },
                 }}
               >
                 {t('Confirm Cash Payment')}

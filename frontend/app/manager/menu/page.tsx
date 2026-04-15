@@ -461,12 +461,12 @@ export default function ManagerMenuPage() {
         minHeight: '100vh',
         px: { xs: 2, md: 4 },
         py: { xs: 3, md: 5 },
-        color: '#24170f',
-        background: 'linear-gradient(180deg, #fff4de 0%, #f8ede0 36%, #f4efe9 100%)',
+        color: 'var(--color-editor-brown-heading)',
+        background: 'linear-gradient(180deg, var(--color-editor-gradient-start) 0%, var(--color-editor-gradient-mid) 36%, var(--color-editor-gradient-end) 100%)',
       }}
     >
       <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-        <Typography component={Link} href="/manager" sx={{ color: '#7a5a38', mb: 2, display: 'inline-flex', textDecoration: 'none', fontWeight: 700 }}>
+        <Typography component={Link} href="/manager" sx={{ color: 'var(--color-editor-brown)', mb: 2, display: 'inline-flex', textDecoration: 'none', fontWeight: 700 }}>
           Back to manager dashboard
         </Typography>
 
@@ -476,8 +476,8 @@ export default function ManagerMenuPage() {
             p: { xs: 2.5, md: 4 },
             mb: 3,
             borderRadius: 4,
-            color: '#fff9f1',
-            background: '#8f8f8f',
+            color: 'var(--color-editor-cream-light)',
+            background: 'var(--color-page-bg)',
           }}
         >
           <Stack direction={{ xs: 'column', lg: 'row' }} spacing={3} justifyContent="space-between">
@@ -493,7 +493,7 @@ export default function ManagerMenuPage() {
                 ['With Images', summary.withImages],
                 ['Categories', summary.categories],
               ].map(([label, value]) => (
-                <Paper key={String(label)} elevation={0} sx={{ px: 2, py: 1.5, minWidth: 120, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.16)', color: '#fff9f1' }}>
+                <Paper key={String(label)} elevation={0} sx={{ px: 2, py: 1.5, minWidth: 120, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.16)', color: 'var(--color-editor-cream-light)' }}>
                   <Typography sx={{ fontSize: '0.72rem', fontWeight: 800, opacity: 0.84 }}>{label}</Typography>
                   <Typography sx={{ fontSize: '1.7rem', lineHeight: 1.1, fontWeight: 800 }}>{value}</Typography>
                 </Paper>
@@ -516,9 +516,9 @@ export default function ManagerMenuPage() {
                 onChange={(_event, nextValue: CatalogKind) => setTab(nextValue)}
                 variant="fullWidth"
                 sx={{
-                  '& .MuiTabs-indicator': { height: 4, bgcolor: '#c97b63' },
-                  '& .MuiTab-root': { minHeight: 66, fontWeight: 800, color: '#725f48' },
-                  '& .Mui-selected': { color: '#2f5d50 !important' },
+                  '& .MuiTabs-indicator': { height: 4, bgcolor: 'var(--color-editor-terracotta)' },
+                  '& .MuiTab-root': { minHeight: 66, fontWeight: 800, color: 'var(--color-editor-brown-muted)' },
+                  '& .Mui-selected': { color: 'var(--color-editor-green) !important' },
                 }}
               >
                 <Tab value="menu" label="Menu Items" />
@@ -526,13 +526,13 @@ export default function ManagerMenuPage() {
               </Tabs>
             </Paper>
 
-            <Paper elevation={0} sx={{ p: 2.5, borderRadius: 4, border: '1px solid rgba(90,65,35,0.08)', bgcolor: '#fffaf2' }}>
+            <Paper elevation={0} sx={{ p: 2.5, borderRadius: 4, border: '1px solid rgba(90,65,35,0.08)', bgcolor: 'var(--color-editor-surface)' }}>
               <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }}>
                 <Box>
-                  <Typography variant="h5" sx={{ fontWeight: 800, color: '#2f5d50' }}>
+                  <Typography variant="h5" sx={{ fontWeight: 800, color: 'var(--color-editor-green)' }}>
                     Browse {pluralLabelFor(tab)}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#7b6852', mt: 0.5 }}>
+                  <Typography variant="body2" sx={{ color: 'var(--color-editor-brown-light)', mt: 0.5 }}>
                     Search by name or category, then edit items directly inside each section.
                   </Typography>
                 </Box>
@@ -541,20 +541,20 @@ export default function ManagerMenuPage() {
                   placeholder={`Search ${pluralLabelFor(tab)}`}
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
-                  sx={{ minWidth: { xs: '100%', md: 320 }, '& .MuiOutlinedInput-root': { borderRadius: 3, bgcolor: '#fff' } }}
+                  sx={{ minWidth: { xs: '100%', md: 320 }, '& .MuiOutlinedInput-root': { borderRadius: 3, bgcolor: 'var(--color-surface)' } }}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <SearchIcon sx={{ color: '#8a755a' }} />
+                        <SearchIcon sx={{ color: 'var(--color-editor-search)' }} />
                       </InputAdornment>
                     ),
                   }}
                 />
               </Stack>
               <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 2 }}>
-                <Chip label={`${summary.available} available`} sx={{ bgcolor: '#e7f2ed', color: '#2f5d50', fontWeight: 700 }} />
-                <Chip label={`${summary.hidden} hidden`} sx={{ bgcolor: '#fff0e8', color: '#b35d3d', fontWeight: 700 }} />
-                <Chip label={`${filteredItems.length} shown`} sx={{ bgcolor: '#f5ecd9', color: '#7c664c', fontWeight: 700 }} />
+                <Chip label={`${summary.available} available`} sx={{ bgcolor: 'var(--color-editor-chip-avail-bg)', color: 'var(--color-editor-green)', fontWeight: 700 }} />
+                <Chip label={`${summary.hidden} hidden`} sx={{ bgcolor: 'var(--color-editor-chip-hidden-bg)', color: 'var(--color-editor-chip-hidden-text)', fontWeight: 700 }} />
+                <Chip label={`${filteredItems.length} shown`} sx={{ bgcolor: 'var(--color-editor-chip-shown-bg)', color: 'var(--color-editor-chip-shown-text)', fontWeight: 700 }} />
               </Stack>
             </Paper>
 
@@ -575,26 +575,26 @@ export default function ManagerMenuPage() {
             )}
 
             {!loading && !error && filteredItems.length === 0 && (
-              <Paper elevation={0} sx={{ p: 5, borderRadius: 4, textAlign: 'center', border: '1px dashed rgba(90,65,35,0.25)', bgcolor: '#fff9f2' }}>
-                <Typography variant="h6" sx={{ fontWeight: 800, color: '#5a4838', mb: 1 }}>
+              <Paper elevation={0} sx={{ p: 5, borderRadius: 4, textAlign: 'center', border: '1px dashed rgba(90,65,35,0.25)', bgcolor: 'var(--color-editor-surface-alt)' }}>
+                <Typography variant="h6" sx={{ fontWeight: 800, color: 'var(--color-editor-brown-dark)', mb: 1 }}>
                   No {pluralLabelFor(tab)} match this view
                 </Typography>
-                <Typography sx={{ color: '#786552' }}>
+                <Typography sx={{ color: 'var(--color-editor-brown-lighter)' }}>
                   Clear the search or create a new {labelFor(tab)} from the panel on the right.
                 </Typography>
               </Paper>
             )}
 
             {!loading && !error && Object.entries(groupedItems).map(([category, items]) => (
-              <Paper key={category} elevation={0} sx={{ p: 2.5, borderRadius: 4, border: '1px solid rgba(90,65,35,0.08)', bgcolor: '#fffaf4' }}>
+              <Paper key={category} elevation={0} sx={{ p: 2.5, borderRadius: 4, border: '1px solid rgba(90,65,35,0.08)', bgcolor: 'var(--color-editor-surface-card)' }}>
                 <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }} spacing={1} sx={{ mb: 2.5 }}>
                   <Box>
-                    <Typography variant="h5" sx={{ fontWeight: 800, color: '#2f5d50' }}>{category}</Typography>
-                    <Typography variant="body2" sx={{ color: '#7b6852' }}>
+                    <Typography variant="h5" sx={{ fontWeight: 800, color: 'var(--color-editor-green)' }}>{category}</Typography>
+                    <Typography variant="body2" sx={{ color: 'var(--color-editor-brown-light)' }}>
                       {items.length} {items.length === 1 ? 'item' : 'items'} in this section
                     </Typography>
                   </Box>
-                  <Chip label={category === 'Uncategorized' ? 'Needs category review' : 'Organized'} sx={{ bgcolor: category === 'Uncategorized' ? '#fff1e8' : '#e8f2ed', color: category === 'Uncategorized' ? '#b25d3d' : '#2f5d50', fontWeight: 700 }} />
+                  <Chip label={category === 'Uncategorized' ? 'Needs category review' : 'Organized'} sx={{ bgcolor: category === 'Uncategorized' ? 'var(--color-editor-chip-uncat-bg)' : 'var(--color-editor-chip-avail-bg)', color: category === 'Uncategorized' ? 'var(--color-editor-chip-uncat-text)' : 'var(--color-editor-green)', fontWeight: 700 }} />
                 </Stack>
 
                 <Stack spacing={2}>
@@ -610,10 +610,10 @@ export default function ManagerMenuPage() {
                     const isBusy = isSaving || isUploading || isDeleting || isRemovingImage;
 
                     return (
-                      <Paper key={`${tab}-${item.id}`} elevation={0} sx={{ p: 2, borderRadius: 3.5, border: '1px solid rgba(90,65,35,0.08)', bgcolor: form.available ? '#fff' : '#fff8f4', boxShadow: '0 8px 18px rgba(63, 47, 28, 0.05)' }}>
+                      <Paper key={`${tab}-${item.id}`} elevation={0} sx={{ p: 2, borderRadius: 3.5, border: '1px solid rgba(90,65,35,0.08)', bgcolor: form.available ? 'var(--color-surface)' : 'var(--color-editor-surface-unavail)', boxShadow: '0 8px 18px rgba(63, 47, 28, 0.05)' }}>
                         <Stack direction={{ xs: 'column', lg: 'row' }} spacing={2} alignItems={{ xs: 'stretch', lg: 'flex-start' }}>
                           <Box sx={{ width: { xs: '100%', lg: 180 }, maxWidth: { xs: '100%', lg: 180 }, flexShrink: 0 }}>
-                            <Box sx={{ width: '100%', aspectRatio: '1 / 1', borderRadius: 3, overflow: 'hidden', bgcolor: '#f6e6cc', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Box sx={{ width: '100%', aspectRatio: '1 / 1', borderRadius: 3, overflow: 'hidden', bgcolor: 'var(--color-editor-img-bg)', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                               {imageSrc ? (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img
@@ -628,16 +628,16 @@ export default function ManagerMenuPage() {
                                 />
                               ) : (
                                 <Stack alignItems="center" spacing={1}>
-                                  <AddPhotoAlternateOutlinedIcon sx={{ fontSize: 38, color: '#b28957' }} />
-                                  <Typography variant="caption" sx={{ color: '#8b6f47', fontWeight: 700 }}>
+                                  <AddPhotoAlternateOutlinedIcon sx={{ fontSize: 38, color: 'var(--color-editor-photo)' }} />
+                                  <Typography variant="caption" sx={{ color: 'var(--color-editor-photo-text)', fontWeight: 700 }}>
                                     Add a photo
                                   </Typography>
                                 </Stack>
                               )}
-                              <Chip label={form.available ? 'Visible' : 'Hidden'} size="small" sx={{ position: 'absolute', top: 10, left: 10, bgcolor: form.available ? '#e7f2ed' : '#fff0e8', color: form.available ? '#2f5d50' : '#b35d3d', fontWeight: 800 }} />
+                              <Chip label={form.available ? 'Visible' : 'Hidden'} size="small" sx={{ position: 'absolute', top: 10, left: 10, bgcolor: form.available ? 'var(--color-editor-chip-avail-bg)' : 'var(--color-editor-chip-hidden-bg)', color: form.available ? 'var(--color-editor-green)' : 'var(--color-editor-chip-hidden-text)', fontWeight: 800 }} />
                             </Box>
                             <Stack spacing={1} sx={{ mt: 1.25 }}>
-                              <Button fullWidth size="small" variant="contained" component="label" disabled={isBusy} sx={{ borderRadius: 2.5, bgcolor: '#2f5d50', '&:hover': { bgcolor: '#284c42' } }}>
+                              <Button fullWidth size="small" variant="contained" component="label" disabled={isBusy} sx={{ borderRadius: 2.5, bgcolor: 'var(--color-editor-green)', '&:hover': { bgcolor: 'var(--color-editor-green-dark)' } }}>
                                 {isUploading ? 'Uploading...' : 'Upload new image'}
                                 <input
                                   type="file"
@@ -660,10 +660,10 @@ export default function ManagerMenuPage() {
                           <Stack spacing={1.75} sx={{ flex: 1, minWidth: 0 }}>
                             <Stack direction={{ xs: 'column', md: 'row' }} spacing={1} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }}>
                               <Box>
-                                <Typography variant="h6" sx={{ fontWeight: 800, color: '#2a221b' }}>{item.name}</Typography>
-                                <Typography variant="body2" sx={{ color: '#7b6852' }}>ID #{item.id}</Typography>
+                                <Typography variant="h6" sx={{ fontWeight: 800, color: 'var(--color-editor-brown-text)' }}>{item.name}</Typography>
+                                <Typography variant="body2" sx={{ color: 'var(--color-editor-brown-light)' }}>ID #{item.id}</Typography>
                               </Box>
-                              <Chip label={`$${Number(item.price).toFixed(2)}`} sx={{ bgcolor: '#fff3ea', color: '#b35d3d', fontWeight: 800 }} />
+                              <Chip label={`$${Number(item.price).toFixed(2)}`} sx={{ bgcolor: 'var(--color-editor-chip-price-bg)', color: 'var(--color-editor-chip-hidden-text)', fontWeight: 800 }} />
                             </Stack>
 
                             <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5}>
@@ -676,10 +676,10 @@ export default function ManagerMenuPage() {
                               <FormControlLabel
                                 control={<Switch checked={form.available} onChange={(event) => updateItemForm(tab, item.id, { available: event.target.checked })} disabled={isBusy} />}
                                 label="Visible to customers"
-                                sx={{ m: 0, px: 1.2, py: 0.6, borderRadius: 999, bgcolor: form.available ? '#f1f8f4' : '#fff4ef' }}
+                                sx={{ m: 0, px: 1.2, py: 0.6, borderRadius: 999, bgcolor: form.available ? 'var(--color-editor-toggle-avail-bg)' : 'var(--color-editor-toggle-hidden-bg)' }}
                               />
                               <Stack direction="row" spacing={1.25} flexWrap="wrap" useFlexGap>
-                                <Button variant="contained" onClick={() => void saveItem(tab, item.id)} disabled={isBusy} sx={{ borderRadius: 2.5, px: 2.2, bgcolor: '#c97b63', '&:hover': { bgcolor: '#ba694f' } }}>
+                                <Button variant="contained" onClick={() => void saveItem(tab, item.id)} disabled={isBusy} sx={{ borderRadius: 2.5, px: 2.2, bgcolor: 'var(--color-editor-terracotta)', '&:hover': { bgcolor: 'var(--color-editor-terracotta-dark)' } }}>
                                   {isSaving ? 'Saving...' : 'Save changes'}
                                 </Button>
                                 {tab === 'menu' && (
@@ -687,7 +687,7 @@ export default function ManagerMenuPage() {
                                     variant="outlined"
                                     onClick={() => setIngredientsModalItem(catalogItemToCustomerMenuItem(item))}
                                     disabled={isBusy}
-                                    sx={{ borderRadius: 2.5, px: 2.2, borderColor: '#2f5d50', color: '#2f5d50' }}
+                                    sx={{ borderRadius: 2.5, px: 2.2, borderColor: 'var(--color-editor-green)', color: 'var(--color-editor-green)' }}
                                   >
                                     Ingredients
                                   </Button>
@@ -707,8 +707,8 @@ export default function ManagerMenuPage() {
             ))}
           </Stack>
 
-          <Paper elevation={0} sx={{ width: { xs: '100%', xl: 360 }, position: { xl: 'sticky' }, top: { xl: 24 }, p: 3, borderRadius: 4, border: '1px solid rgba(90,65,35,0.08)', bgcolor: 'linear-gradient(180deg, #fffaf2 0%, #fff3e1 100%)', boxShadow: '0 20px 40px rgba(89, 67, 37, 0.08)' }}>
-            <Typography variant="h5" sx={{ fontWeight: 800, color: '#2f5d50', mb: 1 }}>
+          <Paper elevation={0} sx={{ width: { xs: '100%', xl: 360 }, position: { xl: 'sticky' }, top: { xl: 24 }, p: 3, borderRadius: 4, border: '1px solid rgba(90,65,35,0.08)', bgcolor: 'linear-gradient(180deg, var(--color-editor-surface) 0%, var(--color-editor-gradient-create-end) 100%)', boxShadow: '0 20px 40px rgba(89, 67, 37, 0.08)' }}>
+            <Typography variant="h5" sx={{ fontWeight: 800, color: 'var(--color-editor-green)', mb: 1 }}>
               Create {labelFor(tab)}
             </Typography>
 
@@ -716,7 +716,7 @@ export default function ManagerMenuPage() {
               <TextField label="Name" fullWidth value={createFormByKind.name} onChange={(event) => updateCreateForm(tab, { name: event.target.value })} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2.5 } }} />
               <TextField label={categoryLabelFor(tab)} fullWidth value={createFormByKind.category} onChange={(event) => updateCreateForm(tab, { category: event.target.value })} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2.5 } }} />
               <TextField label="Price" type="number" inputProps={{ min: 0, step: 0.01 }} value={createFormByKind.price} onChange={(event) => updateCreateForm(tab, { price: event.target.value })} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2.5 } }} />
-              <Button variant="contained" onClick={() => void createItem(tab)} disabled={savingKey === `${tab}-create`} sx={{ mt: 1, py: 1.3, borderRadius: 2.8, fontWeight: 800, bgcolor: '#2f5d50', '&:hover': { bgcolor: '#284c42' } }}>
+              <Button variant="contained" onClick={() => void createItem(tab)} disabled={savingKey === `${tab}-create`} sx={{ mt: 1, py: 1.3, borderRadius: 2.8, fontWeight: 800, bgcolor: 'var(--color-editor-green)', '&:hover': { bgcolor: 'var(--color-editor-green-dark)' } }}>
                 {savingKey === `${tab}-create` ? 'Creating...' : `Create ${labelFor(tab)}`}
               </Button>
             </Stack>
@@ -753,10 +753,10 @@ export default function ManagerMenuPage() {
             {framingItem && framingForm && (
               <Stack spacing={2} sx={{ pt: 1 }}>
                 <Box>
-                  <Typography sx={{ fontWeight: 700, color: '#2a221b' }}>
+                  <Typography sx={{ fontWeight: 700, color: 'var(--color-editor-brown-text)' }}>
                     {framingItem.name}
                   </Typography>
-                  <Typography sx={{ fontSize: '0.88rem', color: '#7b6852' }}>
+                  <Typography sx={{ fontSize: '0.88rem', color: 'var(--color-editor-brown-light)' }}>
                     Adjust the crop focus customers see on the kiosk card.
                   </Typography>
                 </Box>
@@ -767,7 +767,7 @@ export default function ManagerMenuPage() {
                     height: 240,
                     borderRadius: 3,
                     overflow: 'hidden',
-                    bgcolor: '#f6e6cc',
+                    bgcolor: 'var(--color-editor-img-bg)',
                     border: '1px solid rgba(90,65,35,0.08)',
                     display: 'flex',
                     alignItems: 'center',
@@ -788,8 +788,8 @@ export default function ManagerMenuPage() {
                     />
                   ) : (
                     <Stack alignItems="center" spacing={1}>
-                      <AddPhotoAlternateOutlinedIcon sx={{ fontSize: 42, color: '#b28957' }} />
-                      <Typography sx={{ color: '#8b6f47', fontWeight: 700 }}>
+                      <AddPhotoAlternateOutlinedIcon sx={{ fontSize: 42, color: 'var(--color-editor-photo)' }} />
+                      <Typography sx={{ color: 'var(--color-editor-photo-text)', fontWeight: 700 }}>
                         Upload an image first
                       </Typography>
                     </Stack>
@@ -798,10 +798,10 @@ export default function ManagerMenuPage() {
 
                 <Box>
                   <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
-                    <Typography sx={{ fontSize: '0.85rem', color: '#6f5c48', fontWeight: 700 }}>
+                    <Typography sx={{ fontSize: '0.85rem', color: 'var(--color-editor-brown-dim)', fontWeight: 700 }}>
                       Horizontal focus
                     </Typography>
-                    <Typography sx={{ fontSize: '0.85rem', color: '#6f5c48', fontWeight: 700 }}>
+                    <Typography sx={{ fontSize: '0.85rem', color: 'var(--color-editor-brown-dim)', fontWeight: 700 }}>
                       {Math.round(framingForm.imageFocusX)}%
                     </Typography>
                   </Stack>
@@ -815,16 +815,16 @@ export default function ManagerMenuPage() {
                         imageFocusX: Array.isArray(value) ? value[0] : value,
                       })
                     }
-                    sx={{ color: '#c97b63' }}
+                    sx={{ color: 'var(--color-editor-terracotta)' }}
                   />
                 </Box>
 
                 <Box>
                   <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
-                    <Typography sx={{ fontSize: '0.85rem', color: '#6f5c48', fontWeight: 700 }}>
+                    <Typography sx={{ fontSize: '0.85rem', color: 'var(--color-editor-brown-dim)', fontWeight: 700 }}>
                       Vertical focus
                     </Typography>
-                    <Typography sx={{ fontSize: '0.85rem', color: '#6f5c48', fontWeight: 700 }}>
+                    <Typography sx={{ fontSize: '0.85rem', color: 'var(--color-editor-brown-dim)', fontWeight: 700 }}>
                       {Math.round(framingForm.imageFocusY)}%
                     </Typography>
                   </Stack>
@@ -838,7 +838,7 @@ export default function ManagerMenuPage() {
                         imageFocusY: Array.isArray(value) ? value[0] : value,
                       })
                     }
-                    sx={{ color: '#2f5d50' }}
+                    sx={{ color: 'var(--color-editor-green)' }}
                   />
                 </Box>
               </Stack>

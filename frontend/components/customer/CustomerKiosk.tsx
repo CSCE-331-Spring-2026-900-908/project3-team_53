@@ -183,7 +183,7 @@ export default function CustomerKiosk() {
 
   return (
     <TranslationProvider>
-      <Box sx={{ height: '100vh', width: '100vw', overflow: 'hidden', bgcolor: '#FAF3E0' }}>
+      <Box sx={{ height: '100vh', width: '100vw', overflow: 'hidden', bgcolor: 'var(--color-cream)' }}>
         {step === 'welcome' && (
           <WelcomeScreen onSelectOrderType={handleSelectOrderType} />
         )}

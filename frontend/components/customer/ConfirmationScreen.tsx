@@ -49,16 +49,16 @@ export default function ConfirmationScreen({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        bgcolor: '#FAF3E0',
+        bgcolor: 'var(--color-cream)',
         gap: 3,
         px: 4,
         textAlign: 'center',
       }}
     >
-      <CheckCircleOutlineIcon sx={{ fontSize: 100, color: '#4ECDC4' }} />
+      <CheckCircleOutlineIcon sx={{ fontSize: 100, color: 'var(--color-accent-teal)' }} />
 
       <Typography
-        sx={{ color: '#2D3436', fontWeight: 700, fontSize: '2rem' }}
+        sx={{ color: 'var(--color-kiosk-text)', fontWeight: 700, fontSize: '2rem' }}
       >
         {t('Order Placed!')}
       </Typography>
@@ -66,34 +66,34 @@ export default function ConfirmationScreen({
       {order && (
         <Box
           sx={{
-            bgcolor: '#FFF8EE',
+            bgcolor: 'var(--color-cream-light)',
             borderRadius: 4,
-            border: '2px solid #f0e6d3',
+            border: '2px solid var(--color-cream-hover)',
             px: 6,
             py: 4,
             mt: 1,
           }}
         >
           {order.customer_name && (
-            <Typography sx={{ color: '#2D3436', fontWeight: 700, fontSize: '1.25rem', mb: 2 }}>
+            <Typography sx={{ color: 'var(--color-kiosk-text)', fontWeight: 700, fontSize: '1.25rem', mb: 2 }}>
               {t('Order for:')} {order.customer_name}
             </Typography>
           )}
-          <Typography sx={{ color: '#636E72', fontSize: '1rem', mb: 1 }}>
+          <Typography sx={{ color: 'var(--color-kiosk-muted)', fontSize: '1rem', mb: 1 }}>
             {t('Your order number')}
           </Typography>
           <Typography
-            sx={{ color: '#FF6B6B', fontWeight: 700, fontSize: '3.5rem', lineHeight: 1 }}
+            sx={{ color: 'var(--color-accent-coral)', fontWeight: 700, fontSize: '3.5rem', lineHeight: 1 }}
           >
             #{order.id}
           </Typography>
-          <Typography sx={{ color: '#636E72', fontSize: '1rem', mt: 2 }}>
+          <Typography sx={{ color: 'var(--color-kiosk-muted)', fontSize: '1rem', mt: 2 }}>
             {t('Total')}: ${Number(order.total).toFixed(2)}
           </Typography>
           {order.payment_type && (
-            <Typography sx={{ color: '#636E72', fontSize: '0.9rem', mt: 1.5 }}>
+            <Typography sx={{ color: 'var(--color-kiosk-muted)', fontSize: '0.9rem', mt: 1.5 }}>
               {t('Paid with')}{' '}
-              <Box component="span" sx={{ fontWeight: 700, color: '#2D3436' }}>
+              <Box component="span" sx={{ fontWeight: 700, color: 'var(--color-kiosk-text)' }}>
                 {order.payment_type === 'credit_card'
                   ? t('Credit Card')
                   : order.payment_type === 'cash'
@@ -103,7 +103,7 @@ export default function ConfirmationScreen({
             </Typography>
           )}
           {order.payment_type === 'cash' && order.change_due != null && order.change_due > 0 && (
-            <Typography sx={{ color: '#4ECDC4', fontWeight: 700, fontSize: '1.1rem', mt: 1 }}>
+            <Typography sx={{ color: 'var(--color-accent-teal)', fontWeight: 700, fontSize: '1.1rem', mt: 1 }}>
               {t('Change')}: ${order.change_due.toFixed(2)}
             </Typography>
           )}
@@ -111,7 +111,7 @@ export default function ConfirmationScreen({
       )}
 
       <Typography
-        sx={{ color: '#636E72', fontSize: '1.1rem', mt: 2, maxWidth: 400 }}
+        sx={{ color: 'var(--color-kiosk-muted)', fontSize: '1.1rem', mt: 2, maxWidth: 400 }}
       >
         {t('Thank you! Your order is being prepared. Please wait for your number to be called.')}
       </Typography>
@@ -120,8 +120,8 @@ export default function ConfirmationScreen({
         variant="contained"
         onClick={onStartOver}
         sx={{
-          bgcolor: '#FF6B6B',
-          color: '#fff',
+          bgcolor: 'var(--color-accent-coral)',
+          color: 'var(--color-text-white)',
           fontWeight: 700,
           textTransform: 'none',
           fontSize: '1.15rem',
@@ -130,13 +130,13 @@ export default function ConfirmationScreen({
           borderRadius: 4,
           mt: 3,
           boxShadow: '0 4px 14px rgba(255,107,107,0.4)',
-          '&:hover': { bgcolor: '#ee5a5a', boxShadow: '0 6px 20px rgba(255,107,107,0.5)' },
+          '&:hover': { bgcolor: 'var(--color-accent-coral-hover)', boxShadow: '0 6px 20px rgba(255,107,107,0.5)' },
         }}
       >
         {t('Start New Order')}
       </Button>
 
-      <Typography sx={{ color: '#b2bec3', fontSize: '0.85rem', mt: 2 }}>
+      <Typography sx={{ color: 'var(--color-kiosk-light-gray)', fontSize: '0.85rem', mt: 2 }}>
         {t('Returning to start in')} {countdown} {t(countdown !== 1 ? 'seconds' : 'second')}...
       </Typography>
     </Box>

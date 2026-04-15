@@ -27,14 +27,14 @@ export default function KitchenLayout({ children }: { children: React.ReactNode 
           justifyContent: 'space-between',
           px: 3,
           py: 1.5,
-          backgroundColor: '#333',
-          color: '#fff',
+          backgroundColor: 'var(--color-dark-bg)',
+          color: 'var(--color-text-white)',
         }}
       >
         <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
           {user?.name}
         </Typography>
-        <Button variant="outlined" size="small" onClick={handleLogout} sx={{ color: '#fff', borderColor: '#fff' }}>
+        <Button variant="outlined" size="small" onClick={handleLogout} sx={{ color: 'var(--color-text-white)', borderColor: 'var(--color-text-white)' }}>
           Sign Out
         </Button>
       </Box>
