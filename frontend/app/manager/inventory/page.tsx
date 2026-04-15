@@ -127,14 +127,19 @@ export default function ManagerInventoryPage() {
     if (!selectedItem) return false;
     const errors: { id?: string; name?: string } = {};
     const trimmedName = editedValues.name.trim();
-    const parsedId = Number(editedValues.id);
+    const trimmedIdValue = editedValues.id.trim();
+    const parsedId = Number(trimmedIdValue);
 
     if (!trimmedName) {
       errors.name = 'Item name cannot be blank.';
     }
 
-    if (Number.isNaN(parsedId)) {
+    if (!trimmedIdValue) {
+      errors.id = 'Item ID is required.';
+    } else if (Number.isNaN(parsedId)) {
       errors.id = 'Item ID must be a number.';
+    } else if (!Number.isInteger(parsedId)) {
+      errors.id = 'Item ID must be an integer.';
     } else if (parsedId < 0) {
       errors.id = 'Item ID cannot be negative.';
     }

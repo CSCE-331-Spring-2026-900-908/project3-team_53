@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Inventory } from './inventory.entity';
@@ -53,6 +53,14 @@ export class InventoryService {
     currentId: number,
     changes: { id?: number; name?: string; supplier?: string },
   ): Promise<Inventory> {
+    if (!Number.isInteger(currentId)) {
+      throw new BadRequestException('Current inventory ID must be a valid integer.');
+    }
+
+    if (changes.id !== undefined && !Number.isInteger(changes.id)) {
+      throw new BadRequestException('Updated inventory ID must be a valid integer.');
+    }
+
     const inventoryItem = await this.inventoryRepo.findOneBy({ id: currentId });
     if (!inventoryItem) {
       throw new NotFoundException(`Inventory item with ID ${currentId} not found.`);
@@ -89,6 +97,10 @@ export class InventoryService {
   }
 
   async deleteInventory(currentId: number): Promise<void> {
+    if (!Number.isInteger(currentId)) {
+      throw new BadRequestException('Inventory ID must be a valid integer.');
+    }
+
     await this.inventoryRepo.delete(currentId);
   }
 
@@ -97,6 +109,10 @@ export class InventoryService {
     targetId: number,
     changes: { name?: string; supplier?: string },
   ): Promise<Inventory[]> {
+    if (!Number.isInteger(sourceId) || !Number.isInteger(targetId)) {
+      throw new BadRequestException('Inventory IDs must be valid integers.');
+    }
+
     const sourceItem = await this.inventoryRepo.findOneBy({ id: sourceId });
     const targetItem = await this.inventoryRepo.findOneBy({ id: targetId });
 
@@ -111,13 +127,6 @@ export class InventoryService {
         .createQueryBuilder()
         .update(Inventory)
         .set({ id: tempId })
-        .where('id = :id', { id: sourceId })
-        .execute();
-
-      await manager
-        .createQueryBuilder()
-        .update(Inventory)
-        .set({ id: sourceId })
         .where('id = :id', { id: targetId })
         .execute();
 
@@ -125,6 +134,13 @@ export class InventoryService {
         .createQueryBuilder()
         .update(Inventory)
         .set({ id: targetId })
+        .where('id = :id', { id: sourceId })
+        .execute();
+
+      await manager
+        .createQueryBuilder()
+        .update(Inventory)
+        .set({ id: sourceId })
         .where('id = :id', { id: tempId })
         .execute();
 
@@ -146,7 +162,7 @@ export class InventoryService {
   }
 
   private async getTemporaryId(): Promise<number> {
-    let tempId = Number.MAX_SAFE_INTEGER;
+    let tempId = -1;
     let exists = await this.inventoryRepo.findOneBy({ id: tempId });
     while (exists) {
       tempId -= 1;

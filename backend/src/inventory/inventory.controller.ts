@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, UseGuards } from '@nestjs/common';
 import { InventoryService } from './inventory.service';
 import { Inventory } from './inventory.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -21,6 +21,29 @@ export class InventoryController {
     return this.inventoryService.quickRestockLowStock();
   }
 
+  @Patch('swap-ids')
+  swapInventoryIds(
+    @Body()
+    payload: {
+      sourceId: number;
+      targetId: number;
+      name?: string;
+      supplier?: string;
+    },
+  ): Promise<Inventory[]> {
+    const sourceId = Number(payload.sourceId);
+    const targetId = Number(payload.targetId);
+
+    if (!Number.isInteger(sourceId) || !Number.isInteger(targetId)) {
+      throw new BadRequestException('sourceId and targetId must be valid integers.');
+    }
+
+    return this.inventoryService.swapInventoryIds(sourceId, targetId, {
+      name: payload.name,
+      supplier: payload.supplier,
+    });
+  }
+
   @Patch(':id')
   updateInventory(
     @Param('id') id: string,
@@ -32,21 +55,5 @@ export class InventoryController {
   @Delete(':id')
   deleteInventory(@Param('id') id: string): Promise<void> {
     return this.inventoryService.deleteInventory(Number(id));
-  }
-
-  @Patch('swap-ids')
-  swapInventoryIds(
-    @Body()
-    payload: {
-      sourceId: number;
-      targetId: number;
-      name?: string;
-      supplier?: string;
-    },
-  ): Promise<Inventory[]> {
-    return this.inventoryService.swapInventoryIds(payload.sourceId, payload.targetId, {
-      name: payload.name,
-      supplier: payload.supplier,
-    });
   }
 }
