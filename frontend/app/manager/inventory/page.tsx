@@ -48,6 +48,9 @@ export default function ManagerInventoryPage() {
     open: false,
     message: '',
   });
+  const [isManualRestockMode, setIsManualRestockMode] = useState(false);
+  const [selectedRestockItems, setSelectedRestockItems] = useState<Set<number>>(new Set());
+  const [isManualRestockConfirmOpen, setIsManualRestockConfirmOpen] = useState(false);
 
   const lowStockItems = inventoryItems.filter((item) => item.status.toLowerCase().includes('low'));
   const filteredItems = inventoryItems.filter((item) => {
@@ -407,6 +410,56 @@ export default function ManagerInventoryPage() {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
+  const openManualRestock = () => {
+    setIsManualRestockMode(true);
+    setSelectedRestockItems(new Set());
+  };
+
+  const closeManualRestock = () => {
+    setIsManualRestockMode(false);
+    setSelectedRestockItems(new Set());
+  };
+
+  const toggleItemSelection = (itemId: number) => {
+    setSelectedRestockItems((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(itemId)) {
+        newSet.delete(itemId);
+      } else {
+        newSet.add(itemId);
+      }
+      return newSet;
+    });
+  };
+
+  const confirmManualRestock = () => {
+    if (selectedRestockItems.size === 0) {
+      setSnackbar({ open: true, message: 'Please select at least one item to restock.' });
+      return;
+    }
+    setIsManualRestockConfirmOpen(true);
+  };
+
+  const applyManualRestock = async () => {
+    try {
+      const itemIds = Array.from(selectedRestockItems);
+      const updatedItems: InventoryItem[] = await Patch('/inventory/manual-restock', { itemIds });
+      setInventoryItems((items) =>
+        items.map((item) => {
+          const updated = updatedItems.find((updatedItem) => updatedItem.id === item.id);
+          return updated ? updated : item;
+        }),
+      );
+      setSnackbar({ open: true, message: `Successfully restocked ${updatedItems.length} item(s).` });
+      setIsManualRestockConfirmOpen(false);
+      closeManualRestock();
+    } catch (error) {
+      console.error('Manual restock failed:', error);
+      setSnackbar({ open: true, message: 'Failed to restock items. Please try again.' });
+    }
+  };
+
+
   return (
     <Box sx={{ minHeight: '80vh', px: 4, py: 6, backgroundColor: 'var(--color-surface-alt)', color: 'var(--color-text-black)' }}>
       <Typography variant="h3" component="h1" sx={{ fontWeight: 700, mb: 2, color: 'var(--color-text-black)' }}>
@@ -417,6 +470,9 @@ export default function ManagerInventoryPage() {
       </Typography>
 
       <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 4, alignItems: 'center' }}>
+        <Button variant="contained" onClick={openManualRestock}>
+          Manual Restock
+        </Button>
         <Button variant="contained" onClick={openQuickRestock}>
           Quick Restock
         </Button>
@@ -621,6 +677,34 @@ export default function ManagerInventoryPage() {
         </DialogActions>
       </Dialog>
 
+      <Dialog open={isManualRestockConfirmOpen} onClose={() => setIsManualRestockConfirmOpen(false)} aria-labelledby="manual-restock-confirm-dialog-title">
+        <DialogTitle id="manual-restock-confirm-dialog-title">Confirm Manual Restock</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ color: '#333333', mb: 2 }}>
+            Would you like to restock the following items?
+          </Typography>
+          <Box sx={{ maxHeight: 300, overflowY: 'auto', border: '1px solid #ccc', borderRadius: 1, p: 2, backgroundColor: '#f9f9f9' }}>
+            {Array.from(selectedRestockItems).map((itemId) => {
+              const item = inventoryItems.find((i) => i.id === itemId);
+              return item ? (
+                <Typography key={itemId} variant="body2" sx={{ mb: 1, color: '#333333' }}>
+                  • {item.name} (ID: {item.id})
+                </Typography>
+              ) : null;
+            })}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" color="primary" onClick={applyManualRestock}>
+            Yes
+          </Button>
+          <Button variant="outlined" onClick={() => setIsManualRestockConfirmOpen(false)}>
+            No
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+
       <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}
@@ -637,6 +721,27 @@ export default function ManagerInventoryPage() {
         </Alert>
       </Snackbar>
 
+      {isManualRestockMode && (
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 32,
+            right: 32,
+            display: 'flex',
+            gap: 2,
+            zIndex: 1000,
+          }}
+        >
+          <Button variant="contained" color="error" onClick={closeManualRestock}>
+            Cancel
+          </Button>
+          <Button variant="contained" color="primary" onClick={confirmManualRestock}>
+            Confirm ({selectedRestockItems.size})
+          </Button>
+        </Box>
+      )}
+
+
       <Box sx={{ display: 'grid', gap: 2, width: '100%', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))' }}>
         {loading ? (
           <Typography variant="body1" sx={{ color: 'var(--color-text-primary)' }}>
@@ -650,6 +755,7 @@ export default function ManagerInventoryPage() {
           filteredItems.map((item) => (
             <Box
               key={item.id}
+              onClick={() => isManualRestockMode && toggleItemSelection(item.id)}
               sx={{
                 position: 'relative',
                 p: 3,
@@ -660,6 +766,9 @@ export default function ManagerInventoryPage() {
                 alignItems: 'flex-start',
                 justifyContent: 'space-between',
                 minHeight: 140,
+                border: selectedRestockItems.has(item.id) ? '3px solid teal' : 'none',
+                cursor: isManualRestockMode ? 'pointer' : 'default',
+                transition: isManualRestockMode ? 'border-color 0.2s' : 'none',
               }}
             >
               <Box>

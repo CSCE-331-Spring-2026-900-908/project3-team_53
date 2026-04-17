@@ -49,6 +49,30 @@ export class InventoryService {
     return this.inventoryRepo.save(updatedItems);
   }
 
+  async restockSelectedItems(itemIds: number[]): Promise<Inventory[]> {
+    if (!Array.isArray(itemIds) || itemIds.length === 0) {
+      throw new BadRequestException('Item IDs must be a non-empty array.');
+    }
+
+    if (!itemIds.every((id) => Number.isInteger(id))) {
+      throw new BadRequestException('All item IDs must be valid integers.');
+    }
+
+    const items = await this.inventoryRepo.findByIds(itemIds);
+
+    if (items.length !== itemIds.length) {
+      throw new BadRequestException('One or more item IDs were not found.');
+    }
+
+    const updatedItems = items.map((item) => ({
+      ...item,
+      quantity: item.maxStock,
+      status: 'In Stock',
+    }));
+
+    return this.inventoryRepo.save(updatedItems);
+  }
+
   async updateInventory(
     currentId: number,
     changes: { id?: number; name?: string; supplier?: string; quantity?: number; maxStock?: number },

@@ -22,6 +22,11 @@ export class InventoryController {
     return this.inventoryService.quickRestockLowStock();
   }
 
+  @Patch('manual-restock')
+  restockSelectedItems(@Body() payload: { itemIds: number[] }): Promise<Inventory[]> {
+    return this.inventoryService.restockSelectedItems(payload.itemIds);
+  }
+
   @Patch('swap-ids')
   swapInventoryIds(
     @Body()
