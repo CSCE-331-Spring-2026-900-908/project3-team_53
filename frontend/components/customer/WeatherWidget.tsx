@@ -1,58 +1,14 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import ThermostatIcon from '@mui/icons-material/Thermostat';
 import CircularProgress from '@mui/material/CircularProgress';
-
-const KCLL_OBS_URL =
-  'https://api.weather.gov/stations/KCLL/observations/latest';
-
-const REFRESH_INTERVAL_MS = 15 * 60 * 1000;
-
-function celsiusToFahrenheit(c: number): number {
-  return Math.round(c * 9 / 5 + 32);
-}
-
-interface WeatherData {
-  temperature: number;
-  unit: string;
-  description: string;
-}
+import { useWeather } from '@/hooks/useWeather';
 
 export default function WeatherWidget() {
-  const [weather, setWeather] = useState<WeatherData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const fetchWeather = useCallback(async () => {
-    try {
-      const res = await fetch(KCLL_OBS_URL, {
-        headers: { 'User-Agent': 'BobaShopKiosk/1.0 (student-project)' },
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const props = data?.properties;
-      const tempC = props?.temperature?.value;
-      if (tempC != null) {
-        setWeather({
-          temperature: celsiusToFahrenheit(tempC),
-          unit: '°F',
-          description: props.textDescription ?? '',
-        });
-      }
-    } catch {
-      // silently keep previous data or stay null
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchWeather();
-    const id = setInterval(fetchWeather, REFRESH_INTERVAL_MS);
-    return () => clearInterval(id);
-  }, [fetchWeather]);
+  const { weather, loading } = useWeather();
 
   if (loading) {
     return (
