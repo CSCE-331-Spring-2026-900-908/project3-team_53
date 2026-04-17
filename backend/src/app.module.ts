@@ -10,6 +10,7 @@ import { ToppingItemsModule } from './topping-items/topping-items.module';
 import { InventoryModule } from './inventory/inventory.modules';
 import { ItemIngredientsModule } from './item-ingredients/item-ingredients.module';
 import { AuthModule } from './auth/auth.module';
+import { ChatbotModule } from './chatbot/chatbot.module';
 
 
 @Module({
@@ -23,6 +24,7 @@ import { AuthModule } from './auth/auth.module';
     ToppingItemsModule,
     InventoryModule,
     ItemIngredientsModule,
+    ChatbotModule,
   ],
   controllers: [AppController],
   providers: [AppService],

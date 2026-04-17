@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -8,6 +8,7 @@ import Badge from '@mui/material/Badge';
 import IconButton from '@mui/material/IconButton';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import {
   MenuItem as MenuItemType,
   CartItem,
@@ -22,6 +23,7 @@ import MenuItemCard from './MenuItemCard';
 import ItemCustomizationModal from './ItemCustomizationModal';
 import SnackAddModal from './SnackAddModal';
 import CartSidebar from './CartSidebar';
+import ChatbotPopover from './ChatbotPopover';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { publicAssetUrl } from '@/utils/publicAssetUrl';
 
@@ -68,6 +70,8 @@ export default function MenuScreen({
   const [selectedCategory, setSelectedCategory] = useState(categories[0] || 'Milk Tea');
   const [customizingItem, setCustomizingItem] = useState<MenuItemType | null>(null);
   const [cartOpen, setCartOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+  const chatAnchorRef = useRef<HTMLButtonElement | null>(null);
   const [largestImageArea, setLargestImageArea] = useState(0);
 
   const filteredItems = menuItems.filter((i) => i.category === selectedCategory);
@@ -139,17 +143,33 @@ export default function MenuScreen({
           {t('Build Your Order')}
         </Typography>
 
-        <IconButton onClick={() => setCartOpen(true)} sx={{ color: 'var(--color-cream)' }}>
-          <Badge
-            badgeContent={cartCount}
-            sx={{
-              '& .MuiBadge-badge': { bgcolor: 'var(--color-accent-coral)', color: 'var(--color-text-white)' },
-            }}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <IconButton
+            ref={chatAnchorRef}
+            onClick={() => setChatOpen((v) => !v)}
+            aria-label={t('Ask about our menu')}
+            sx={{ color: 'var(--color-cream)' }}
           >
-            <ShoppingCartIcon />
-          </Badge>
-        </IconButton>
+            <ChatBubbleOutlineIcon />
+          </IconButton>
+          <IconButton onClick={() => setCartOpen(true)} sx={{ color: 'var(--color-cream)' }}>
+            <Badge
+              badgeContent={cartCount}
+              sx={{
+                '& .MuiBadge-badge': { bgcolor: 'var(--color-accent-coral)', color: 'var(--color-text-white)' },
+              }}
+            >
+              <ShoppingCartIcon />
+            </Badge>
+          </IconButton>
+        </Box>
       </Box>
+
+      <ChatbotPopover
+        open={chatOpen}
+        anchorEl={chatAnchorRef.current}
+        onClose={() => setChatOpen(false)}
+      />
 
       {/* Body: sidebar + grid */}
       <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
