@@ -13,6 +13,7 @@ import SmartToyIcon from '@mui/icons-material/SmartToy';
 import { Post } from '@/utils/apiService';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useWeather } from '@/hooks/useWeather';
+import OnScreenKeyboard from '@/components/customer/OnScreenKeyboard';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -55,6 +56,7 @@ export default function ChatbotPopover({
   const [input, setInput] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -268,12 +270,14 @@ export default function ChatbotPopover({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
+          onClick={() => !isSending && setKeyboardOpen(true)}
           placeholder={t('Ask for a drink suggestion...')}
           size="small"
           fullWidth
           multiline
           maxRows={3}
           disabled={isSending}
+          InputProps={{ readOnly: true }}
           sx={{
             bgcolor: 'var(--color-text-white)',
             borderRadius: 2,
@@ -296,6 +300,21 @@ export default function ChatbotPopover({
           <SendIcon fontSize="small" />
         </IconButton>
       </Box>
+
+      <OnScreenKeyboard
+        open={keyboardOpen}
+        value={input}
+        onChange={setInput}
+        onClose={() => setKeyboardOpen(false)}
+        onSubmit={() => {
+          if (input.trim() && !isSending) sendMessage();
+        }}
+        mode="text"
+        accent="coral"
+        label={t('Ask about our menu')}
+        submitLabel={t('Send')}
+        maxLength={240}
+      />
     </Popover>
   );
 }
