@@ -14,7 +14,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
-import { Get, Patch, Delete } from '@/utils/apiService';
+import { Get, Post, Patch, Delete } from '@/utils/apiService';
 
 interface InventoryItem {
   id: number;
@@ -30,12 +30,15 @@ export default function ManagerInventoryPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [isQuickRestockOpen, setIsQuickRestockOpen] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [pendingAction, setPendingAction] = useState<'save' | 'delete' | null>(null);
+  const [pendingAction, setPendingAction] = useState<'save' | 'delete' | 'create' | null>(null);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [editedValues, setEditedValues] = useState({ id: '', name: '', supplier: '' });
+  const [newItemValues, setNewItemValues] = useState({ name: '', supplier: '', quantity: '', maxStock: '' });
   const [formErrors, setFormErrors] = useState<{ id?: string; name?: string }>({});
+  const [newItemErrors, setNewItemErrors] = useState<{ name?: string; supplier?: string; quantity?: string; maxStock?: string }>({});
   const [swapPrompt, setSwapPrompt] = useState<{
     open: boolean;
     existingItem: InventoryItem | null;
@@ -118,9 +121,27 @@ export default function ManagerInventoryPage() {
     setSwapPrompt({ open: false, existingItem: null, newId: null });
   };
 
+  const openCreateDialog = () => {
+    setIsCreateOpen(true);
+    setNewItemValues({ name: '', supplier: '', quantity: '', maxStock: '' });
+    setNewItemErrors({});
+    setPendingAction(null);
+  };
+
+  const closeCreateDialog = () => {
+    setIsCreateOpen(false);
+    setNewItemErrors({});
+    setPendingAction(null);
+  };
+
   const handleFieldChange = (field: 'id' | 'name' | 'supplier', value: string) => {
     setEditedValues((prev) => ({ ...prev, [field]: value }));
     setFormErrors((prev) => ({ ...prev, [field]: undefined }));
+  };
+
+  const handleCreateFieldChange = (field: 'name' | 'supplier' | 'quantity' | 'maxStock', value: string) => {
+    setNewItemValues((prev) => ({ ...prev, [field]: value }));
+    setNewItemErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
   const validateFields = () => {
@@ -171,6 +192,62 @@ export default function ManagerInventoryPage() {
     setIsConfirmOpen(true);
   };
 
+  const validateCreateFields = () => {
+    const errors: { name?: string; supplier?: string; quantity?: string; maxStock?: string } = {};
+    const trimmedName = newItemValues.name.trim();
+    const trimmedSupplier = newItemValues.supplier.trim();
+    const trimmedQuantity = newItemValues.quantity.trim();
+    const trimmedMaxStock = newItemValues.maxStock.trim();
+    const parsedQuantity = Number(trimmedQuantity);
+    const parsedMaxStock = Number(trimmedMaxStock);
+
+    if (!trimmedName) {
+      errors.name = 'Item name cannot be blank.';
+    }
+
+    if (!trimmedSupplier) {
+      errors.supplier = 'Supplier cannot be blank.';
+    }
+
+    if (!trimmedQuantity) {
+      errors.quantity = 'Current stock is required.';
+    } else if (Number.isNaN(parsedQuantity)) {
+      errors.quantity = 'Current stock must be a number.';
+    } else if (!Number.isInteger(parsedQuantity) || parsedQuantity < 0) {
+      errors.quantity = 'Current stock must be a non-negative integer.';
+    }
+
+    if (!trimmedMaxStock) {
+      errors.maxStock = 'Max stock is required.';
+    } else if (Number.isNaN(parsedMaxStock)) {
+      errors.maxStock = 'Max stock must be a number.';
+    } else if (!Number.isInteger(parsedMaxStock) || parsedMaxStock <= 0) {
+      errors.maxStock = 'Max stock must be a positive integer.';
+    }
+
+    if (
+      !errors.quantity &&
+      !errors.maxStock &&
+      parsedQuantity > parsedMaxStock
+    ) {
+      errors.quantity = 'Current stock cannot exceed max stock.';
+    }
+
+    setNewItemErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleCreateConfirm = () => {
+    if (!validateCreateFields()) return;
+
+    setPendingAction('create');
+    setIsConfirmOpen(true);
+  };
+
+  const computeInventoryStatus = (quantity: number, maxStock: number) => {
+    return quantity < maxStock * 0.2 ? 'Low Stock' : 'In Stock';
+  };
+
   const handleDeleteClick = () => {
     if (!selectedItem) return;
     setPendingAction('delete');
@@ -196,14 +273,27 @@ export default function ManagerInventoryPage() {
     return Patch('/inventory/swap-ids', { sourceId, targetId, ...payload });
   };
 
+  const createInventoryItem = async (payload: {
+    name: string;
+    supplier?: string;
+    quantity: number;
+    maxStock: number;
+  }) => {
+    return Post('/inventory', payload);
+  };
+
   const applyPendingAction = async () => {
-    if (!selectedItem || !pendingAction) return;
+    if (!pendingAction) return;
 
     try {
       if (pendingAction === 'delete') {
+        if (!selectedItem) return;
         await deleteInventoryItem(selectedItem.id);
         setSnackbar({ open: true, message: `Deleted ${selectedItem.name}.` });
-      } else {
+        await fetchInventory();
+        closeEditDialog();
+      } else if (pendingAction === 'save') {
+        if (!selectedItem) return;
         const trimmedName = editedValues.name.trim();
         const parsedId = Number(editedValues.id);
         await updateInventoryItem(selectedItem.id, {
@@ -212,10 +302,30 @@ export default function ManagerInventoryPage() {
           supplier: editedValues.supplier.trim() || undefined,
         });
         setSnackbar({ open: true, message: `Saved changes for ${trimmedName}.` });
+        await fetchInventory();
+        closeEditDialog();
+      } else if (pendingAction === 'create') {
+        const trimmedName = newItemValues.name.trim();
+        const trimmedSupplier = newItemValues.supplier.trim();
+        const parsedQuantity = Number(newItemValues.quantity.trim());
+        const parsedMaxStock = Number(newItemValues.maxStock.trim());
+        const createdItem = await createInventoryItem({
+          name: trimmedName,
+          supplier: trimmedSupplier || undefined,
+          quantity: parsedQuantity,
+          maxStock: parsedMaxStock,
+        });
+
+        setSnackbar({
+          open: true,
+          message: `The item ${createdItem.name} has been added with Item ID ${createdItem.id}.`,
+        });
+        await fetchInventory();
+        closeCreateDialog();
       }
-      await fetchInventory();
-      closeEditDialog();
+
       setIsConfirmOpen(false);
+      setPendingAction(null);
     } catch (error) {
       console.error('Failed to persist inventory changes:', error);
       setSnackbar({ open: true, message: 'Failed to save inventory changes. Please try again.' });
@@ -264,7 +374,9 @@ export default function ManagerInventoryPage() {
         <Button variant="contained" onClick={openQuickRestock}>
           Quick Restock
         </Button>
-        <Button variant="outlined">Create Order</Button>
+        <Button variant="contained" onClick={openCreateDialog}>
+          Create Ingredient
+        </Button>
         <TextField
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.target.value)}
@@ -294,6 +406,59 @@ export default function ManagerInventoryPage() {
             Confirm
           </Button>
           <Button variant="outlined" onClick={closeQuickRestock}>
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={isCreateOpen} onClose={closeCreateDialog} aria-labelledby="create-item-dialog-title">
+        <DialogTitle id="create-item-dialog-title">Create Ingredient</DialogTitle>
+        <DialogContent sx={{ display: 'grid', gap: 2, minWidth: 360 }}>
+          <TextField
+            label="Item Name"
+            value={newItemValues.name}
+            onChange={(event) => handleCreateFieldChange('name', event.target.value)}
+            error={Boolean(newItemErrors.name)}
+            helperText={newItemErrors.name}
+            fullWidth
+          />
+          <TextField
+            label="Supplier"
+            value={newItemValues.supplier}
+            onChange={(event) => handleCreateFieldChange('supplier', event.target.value)}
+            error={Boolean(newItemErrors.supplier)}
+            helperText={newItemErrors.supplier}
+            fullWidth
+          />
+          <TextField
+            label="Current Stock"
+            type="number"
+            value={newItemValues.quantity}
+            onChange={(event) => handleCreateFieldChange('quantity', event.target.value)}
+            error={Boolean(newItemErrors.quantity)}
+            helperText={newItemErrors.quantity}
+            fullWidth
+          />
+          <TextField
+            label="Max Stock"
+            type="number"
+            value={newItemValues.maxStock}
+            onChange={(event) => handleCreateFieldChange('maxStock', event.target.value)}
+            error={Boolean(newItemErrors.maxStock)}
+            helperText={newItemErrors.maxStock}
+            fullWidth
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleCreateConfirm}
+            disabled={!newItemValues.name.trim() || !newItemValues.supplier.trim() || !newItemValues.quantity.trim() || !newItemValues.maxStock.trim()}
+          >
+            Confirm
+          </Button>
+          <Button variant="text" onClick={closeCreateDialog}>
             Cancel
           </Button>
         </DialogActions>
@@ -344,7 +509,9 @@ export default function ManagerInventoryPage() {
         <DialogContent>
           <Typography variant="body2" sx={{ color: '#333333', mb: 2 }}>
             {pendingAction === 'delete'
-              ? `Are you sure you want to implement these changes and delete ${selectedItem?.name}?`
+              ? `Are you sure you want to delete ${selectedItem?.name}?`
+              : pendingAction === 'create'
+              ? `Are you sure you want to add ${newItemValues.name.trim() || 'this item'}?`
               : `Are you sure you want to implement these changes to ${editedValues.name.trim() || selectedItem?.name}?`}
           </Typography>
         </DialogContent>

@@ -104,6 +104,55 @@ export class InventoryService {
     await this.inventoryRepo.delete(currentId);
   }
 
+  async createInventory(
+    payload: {
+      name: string;
+      supplier?: string;
+      quantity: number;
+      maxStock: number;
+    },
+  ): Promise<Inventory> {
+    const trimmedName = payload.name.trim();
+
+    if (!trimmedName) {
+      throw new BadRequestException('Inventory item name cannot be blank.');
+    }
+
+    if (!Number.isInteger(payload.quantity) || payload.quantity < 0) {
+      throw new BadRequestException('Quantity must be a non-negative integer.');
+    }
+
+    if (!Number.isInteger(payload.maxStock) || payload.maxStock <= 0) {
+      throw new BadRequestException('Max stock must be a positive integer.');
+    }
+
+    const existingItem = await this.inventoryRepo
+      .createQueryBuilder('inventory')
+      .where('LOWER(inventory.name) = LOWER(:name)', { name: trimmedName })
+      .getOne();
+
+    if (existingItem) {
+      throw new ConflictException(`Inventory item with name ${trimmedName} already exists.`);
+    }
+
+    const status = payload.quantity < payload.maxStock * 0.2 ? 'Low Stock' : 'In Stock';
+
+    await this.inventoryRepo.query(
+      `SELECT setval(pg_get_serial_sequence('inventory', 'id'), (SELECT COALESCE(MAX(id), 0) FROM inventory), true)`,
+    );
+
+    const newInventory = {
+      name: trimmedName,
+      supplier: payload.supplier?.trim() ?? undefined,
+      quantity: payload.quantity,
+      maxStock: payload.maxStock,
+      quantityPerServing: 0,
+      status,
+    };
+
+    return this.inventoryRepo.save(newInventory);
+  }
+
   async swapInventoryIds(
     sourceId: number,
     targetId: number,

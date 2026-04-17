@@ -1,6 +1,7 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { InventoryService } from './inventory.service';
 import { Inventory } from './inventory.entity';
+import { CreateInventoryDto } from './create-inventory.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -42,6 +43,11 @@ export class InventoryController {
       name: payload.name,
       supplier: payload.supplier,
     });
+  }
+
+  @Post()
+  createInventory(@Body() payload: CreateInventoryDto): Promise<Inventory> {
+    return this.inventoryService.createInventory(payload);
   }
 
   @Patch(':id')
