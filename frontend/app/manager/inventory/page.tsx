@@ -637,7 +637,7 @@ export default function ManagerInventoryPage() {
         </Alert>
       </Snackbar>
 
-      <Box sx={{ display: 'grid', gap: 2, maxWidth: 900 }}>
+      <Box sx={{ display: 'grid', gap: 2, width: '100%', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))' }}>
         {loading ? (
           <Typography variant="body1" sx={{ color: 'var(--color-text-primary)' }}>
             Loading inventory...
@@ -659,6 +659,7 @@ export default function ManagerInventoryPage() {
                 display: 'flex',
                 alignItems: 'flex-start',
                 justifyContent: 'space-between',
+                minHeight: 140,
               }}
             >
               <Box>
