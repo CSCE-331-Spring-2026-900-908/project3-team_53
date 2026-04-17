@@ -13,6 +13,9 @@ import SchoolIcon from '@mui/icons-material/School';
 import PersonIcon from '@mui/icons-material/Person';
 import { PaymentType } from '@/types/customer';
 import { useTranslation } from '@/contexts/TranslationContext';
+import OnScreenKeyboard from '@/components/customer/OnScreenKeyboard';
+
+type ActiveField = 'name' | 'phone' | 'cash' | null;
 
 interface PaymentScreenProps {
   grandTotal: number;
@@ -32,6 +35,7 @@ export default function PaymentScreen({
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [cashInput, setCashInput] = useState('');
+  const [activeField, setActiveField] = useState<ActiveField>(null);
   const cashTendered = parseFloat(cashInput) || 0;
 
   const changeDue = cashTendered - grandTotal;
@@ -165,8 +169,10 @@ export default function PaymentScreen({
                 placeholder={t('e.g. John')}
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
+                onClick={() => setActiveField('name')}
                 fullWidth
                 variant="outlined"
+                InputProps={{ readOnly: true }}
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     bgcolor: 'var(--color-cream-light)',
@@ -184,8 +190,10 @@ export default function PaymentScreen({
                 placeholder={t('e.g. 979-555-1234')}
                 value={customerPhone}
                 onChange={(e) => setCustomerPhone(e.target.value)}
+                onClick={() => setActiveField('phone')}
                 fullWidth
                 variant="outlined"
+                InputProps={{ readOnly: true }}
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     bgcolor: 'var(--color-cream-light)',
@@ -325,8 +333,10 @@ export default function PaymentScreen({
                   setCashInput(val);
                 }
               }}
+              onClick={() => setActiveField('cash')}
               fullWidth
               variant="outlined"
+              InputProps={{ readOnly: true }}
               inputProps={{ inputMode: 'decimal' }}
               sx={{
                 mb: 3,
@@ -407,6 +417,40 @@ export default function PaymentScreen({
           </Box>
         )}
       </Box>
+
+      {/* On-screen keyboards (one renders at a time based on activeField) */}
+      <OnScreenKeyboard
+        open={activeField === 'name'}
+        value={customerName}
+        onChange={setCustomerName}
+        onClose={() => setActiveField(null)}
+        mode="text"
+        accent="teal"
+        label={t('Enter Name')}
+        submitLabel={t('Done')}
+        maxLength={40}
+      />
+      <OnScreenKeyboard
+        open={activeField === 'phone'}
+        value={customerPhone}
+        onChange={setCustomerPhone}
+        onClose={() => setActiveField(null)}
+        mode="phone"
+        accent="teal"
+        label={t('Enter Phone Number')}
+        submitLabel={t('Done')}
+        maxLength={14}
+      />
+      <OnScreenKeyboard
+        open={activeField === 'cash'}
+        value={cashInput}
+        onChange={setCashInput}
+        onClose={() => setActiveField(null)}
+        mode="decimal"
+        accent="coral"
+        label={t('Enter Cash Tendered')}
+        submitLabel={t('Done')}
+      />
     </Box>
   );
 }
