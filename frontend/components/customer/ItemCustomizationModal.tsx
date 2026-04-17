@@ -70,7 +70,7 @@ export default function ItemCustomizationModal({
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="sm"
+      maxWidth="md"
       fullWidth
       PaperProps={{
         sx: { bgcolor: 'var(--color-cream-light)', borderRadius: 4, maxHeight: '90vh' },
@@ -92,133 +92,156 @@ export default function ItemCustomizationModal({
         </IconButton>
       </DialogTitle>
 
-      <DialogContent dividers sx={{ borderColor: 'var(--color-cream-hover)' }}>
-        {/* Item header — large hero image so the drink is easy to recognize */}
-        <Box sx={{ mb: 3 }}>
-          <Box
-            sx={{
-              mx: 'auto',
-              width: '100%',
-              maxWidth: { xs: 260, sm: 300 },
-              aspectRatio: '1',
-              borderRadius: 3,
-              overflow: 'hidden',
-              bgcolor: 'var(--color-cream)',
-              border: '1px solid var(--color-cream-border-dark)',
-              boxShadow: '0 6px 20px rgba(45, 52, 54, 0.12)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            {headerImageSrc ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={headerImageSrc}
-                alt={item.name}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: 'block',
-                }}
-              />
-            ) : (
-              <LocalCafeIcon sx={{ fontSize: { xs: 96, sm: 112 }, color: 'var(--color-accent-teal)' }} />
-            )}
-          </Box>
-          <Box sx={{ textAlign: 'center', mt: 2.5 }}>
+      <DialogContent sx={{ overflow: 'hidden', p: 3 }}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: '220px 1fr' },
+            columnGap: 3,
+            rowGap: 2,
+            alignItems: 'start',
+          }}
+        >
+          {/* Left column: compact hero + name + price */}
+          <Box sx={{ textAlign: 'center' }}>
+            <Box
+              sx={{
+                mx: 'auto',
+                width: 200,
+                aspectRatio: '1',
+                borderRadius: 3,
+                overflow: 'hidden',
+                bgcolor: 'var(--color-cream)',
+                border: '1px solid var(--color-cream-border-dark)',
+                boxShadow: '0 6px 20px rgba(45, 52, 54, 0.12)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {headerImageSrc ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={headerImageSrc}
+                  alt={item.name}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block',
+                  }}
+                />
+              ) : (
+                <LocalCafeIcon sx={{ fontSize: 96, color: 'var(--color-accent-teal)' }} />
+              )}
+            </Box>
             <Typography
               component="h2"
-              sx={{ fontWeight: 700, fontSize: '1.35rem', color: 'var(--color-kiosk-text)', lineHeight: 1.3 }}
+              sx={{
+                fontWeight: 700,
+                fontSize: '1.15rem',
+                color: 'var(--color-kiosk-text)',
+                lineHeight: 1.3,
+                mt: 1.5,
+              }}
             >
               {t(item.name)}
             </Typography>
-            <Typography sx={{ color: 'var(--color-accent-coral)', fontWeight: 700, fontSize: '1.2rem', mt: 0.5 }}>
+            <Typography
+              sx={{
+                color: 'var(--color-accent-coral)',
+                fontWeight: 700,
+                fontSize: '1.05rem',
+                mt: 0.25,
+              }}
+            >
               ${Number(item.price).toFixed(2)}
             </Typography>
           </Box>
+
+          {/* Right column: options */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+            <OptionSection title={t('Size')}>
+              {SIZES.map((s) => (
+                <Chip
+                  key={s}
+                  size="small"
+                  label={t(s)}
+                  onClick={() => setSize(s)}
+                  sx={{
+                    bgcolor: size === s ? 'var(--color-accent-teal)' : 'var(--color-cream-light)',
+                    color: size === s ? 'var(--color-text-white)' : 'var(--color-kiosk-text)',
+                    fontWeight: size === s ? 700 : 500,
+                    border: size === s ? '2px solid transparent' : '2px solid rgba(45, 52, 54, 0.38)',
+                    boxShadow: size === s ? '0 2px 8px rgba(78, 205, 196, 0.35)' : 'none',
+                    '&:hover': { bgcolor: size === s ? 'var(--color-accent-teal-hover)' : 'var(--color-cream-hover)' },
+                  }}
+                />
+              ))}
+            </OptionSection>
+
+            <OptionSection title={t('Sugar Level')}>
+              {SUGAR_LEVELS.map((s) => (
+                <Chip
+                  key={s}
+                  size="small"
+                  label={t(s)}
+                  onClick={() => setSugarLevel(s)}
+                  sx={{
+                    bgcolor: sugarLevel === s ? 'var(--color-accent-teal)' : 'var(--color-cream-light)',
+                    color: sugarLevel === s ? 'var(--color-text-white)' : 'var(--color-kiosk-text)',
+                    fontWeight: sugarLevel === s ? 700 : 500,
+                    border: sugarLevel === s ? '2px solid transparent' : '2px solid rgba(45, 52, 54, 0.38)',
+                    boxShadow: sugarLevel === s ? '0 2px 8px rgba(78, 205, 196, 0.35)' : 'none',
+                    '&:hover': { bgcolor: sugarLevel === s ? 'var(--color-accent-teal-hover)' : 'var(--color-cream-hover)' },
+                  }}
+                />
+              ))}
+            </OptionSection>
+
+            <OptionSection title={t('Ice Level')}>
+              {ICE_LEVELS.map((i) => (
+                <Chip
+                  key={i}
+                  size="small"
+                  label={t(i)}
+                  onClick={() => setIceLevel(i)}
+                  sx={{
+                    bgcolor: iceLevel === i ? 'var(--color-accent-teal)' : 'var(--color-cream-light)',
+                    color: iceLevel === i ? 'var(--color-text-white)' : 'var(--color-kiosk-text)',
+                    fontWeight: iceLevel === i ? 700 : 500,
+                    border: iceLevel === i ? '2px solid transparent' : '2px solid rgba(45, 52, 54, 0.38)',
+                    boxShadow: iceLevel === i ? '0 2px 8px rgba(78, 205, 196, 0.35)' : 'none',
+                    '&:hover': { bgcolor: iceLevel === i ? 'var(--color-accent-teal-hover)' : 'var(--color-cream-hover)' },
+                  }}
+                />
+              ))}
+            </OptionSection>
+
+            {availableToppings.length > 0 && (
+              <OptionSection title={t('Toppings')} chipsMaxHeight={120}>
+                {availableToppings.map((topping) => (
+                  <Chip
+                    key={topping.id}
+                    size="small"
+                    label={`${t(topping.name)} +$${Number(topping.price).toFixed(2)}`}
+                    onClick={() => toggleTopping(topping.name)}
+                    sx={{
+                      bgcolor: selectedToppings.includes(topping.name) ? 'var(--color-accent-coral)' : 'var(--color-cream-light)',
+                      color: selectedToppings.includes(topping.name) ? 'var(--color-text-white)' : 'var(--color-kiosk-text)',
+                      fontWeight: selectedToppings.includes(topping.name) ? 700 : 500,
+                      border: selectedToppings.includes(topping.name) ? '2px solid transparent' : '2px solid rgba(45, 52, 54, 0.38)',
+                      boxShadow: selectedToppings.includes(topping.name) ? '0 2px 8px rgba(255, 107, 107, 0.35)' : 'none',
+                      '&:hover': {
+                        bgcolor: selectedToppings.includes(topping.name) ? 'var(--color-accent-coral-hover)' : 'var(--color-cream-hover)',
+                      },
+                    }}
+                  />
+                ))}
+              </OptionSection>
+            )}
+          </Box>
         </Box>
-
-        {/* Size */}
-        <OptionSection title={t('Size')}>
-          {SIZES.map((s) => (
-            <Chip
-              key={s}
-              label={t(s)}
-              onClick={() => setSize(s)}
-              sx={{
-                bgcolor: size === s ? 'var(--color-accent-teal)' : 'var(--color-cream-light)',
-                color: size === s ? 'var(--color-text-white)' : 'var(--color-kiosk-text)',
-                fontWeight: size === s ? 700 : 500,
-                border: size === s ? '2px solid transparent' : '2px solid rgba(45, 52, 54, 0.38)',
-                boxShadow: size === s ? '0 2px 8px rgba(78, 205, 196, 0.35)' : 'none',
-                '&:hover': { bgcolor: size === s ? 'var(--color-accent-teal-hover)' : 'var(--color-cream-hover)' },
-              }}
-            />
-          ))}
-        </OptionSection>
-
-        {/* Sugar level */}
-        <OptionSection title={t('Sugar Level')}>
-          {SUGAR_LEVELS.map((s) => (
-            <Chip
-              key={s}
-              label={t(s)}
-              onClick={() => setSugarLevel(s)}
-              sx={{
-                bgcolor: sugarLevel === s ? 'var(--color-accent-teal)' : 'var(--color-cream-light)',
-                color: sugarLevel === s ? 'var(--color-text-white)' : 'var(--color-kiosk-text)',
-                fontWeight: sugarLevel === s ? 700 : 500,
-                border: sugarLevel === s ? '2px solid transparent' : '2px solid rgba(45, 52, 54, 0.38)',
-                boxShadow: sugarLevel === s ? '0 2px 8px rgba(78, 205, 196, 0.35)' : 'none',
-                '&:hover': { bgcolor: sugarLevel === s ? 'var(--color-accent-teal-hover)' : 'var(--color-cream-hover)' },
-              }}
-            />
-          ))}
-        </OptionSection>
-
-        {/* Ice level */}
-        <OptionSection title={t('Ice Level')}>
-          {ICE_LEVELS.map((i) => (
-            <Chip
-              key={i}
-              label={t(i)}
-              onClick={() => setIceLevel(i)}
-              sx={{
-                bgcolor: iceLevel === i ? 'var(--color-accent-teal)' : 'var(--color-cream-light)',
-                color: iceLevel === i ? 'var(--color-text-white)' : 'var(--color-kiosk-text)',
-                fontWeight: iceLevel === i ? 700 : 500,
-                border: iceLevel === i ? '2px solid transparent' : '2px solid rgba(45, 52, 54, 0.38)',
-                boxShadow: iceLevel === i ? '0 2px 8px rgba(78, 205, 196, 0.35)' : 'none',
-                '&:hover': { bgcolor: iceLevel === i ? 'var(--color-accent-teal-hover)' : 'var(--color-cream-hover)' },
-              }}
-            />
-          ))}
-        </OptionSection>
-
-        {/* Toppings */}
-        {availableToppings.length > 0 && (
-          <OptionSection title={t('Toppings')}>
-            {availableToppings.map((topping) => (
-              <Chip
-                key={topping.id}
-                label={`${t(topping.name)} +$${Number(topping.price).toFixed(2)}`}
-                onClick={() => toggleTopping(topping.name)}
-                sx={{
-                  bgcolor: selectedToppings.includes(topping.name) ? 'var(--color-accent-coral)' : 'var(--color-cream-light)',
-                  color: selectedToppings.includes(topping.name) ? 'var(--color-text-white)' : 'var(--color-kiosk-text)',
-                  fontWeight: selectedToppings.includes(topping.name) ? 700 : 500,
-                  border: selectedToppings.includes(topping.name) ? '2px solid transparent' : '2px solid rgba(45, 52, 54, 0.38)',
-                  boxShadow: selectedToppings.includes(topping.name) ? '0 2px 8px rgba(255, 107, 107, 0.35)' : 'none',
-                  '&:hover': {
-                    bgcolor: selectedToppings.includes(topping.name) ? 'var(--color-accent-coral-hover)' : 'var(--color-cream-hover)',
-                  },
-                }}
-              />
-            ))}
-          </OptionSection>
-        )}
       </DialogContent>
 
       <DialogActions sx={{ px: 3, py: 2 }}>
@@ -254,18 +277,31 @@ export default function ItemCustomizationModal({
 function OptionSection({
   title,
   children,
+  chipsMaxHeight,
 }: {
   title: string;
   children: React.ReactNode;
+  chipsMaxHeight?: number;
 }) {
   return (
-    <Box sx={{ mb: 3 }}>
+    <Box>
       <Typography
-        sx={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--color-kiosk-text)', mb: 1 }}
+        sx={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--color-kiosk-text)', mb: 0.5 }}
       >
         {title}
       </Typography>
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>{children}</Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 0.75,
+          ...(chipsMaxHeight
+            ? { maxHeight: chipsMaxHeight, overflowY: 'auto', pr: 0.5 }
+            : {}),
+        }}
+      >
+        {children}
+      </Box>
     </Box>
   );
 }
