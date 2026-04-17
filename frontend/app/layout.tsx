@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ThemeRegistry from "@/components/ThemeRegistry";
 import AuthProviderWrapper from "@/components/AuthProviderWrapper";
+import { HighContrastProvider } from "@/contexts/HighContrastContext";
+import HighContrastToggle from "@/components/HighContrastToggle";
 import { getRootCssVariablesStyle } from "@/lib/theme";
 
 const geistSans = Geist({
@@ -43,7 +45,10 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: getRootCssVariablesStyle() }}
         />
         <ThemeRegistry>
-          <AuthProviderWrapper>{children}</AuthProviderWrapper>
+          <HighContrastProvider>
+            <AuthProviderWrapper>{children}</AuthProviderWrapper>
+            <HighContrastToggle />
+          </HighContrastProvider>
         </ThemeRegistry>
       </body>
     </html>

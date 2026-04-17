@@ -17,3 +17,170 @@ body {
   color: var(--color-text-primary);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ── High Contrast mode ──────────────────────────────────────────────────────
+   Override every CSS_VARIABLES token so all components that use var(--color-*)
+   automatically pick up the high-contrast palette without code changes.
+   Contrast ratios target WCAG AA (4.5:1 text, 3:1 UI components).
+   ──────────────────────────────────────────────────────────────────────────── */
+body.high-contrast {
+  --color-page-bg: #ffffff;
+  --color-page-bg-dark: #f0f0f0;
+  --color-text-primary: #000000;
+  --color-text-secondary: #000000;
+  --color-text-muted: #333333;
+  --color-text-light: #333333;
+  --color-text-white: #ffffff;
+  --color-text-black: #000000;
+  --color-surface: #ffffff;
+  --color-surface-alt: #ffffff;
+  --color-surface-hover: #000000;
+  --color-border: #000000;
+  --color-divider: #000000;
+
+  --color-cream: #ffffff;
+  --color-cream-light: #f0f0f0;
+  --color-cream-dark: #e0e0e0;
+  --color-cream-darker: #cccccc;
+  --color-cream-hover: #e0e0e0;
+  --color-cream-border: #000000;
+  --color-cream-border-dark: #000000;
+  --color-cream-input-hover: #0000cc;
+  --color-cream-input-active: #e0e0e0;
+
+  --color-warm-brown: #000000;
+  --color-warm-brown-dark: #000000;
+  --color-warm-brown-border: #000000;
+  --color-warm-brown-border-hover: #000000;
+  --color-warm-brown-disabled: #555555;
+  --color-warm-brown-muted: #333333;
+
+  --color-accent-teal: #005f5f;
+  --color-accent-teal-hover: #003f3f;
+  --color-accent-teal-dark: #000000;
+  --color-accent-coral: #cc0000;
+  --color-accent-coral-hover: #990000;
+  --color-accent-purple: #4a00a0;
+  --color-accent-purple-hover: #300070;
+
+  --color-kiosk-text: #000000;
+  --color-kiosk-muted: #333333;
+  --color-kiosk-light-gray: #555555;
+  --color-kiosk-lighter-gray: #555555;
+  --color-kiosk-border-light: #000000;
+
+  --color-dark-bg: #000000;
+  --color-dark-surface: #111111;
+  --color-dark-accent: #000066;
+  --color-dark-highlight: #cc0000;
+  --color-dark-success: #005f5f;
+  --color-dark-success-bg: #001a1a;
+  --color-dark-overlay: #000000;
+  --color-dark-border: #ffffff;
+  --color-dark-muted: #cccccc;
+  --color-dark-btn-disabled: #666666;
+  --color-dark-text-muted: #aaaaaa;
+  --color-dark-card-border: #ffffff;
+  --color-dark-error-bg: #1a0000;
+  --color-dark-loading-bg: #000000;
+  --color-dark-text-dim: #888888;
+  --color-dark-text-subtle: #777777;
+
+  --color-status-green-bg: #e0ffe0;
+  --color-status-green-border: #006600;
+  --color-status-green-accent: #004400;
+  --color-status-yellow-bg: #fffde0;
+  --color-status-yellow-border: #7a4000;
+  --color-status-yellow-accent: #5a3000;
+  --color-status-orange-bg: #fff0e0;
+  --color-status-orange-border: #7a3000;
+  --color-status-orange-accent: #5a2000;
+  --color-status-red-bg: #ffe0e0;
+  --color-status-red-border: #cc0000;
+  --color-status-red-accent: #880000;
+
+  --color-tag-dinein-bg: #d0e8ff;
+  --color-tag-dinein-text: #00008b;
+  --color-tag-takeout-bg: #ffe0e0;
+  --color-tag-takeout-text: #880000;
+  --color-tag-category-bg: #e0e4ff;
+  --color-tag-category-text: #000080;
+  --color-tag-topping-bg: #f0e0ff;
+  --color-tag-topping-text: #4a0080;
+
+  --color-stat-blue: #0000cc;
+  --color-stat-green: #006600;
+  --color-stat-purple: #4a00a0;
+
+  --color-manager-orders: #005f5f;
+  --color-manager-employees: #005f5f;
+  --color-manager-inventory: #cc0000;
+  --color-manager-menu: #4a00a0;
+
+  --color-editor-green: #005f5f;
+  --color-editor-green-dark: #003f3f;
+  --color-editor-terracotta: #cc0000;
+  --color-editor-terracotta-dark: #990000;
+  --color-editor-brown: #333333;
+  --color-editor-brown-light: #444444;
+  --color-editor-brown-lighter: #555555;
+  --color-editor-brown-dark: #000000;
+  --color-editor-brown-muted: #333333;
+  --color-editor-brown-dim: #444444;
+  --color-editor-brown-text: #000000;
+  --color-editor-brown-heading: #000000;
+  --color-editor-search: #333333;
+  --color-editor-photo: #555555;
+  --color-editor-photo-text: #333333;
+  --color-editor-surface: #ffffff;
+  --color-editor-surface-alt: #ffffff;
+  --color-editor-surface-card: #ffffff;
+  --color-editor-surface-unavail: #f0f0f0;
+  --color-editor-cream-light: #ffffff;
+  --color-editor-chip-avail-bg: #c8ffe0;
+  --color-editor-chip-avail-fg: #003300;
+  --color-editor-chip-hidden-bg: #ffe0e0;
+  --color-editor-chip-hidden-fg: #880000;
+  --color-editor-chip-hidden-text: #cc0000;
+  --color-editor-chip-shown-bg: #e8e8e8;
+  --color-editor-chip-shown-text: #000000;
+  --color-editor-chip-uncat-bg: #ffe0e0;
+  --color-editor-chip-uncat-text: #880000;
+  --color-editor-chip-price-bg: #ffe0e0;
+  --color-editor-chip-price-text: #880000;
+  --color-editor-toggle-avail-bg: #c8ffe0;
+  --color-editor-toggle-hidden-bg: #ffe0e0;
+  --color-editor-img-bg: #e0e0e0;
+  --color-editor-gradient-start: #ffffff;
+  --color-editor-gradient-mid: #f8f8f8;
+  --color-editor-gradient-end: #f8f8f8;
+  --color-editor-gradient-create-end: #f8f8f8;
+  --color-editor-field-bg: #e0e0e0;
+  --color-editor-field-outline: #000000;
+  --color-editor-field-outline-hover: #000000;
+  --color-editor-outlined-button-bg: #cccccc;
+  --color-editor-outlined-button-hover: #bbbbbb;
+  --color-editor-contained-teal: #005f5f;
+  --color-editor-contained-teal-hover: #003f3f;
+  --color-editor-contained-coral: #880000;
+  --color-editor-contained-coral-hover: #660000;
+  --color-editor-outlined-teal-fg: #003030;
+  --color-editor-outlined-teal-border: #005f5f;
+  --color-editor-delete-fill: #ffe0e0;
+  --color-editor-delete-fill-hover: #ffcccc;
+
+  --color-success: #006600;
+  --color-warning: #7a4000;
+  --color-warning-alt: #7a4000;
+  --color-error: #cc0000;
+  --color-error-dark: #990000;
+  --color-error-text: #880000;
+  --color-info: #000080;
+  --color-active-green: #005500;
+  --color-active-green-alt: #004400;
+
+  --color-overlay-heavy: rgba(0, 0, 0, 0.9);
+  --color-overlay-medium: rgba(0, 0, 0, 0.85);
+
+  --color-order-row-bg: #ffffff;
+}
