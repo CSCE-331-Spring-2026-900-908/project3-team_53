@@ -466,7 +466,6 @@ export default function ManagerInventoryPage() {
         Inventory Management
       </Typography>
       <Typography variant="body1" sx={{ color: 'var(--color-text-black)', mb: 4, maxWidth: 820 }}>
-        Track stock levels and update inventory so the shop stays fully stocked.
       </Typography>
 
       <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 4, alignItems: 'center' }}>
