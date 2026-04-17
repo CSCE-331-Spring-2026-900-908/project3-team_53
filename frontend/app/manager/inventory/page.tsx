@@ -35,9 +35,9 @@ export default function ManagerInventoryPage() {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<'save' | 'delete' | 'create' | null>(null);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
-  const [editedValues, setEditedValues] = useState({ id: '', name: '', supplier: '' });
+  const [editedValues, setEditedValues] = useState({ id: '', name: '', supplier: '', quantity: '', maxStock: '' });
   const [newItemValues, setNewItemValues] = useState({ name: '', supplier: '', quantity: '', maxStock: '' });
-  const [formErrors, setFormErrors] = useState<{ id?: string; name?: string }>({});
+  const [formErrors, setFormErrors] = useState<{ id?: string; name?: string; quantity?: string; maxStock?: string }>({});
   const [newItemErrors, setNewItemErrors] = useState<{ name?: string; supplier?: string; quantity?: string; maxStock?: string }>({});
   const [swapPrompt, setSwapPrompt] = useState<{
     open: boolean;
@@ -106,7 +106,13 @@ export default function ManagerInventoryPage() {
 
   const openEditDialog = (item: InventoryItem) => {
     setSelectedItem(item);
-    setEditedValues({ id: String(item.id), name: item.name, supplier: item.supplier ?? '' });
+    setEditedValues({
+      id: String(item.id),
+      name: item.name,
+      supplier: item.supplier ?? '',
+      quantity: String(item.quantity),
+      maxStock: String(item.maxStock ?? ''),
+    });
     setFormErrors({});
     setPendingAction(null);
     setSwapPrompt({ open: false, existingItem: null, newId: null });
@@ -134,7 +140,10 @@ export default function ManagerInventoryPage() {
     setPendingAction(null);
   };
 
-  const handleFieldChange = (field: 'id' | 'name' | 'supplier', value: string) => {
+  const handleFieldChange = (
+    field: 'id' | 'name' | 'supplier' | 'quantity' | 'maxStock',
+    value: string,
+  ) => {
     setEditedValues((prev) => ({ ...prev, [field]: value }));
     setFormErrors((prev) => ({ ...prev, [field]: undefined }));
   };
@@ -146,10 +155,14 @@ export default function ManagerInventoryPage() {
 
   const validateFields = () => {
     if (!selectedItem) return false;
-    const errors: { id?: string; name?: string } = {};
+    const errors: { id?: string; name?: string; quantity?: string; maxStock?: string } = {};
     const trimmedName = editedValues.name.trim();
     const trimmedIdValue = editedValues.id.trim();
+    const trimmedQuantity = editedValues.quantity.trim();
+    const trimmedMaxStock = editedValues.maxStock.trim();
     const parsedId = Number(trimmedIdValue);
+    const parsedQuantity = Number(trimmedQuantity);
+    const parsedMaxStock = Number(trimmedMaxStock);
 
     if (!trimmedName) {
       errors.name = 'Item name cannot be blank.';
@@ -163,6 +176,33 @@ export default function ManagerInventoryPage() {
       errors.id = 'Item ID must be an integer.';
     } else if (parsedId < 0) {
       errors.id = 'Item ID cannot be negative.';
+    }
+
+    if (trimmedQuantity) {
+      if (Number.isNaN(parsedQuantity)) {
+        errors.quantity = 'Current stock must be a number.';
+      } else if (!Number.isInteger(parsedQuantity) || parsedQuantity < 0) {
+        errors.quantity = 'Current stock must be a non-negative integer.';
+      }
+    }
+
+    if (trimmedMaxStock) {
+      if (Number.isNaN(parsedMaxStock)) {
+        errors.maxStock = 'Max stock must be a number.';
+      } else if (!Number.isInteger(parsedMaxStock) || parsedMaxStock < 1) {
+        errors.maxStock = 'Max stock must be at least 1.';
+      }
+    }
+
+    const effectiveQuantity = trimmedQuantity ? parsedQuantity : selectedItem.quantity;
+    const effectiveMaxStock = trimmedMaxStock ? parsedMaxStock : selectedItem.maxStock ?? 0;
+
+    if (
+      !errors.quantity &&
+      !errors.maxStock &&
+      effectiveMaxStock < effectiveQuantity
+    ) {
+      errors.maxStock = 'Max stock cannot be less than current stock.';
     }
 
     if (
@@ -256,7 +296,7 @@ export default function ManagerInventoryPage() {
 
   const updateInventoryItem = async (
     currentId: number,
-    payload: { id: number; name: string; supplier?: string },
+    payload: { id: number; name: string; supplier?: string; quantity?: number; maxStock?: number },
   ) => {
     return Patch(`/inventory/${currentId}`, payload);
   };
@@ -296,10 +336,16 @@ export default function ManagerInventoryPage() {
         if (!selectedItem) return;
         const trimmedName = editedValues.name.trim();
         const parsedId = Number(editedValues.id);
+        const trimmedSupplier = editedValues.supplier.trim();
+        const trimmedQuantity = editedValues.quantity.trim();
+        const trimmedMaxStock = editedValues.maxStock.trim();
+
         await updateInventoryItem(selectedItem.id, {
           id: parsedId,
           name: trimmedName,
-          supplier: editedValues.supplier.trim() || undefined,
+          supplier: trimmedSupplier || undefined,
+          quantity: trimmedQuantity ? Number(trimmedQuantity) : undefined,
+          maxStock: trimmedMaxStock ? Number(trimmedMaxStock) : undefined,
         });
         setSnackbar({ open: true, message: `Saved changes for ${trimmedName}.` });
         await fetchInventory();
@@ -481,6 +527,34 @@ export default function ManagerInventoryPage() {
             onChange={(event) => handleFieldChange('supplier', event.target.value)}
             fullWidth
           />
+          <TextField
+            label="Current Stock"
+            type="number"
+            value={editedValues.quantity}
+            onChange={(event) => handleFieldChange('quantity', event.target.value)}
+            error={Boolean(formErrors.quantity)}
+            helperText={formErrors.quantity}
+            fullWidth
+          />
+          <TextField
+            label="Max Stock"
+            type="number"
+            value={editedValues.maxStock}
+            onChange={(event) => handleFieldChange('maxStock', event.target.value)}
+            error={Boolean(formErrors.maxStock)}
+            helperText={formErrors.maxStock}
+            fullWidth
+          />
+          {selectedItem && (() => {
+            const effectiveQuantity = editedValues.quantity.trim() ? Number(editedValues.quantity.trim()) : selectedItem.quantity;
+            const effectiveMaxStock = editedValues.maxStock.trim() ? Number(editedValues.maxStock.trim()) : selectedItem.maxStock ?? 0;
+            const willBeLowStock = effectiveMaxStock > 0 && effectiveQuantity < effectiveMaxStock * 0.2;
+            return willBeLowStock ? (
+              <Typography variant="body2" sx={{ color: 'var(--color-error-dark)' }}>
+                Warning: this item will be marked as Low Stock.
+              </Typography>
+            ) : null;
+          })()}
           <TextField
             label="Item ID"
             type="number"

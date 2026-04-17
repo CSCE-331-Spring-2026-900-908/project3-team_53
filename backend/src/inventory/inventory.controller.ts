@@ -53,7 +53,7 @@ export class InventoryController {
   @Patch(':id')
   updateInventory(
     @Param('id') id: string,
-    @Body() payload: { id?: number; name?: string; supplier?: string },
+    @Body() payload: { id?: number; name?: string; supplier?: string; quantity?: number; maxStock?: number },
   ): Promise<Inventory> {
     return this.inventoryService.updateInventory(Number(id), payload);
   }

@@ -51,7 +51,7 @@ export class InventoryService {
 
   async updateInventory(
     currentId: number,
-    changes: { id?: number; name?: string; supplier?: string },
+    changes: { id?: number; name?: string; supplier?: string; quantity?: number; maxStock?: number },
   ): Promise<Inventory> {
     if (!Number.isInteger(currentId)) {
       throw new BadRequestException('Current inventory ID must be a valid integer.');
@@ -61,9 +61,24 @@ export class InventoryService {
       throw new BadRequestException('Updated inventory ID must be a valid integer.');
     }
 
+    if (changes.quantity !== undefined && (!Number.isInteger(changes.quantity) || changes.quantity < 0)) {
+      throw new BadRequestException('Quantity must be a non-negative integer.');
+    }
+
+    if (changes.maxStock !== undefined && (!Number.isInteger(changes.maxStock) || changes.maxStock < 1)) {
+      throw new BadRequestException('Max stock must be at least 1.');
+    }
+
     const inventoryItem = await this.inventoryRepo.findOneBy({ id: currentId });
     if (!inventoryItem) {
       throw new NotFoundException(`Inventory item with ID ${currentId} not found.`);
+    }
+
+    const effectiveQuantity = changes.quantity !== undefined ? changes.quantity : inventoryItem.quantity;
+    const effectiveMaxStock = changes.maxStock !== undefined ? changes.maxStock : inventoryItem.maxStock;
+
+    if (effectiveMaxStock < effectiveQuantity) {
+      throw new BadRequestException('Max stock cannot be less than current stock.');
     }
 
     const updatedId = changes.id ?? currentId;
@@ -80,6 +95,9 @@ export class InventoryService {
           id: updatedId,
           name: changes.name ?? inventoryItem.name,
           supplier: changes.supplier ?? inventoryItem.supplier,
+          quantity: effectiveQuantity,
+          maxStock: effectiveMaxStock,
+          status: effectiveQuantity < effectiveMaxStock * 0.2 ? 'Low Stock' : 'In Stock',
         })
         .where('id = :id', { id: currentId })
         .execute();
@@ -93,6 +111,10 @@ export class InventoryService {
 
     inventoryItem.name = changes.name ?? inventoryItem.name;
     inventoryItem.supplier = changes.supplier ?? inventoryItem.supplier;
+    inventoryItem.quantity = effectiveQuantity;
+    inventoryItem.maxStock = effectiveMaxStock;
+    inventoryItem.status = effectiveQuantity < effectiveMaxStock * 0.2 ? 'Low Stock' : 'In Stock';
+
     return this.inventoryRepo.save(inventoryItem);
   }
 
