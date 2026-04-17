@@ -671,7 +671,7 @@ export default function ManagerInventoryPage() {
                   </Typography>
                 </Box>
                 <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)' }}>
-                  <strong>Quantity:</strong> {item.quantity}
+                  <strong>Quantity:</strong> {item.quantity}{item.maxStock !== undefined ? ` / ${item.maxStock}` : ''}
                 </Typography>
                 {item.supplier && (
                   <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)', mt: 0.5 }}>
